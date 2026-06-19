@@ -1,0 +1,10 @@
+# Archivos temporales de MATLAB y Simulink
+*.asv
+*.slxc
+*.mex*
+*.log
+slprj/
+          
+# Caché de carpetas de Windows
+Thumbs.db
+ehthumbs.db
