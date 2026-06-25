@@ -815,7 +815,7 @@ La Fig. \ref{fig:diagrama_mecanico_equivalente} muestra el diagrama de bloques c
 \begin{figure}[H]
     \centering
    	% Inserta la ruta y nombre exacto de tu archivo PNG aquí
-   	\includegraphics[width=0.95\textwidth]{subsistema_mecanico.jpg}
+   	\includegraphics[width=0.95\textwidth]{img/screenshot_subsistema_mecanico.png}
    	\caption{Diagrama de bloques del subsistema mecánico equivalente referido al eje del motor.}
    	\label{fig:diagrama_mecanico_equivalente}
    \end{figure}
@@ -830,879 +830,1132 @@ A partir de las ecuaciones de la carga, la transmisión y el rotor del motor se 
 % SECCIONES PENDIENTES PARA COMPLETAR EL INFORME
 % ---------------------------------------------------------
 
-\subsection{Modelo dinámico global no lineal del sistema físico}
+\subsection{Punto 2: Modelo dinámico del sistema físico completo}
 
-En esta sección se incorpora el subsistema electromagnético de la máquina PMSM y el subsistema térmico del bobinado de estator al modelo mecánico equivalente obtenido previamente. De esta manera, el torque electromagnético deja de considerarse una entrada externa genérica y pasa a calcularse a partir de las corrientes internas de la máquina en coordenadas de rotor. El modelo resultante es no lineal debido al acoplamiento electromecánico, a la dependencia de la resistencia con la temperatura, al producto entre corrientes en el torque de reluctancia, a los términos de fuerza contraelectromotriz y al torque gravitacional de la carga.
+En este punto se incorpora al modelo mecánico equivalente obtenido en el punto 1 el subsistema electromagnético de la máquina PMSM y el subsistema térmico del bobinado de estator. El objetivo es pasar de una planta mecánica excitada por un torque genérico \(T_m(t)\) a un modelo físico completo donde dicho torque se obtiene a partir de las corrientes internas de la máquina, las tensiones aplicadas por el inversor y la temperatura del estator.
 
-El modelo global se construye utilizando coordenadas electromagnéticas de rotor \(qd0\), obtenidas mediante la Transformación de Park. Para una variable trifásica genérica \(\mathbf{f}_{abcs}(t)=[f_{as}(t)\; f_{bs}(t)\; f_{cs}(t)]^T\), donde \(f\) puede representar tensión, corriente o flujo, la transformación directa adoptada es
+El desarrollo se organiza respetando los incisos de la consigna: primero se obtiene el modelo global no lineal en coordenadas virtuales \(qd0\), luego se realiza la linealización Jacobiana para obtener un modelo LPV, y finalmente se construye un modelo LTI equivalente mediante linealización por retroalimentación no lineal y control vectorial con campo orientado.
 
-\begin{equation}
-    \begin{bmatrix}
-        f_{qs}^{r}(t)\\
-        f_{ds}^{r}(t)\\
-        f_{0s}(t)
-    \end{bmatrix}
-    =
-    \frac{2}{3}
-    \begin{bmatrix}
-        \cos\theta_r & \cos\left(\theta_r-\frac{2\pi}{3}\right) & \cos\left(\theta_r+\frac{2\pi}{3}\right)\\
-        \sin\theta_r & \sin\left(\theta_r-\frac{2\pi}{3}\right) & \sin\left(\theta_r+\frac{2\pi}{3}\right)\\
-        \frac{1}{2} & \frac{1}{2} & \frac{1}{2}
-    \end{bmatrix}
-    \begin{bmatrix}
-        f_{as}(t)\\
-        f_{bs}(t)\\
-        f_{cs}(t)
-    \end{bmatrix}.
-    \label{eq:park_directa}
-\end{equation}
+% ---------------------------------------------------------
+\subsubsection{2.a) Modelo global no lineal del sistema físico completo, para \(i_{ds}^{r}(t)\neq 0\)}
 
-La transformación inversa queda dada por
+\paragraph{Objetivo del inciso.}
+El objetivo de este inciso es obtener un modelo dinámico global no lineal del accionamiento completo, incorporando la dinámica mecánica equivalente, la dinámica electromagnética de la PMSM y la dinámica térmica del estator. En esta primera formulación no se impone la condición de campo orientado, por lo que se considera el caso general
 
 \begin{equation}
-    \begin{bmatrix}
-        f_{as}(t)\\
-        f_{bs}(t)\\
-        f_{cs}(t)
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-        \cos\theta_r & \sin\theta_r & 1\\
-        \cos\left(\theta_r-\frac{2\pi}{3}\right) & \sin\left(\theta_r-\frac{2\pi}{3}\right) & 1\\
-        \cos\left(\theta_r+\frac{2\pi}{3}\right) & \sin\left(\theta_r+\frac{2\pi}{3}\right) & 1
-    \end{bmatrix}
-    \begin{bmatrix}
-        f_{qs}^{r}(t)\\
-        f_{ds}^{r}(t)\\
-        f_{0s}(t)
-    \end{bmatrix}.
-    \label{eq:park_inversa}
+	i_{ds}^{r}(t)\neq 0.
 \end{equation}
 
-Para el accionamiento considerado, el centro de estrella del estator es flotante y no accesible. Además, inicialmente se considera un sistema trifásico equilibrado. Por lo tanto, la componente homopolar no participa de la dinámica principal y se adopta
+Esto implica que el torque electromagnético conserva tanto el término debido a los imanes permanentes como el término de reluctancia. Por lo tanto, el modelo resultante es no lineal y acoplado.
+
+\paragraph{Transformaciones de Park y acceso físico a variables reales.}
+El modelo electromagnético se escribe en coordenadas virtuales de rotor \(qd0\), porque en ese sistema de referencia las ecuaciones de la PMSM toman una forma más compacta para el análisis y el diseño de control. Sin embargo, físicamente el inversor y los sensores trabajan sobre variables trifásicas reales de estator \(abc\). Por ese motivo es necesario incorporar explícitamente las transformaciones de Park directa e inversa.
+
+Para una variable trifásica genérica
 
 \begin{equation}
-    i_{0s}(t) \equiv 0,
-    \qquad
-    v_{0s}(t) \equiv 0.
-    \label{eq:homopolar_nula}
+	\mathbf{f}_{abcs}(t)=
+	\begin{bmatrix}
+		f_{as}(t) & f_{bs}(t) & f_{cs}(t)
+	\end{bmatrix}^{T},
 \end{equation}
 
-\subsubsection{Variables de estado, entradas y salidas}
+donde \(f\) puede representar tensión, corriente o flujo concatenado, se adopta la transformación directa
 
+\begin{equation}
+	\begin{bmatrix}
+		f_{qs}^{r}(t)\\
+		f_{ds}^{r}(t)\\
+		f_{0s}(t)
+	\end{bmatrix}
+	=
+	\frac{2}{3}
+	\begin{bmatrix}
+		\cos\theta_r & \cos\left(\theta_r-\frac{2\pi}{3}\right) & \cos\left(\theta_r+\frac{2\pi}{3}\right)\\
+		\sin\theta_r & \sin\left(\theta_r-\frac{2\pi}{3}\right) & \sin\left(\theta_r+\frac{2\pi}{3}\right)\\
+		\frac{1}{2} & \frac{1}{2} & \frac{1}{2}
+	\end{bmatrix}
+	\begin{bmatrix}
+		f_{as}(t)\\
+		f_{bs}(t)\\
+		f_{cs}(t)
+	\end{bmatrix}.
+	\label{eq:park_directa_p2}
+\end{equation}
+
+La transformación inversa permite volver desde las coordenadas virtuales \(qd0\) a las variables físicas reales de fase:
+
+\begin{equation}
+	\begin{bmatrix}
+		f_{as}(t)\\
+		f_{bs}(t)\\
+		f_{cs}(t)
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\cos\theta_r & \sin\theta_r & 1\\
+		\cos\left(\theta_r-\frac{2\pi}{3}\right) & \sin\left(\theta_r-\frac{2\pi}{3}\right) & 1\\
+		\cos\left(\theta_r+\frac{2\pi}{3}\right) & \sin\left(\theta_r+\frac{2\pi}{3}\right) & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+		f_{qs}^{r}(t)\\
+		f_{ds}^{r}(t)\\
+		f_{0s}(t)
+	\end{bmatrix}.
+	\label{eq:park_inversa_p2}
+\end{equation}
+
+La posición eléctrica del rotor se relaciona con la posición mecánica mediante
+
+\begin{equation}
+	\theta_r(t)=P_p\theta_m(t),
+	\qquad
+	\omega_r(t)=P_p\omega_m(t),
+	\label{eq:theta_r_omega_r_p2}
+\end{equation}
+
+donde \(P_p\) es el número de pares de polos de la máquina.
+
+Como la PMSM se encuentra conectada en estrella con neutro flotante no accesible, no existe camino físico para la circulación de corriente homopolar. Por lo tanto, para el modelo principal se adopta
+
+\begin{equation}
+	i_{0s}(t)\equiv 0.
+\end{equation}
+
+Si además se considera alimentación trifásica equilibrada, también se tiene
+
+\begin{equation}
+	v_{0s}(t)\equiv 0.
+\end{equation}
+
+\textit{Epígrafe sugerido para figura pendiente: Diagrama de bloques del modelo global no lineal del sistema físico completo, incluyendo inversor trifásico idealizado, transformación de Park directa, modelo PMSM en coordenadas \(qd0\), subsistema mecánico equivalente, subsistema térmico, sensores y transformación de Park inversa para reconstrucción de variables reales \(abc\).}
+
+\paragraph{Variables de estado, entradas y salida.}
 Se adopta como vector de estado global
 
 \begin{equation}
-    \mathbf{x}(t)=
-    \begin{bmatrix}
-        x_1(t)\\ x_2(t)\\ x_3(t)\\ x_4(t)\\ x_5(t)
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-        \theta_m(t)\\
-        \omega_m(t)\\
-        i_{qs}^{r}(t)\\
-        i_{ds}^{r}(t)\\
-        T_s^{\circ}(t)
-    \end{bmatrix}.
-    \label{eq:vector_estado_global_nl}
+	x(t)=
+	\begin{bmatrix}
+		x_1(t)\\
+		x_2(t)\\
+		x_3(t)\\
+		x_4(t)\\
+		x_5(t)
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\theta_m(t)\\
+		\omega_m(t)\\
+		i_{qs}^{r}(t)\\
+		i_{ds}^{r}(t)\\
+		T_s^{\circ}(t)
+	\end{bmatrix}.
+	\label{eq:estado_global_p2}
 \end{equation}
 
-Las entradas externas del modelo son
+Las entradas externas del modelo se organizan como
 
 \begin{equation}
-    \mathbf{u}(t)=
-    \begin{bmatrix}
-        u_1(t)\\ u_2(t)\\ u_3(t)\\ u_4(t)
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-        v_{qs}^{r}(t)\\
-        v_{ds}^{r}(t)\\
-        T_{ld}(t)\\
-        T_{amb}^{\circ}(t)
-    \end{bmatrix}.
-    \label{eq:vector_entrada_global_nl}
+	u(t)=
+	\begin{bmatrix}
+		u_1(t)\\
+		u_2(t)\\
+		u_3(t)\\
+		u_4(t)
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		v_{qs}^{r}(t)\\
+		v_{ds}^{r}(t)\\
+		T_{ld}(t)\\
+		T_{amb}^{\circ}(t)
+	\end{bmatrix}.
+	\label{eq:entradas_global_p2}
 \end{equation}
 
-La salida principal de interés para el control de movimiento es la posición angular de la articulación:
+La salida principal de interés para el control de movimiento es la posición angular de la carga:
 
 \begin{equation}
-    y(t)=q(t)=\theta_l(t)=\frac{\theta_m(t)}{r}=\frac{x_1(t)}{r}.
-    \label{eq:salida_principal_q}
+	y(t)=q(t)=\theta_l(t)=\frac{\theta_m(t)}{r}=\frac{x_1(t)}{r}.
+	\label{eq:salida_q_p2}
 \end{equation}
 
-Como salidas adicionales para análisis y realimentación pueden considerarse \(\theta_m(t)\), \(\omega_m(t)\), \(i_{qs}^{r}(t)\), \(i_{ds}^{r}(t)\), las corrientes reales de fase \(i_{as}(t), i_{bs}(t), i_{cs}(t)\) obtenidas mediante la Transformación de Park inversa, y la temperatura de estator \(T_s^{\circ}(t)\).
+También pueden considerarse como salidas medidas o reconstruidas \(\theta_m(t)\), \(\omega_m(t)\), las corrientes de fase \(i_{as}(t)\), \(i_{bs}(t)\), \(i_{cs}(t)\) y la temperatura de estator \(T_s^{\circ}(t)\).
 
-\subsubsection{Relaciones eléctricas rotor-estator}
-
-La coordenada eléctrica del rotor se relaciona con la posición mecánica mediante
+\paragraph{Resistencia de estator dependiente de la temperatura.}
+La resistencia de fase del estator aumenta con la temperatura del bobinado. Se modela mediante
 
 \begin{equation}
-    \theta_r(t)=P_p\theta_m(t),
-    \label{eq:theta_r}
+	R_s\left(T_s^{\circ}\right)
+	=
+	R_{sREF}
+	\left[
+	1+\alpha_{Cu}\left(T_s^{\circ}-T_{sREF}^{\circ}\right)
+	\right].
+	\label{eq:rs_temp_p2}
 \end{equation}
 
-mientras que la velocidad eléctrica del rotor es
+En variables de estado,
 
 \begin{equation}
-    \omega_r(t)=P_p\omega_m(t).
-    \label{eq:omega_r}
+	R_s(x_5)
+	=
+	R_{sREF}
+	\left[
+	1+\alpha_{Cu}\left(x_5-T_{sREF}^{\circ}\right)
+	\right].
+	\label{eq:rs_estado_p2}
 \end{equation}
 
-Para la máquina del proyecto se tiene \(P_p=3\) pares de polos. La resistencia de estator se modela dependiente de la temperatura del bobinado:
+Esta dependencia introduce un acoplamiento térmico-eléctrico, porque la temperatura modifica la resistencia, y la resistencia modifica tanto la dinámica de corriente como la potencia disipada por efecto Joule.
+
+\paragraph{Torque electromagnético.}
+El torque electromagnético de la PMSM está dado por
 
 \begin{equation}
-    R_s\left(T_s^{\circ}\right)
-    =
-    R_{sREF}
-    \left[
-    1+\alpha_{Cu}\left(T_s^{\circ}-T_{sREF}^{\circ}\right)
-    \right].
-    \label{eq:rs_temperatura}
-\end{equation}
-
-Con los valores nominales del proyecto:
-
-\begin{equation}
-    R_{sREF}=\SI{1.02}{\ohm},
-    \qquad
-    T_{sREF}^{\circ}=\SI{20}{\celsius},
-    \qquad
-    \alpha_{Cu}=3.9\times10^{-3}\ \si{\per\celsius}.
-\end{equation}
-
-\subsubsection{Modelo electromagnético de la PMSM en coordenadas \(qd\)}
-
-Las ecuaciones de balance de tensión del estator, expresadas en coordenadas \(qd\) fijas al rotor, son
-
-\begin{equation}
-    v_{qs}^{r}(t)
-    =
-    R_s\left(T_s^{\circ}\right)i_{qs}^{r}(t)
-    +
-    L_q\frac{d i_{qs}^{r}(t)}{dt}
-    +
-    \left[\lambda_m^{\prime r}+L_d i_{ds}^{r}(t)\right]\omega_r(t),
-    \label{eq:vq_pmsm}
-\end{equation}
-
-\begin{equation}
-    v_{ds}^{r}(t)
-    =
-    R_s\left(T_s^{\circ}\right)i_{ds}^{r}(t)
-    +
-    L_d\frac{d i_{ds}^{r}(t)}{dt}
-    -
-    L_q i_{qs}^{r}(t)\omega_r(t).
-    \label{eq:vd_pmsm}
-\end{equation}
-
-Despejando las derivadas de corriente, e incorporando \(\omega_r=P_p\omega_m\), se obtiene
-
-\begin{equation}
-    \frac{d i_{qs}^{r}}{dt}
-    =
-    \frac{
-    v_{qs}^{r}
-    -
-    R_s\left(T_s^{\circ}\right)i_{qs}^{r}
-    -
-    \left(\lambda_m^{\prime r}+L_d i_{ds}^{r}\right)P_p\omega_m
-    }{L_q},
-    \label{eq:iq_dot_nl}
-\end{equation}
-
-\begin{equation}
-    \frac{d i_{ds}^{r}}{dt}
-    =
-    \frac{
-    v_{ds}^{r}
-    -
-    R_s\left(T_s^{\circ}\right)i_{ds}^{r}
-    +
-    L_q i_{qs}^{r}P_p\omega_m
-    }{L_d}.
-    \label{eq:id_dot_nl}
-\end{equation}
-
-El torque electromagnético generado por la PMSM está compuesto por un término debido a los imanes permanentes y un término de reluctancia:
-
-\begin{equation}
-    T_m(t)
-    =
-    \frac{3}{2}P_p\lambda_m^{\prime r}i_{qs}^{r}(t)
-    +
-    \frac{3}{2}P_p\left(L_d-L_q\right)i_{ds}^{r}(t)i_{qs}^{r}(t).
-    \label{eq:torque_pmsm}
+	T_m(t)
+	=
+	\frac{3}{2}P_p\lambda_m^{\prime r}i_{qs}^{r}(t)
+	+
+	\frac{3}{2}P_p\left(L_d-L_q\right)i_{ds}^{r}(t)i_{qs}^{r}(t).
+	\label{eq:torque_pmsm_general_p2}
 \end{equation}
 
 Se definen las constantes
 
 \begin{equation}
-    K_t=\frac{3}{2}P_p\lambda_m^{\prime r},
-    \qquad
-    K_{rel}=\frac{3}{2}P_p\left(L_d-L_q\right),
-    \label{eq:kt_krel}
+	K_t=\frac{3}{2}P_p\lambda_m^{\prime r},
+	\qquad
+	K_{rel}=\frac{3}{2}P_p\left(L_d-L_q\right),
+	\label{eq:kt_krel_p2}
 \end{equation}
 
-por lo que el torque puede escribirse como
+por lo que
 
 \begin{equation}
-    T_m(t)=K_t i_{qs}^{r}(t)+K_{rel}i_{ds}^{r}(t)i_{qs}^{r}(t).
-    \label{eq:torque_pmsm_compacto}
+	T_m(t)=K_t i_{qs}^{r}(t)+K_{rel}i_{ds}^{r}(t)i_{qs}^{r}(t).
+	\label{eq:torque_kt_krel_p2}
 \end{equation}
 
-Con los parámetros nominales \(P_p=3\), \(\lambda_m^{\prime r}=\SI{0.016}{\weber}\), \(L_d=\SI{6.6e-3}{\henry}\) y \(L_q=\SI{5.8e-3}{\henry}\), se obtiene
+El segundo término de \eqref{eq:torque_kt_krel_p2} muestra una de las no linealidades principales del modelo: el producto entre las corrientes de eje directo y eje en cuadratura.
+
+\paragraph{Ecuaciones eléctricas en coordenadas \(qd\).}
+El balance de tensiones de estator en coordenadas de rotor queda dado por
 
 \begin{equation}
-    K_t=\SI{0.072}{\newton\meter\per\ampere},
-    \qquad
-    K_{rel}=\SI{0.0036}{\newton\meter\per\ampere\squared}.
-    \label{eq:kt_krel_numerico}
+	v_{qs}^{r}(t)
+	=
+	R_s\left(T_s^{\circ}\right)i_{qs}^{r}(t)
+	+
+	L_q\frac{di_{qs}^{r}(t)}{dt}
+	+
+	\left[\lambda_m^{\prime r}+L_d i_{ds}^{r}(t)\right]\omega_r(t),
+	\label{eq:vq_balance_p2}
 \end{equation}
 
-\subsubsection{Acoplamiento con el subsistema mecánico equivalente}
-
-El modelo mecánico equivalente referido al eje del motor, desarrollado en el punto anterior, queda ahora acoplado al subsistema electromagnético mediante el torque \(T_m(t)\). Sustituyendo \eqref{eq:torque_pmsm_compacto} en \eqref{eq:modelo_mecanico_final}, se obtiene
-
 \begin{equation}
-    \dot{\omega}_m(t)
-    =
-    \frac{1}{J_{eq}}
-    \left[
-    K_t i_{qs}^{r}
-    +
-    K_{rel}i_{ds}^{r}i_{qs}^{r}
-    -
-    b_{eq}\omega_m
-    -
-    \frac{gk_l}{r}\sin\left(\frac{\theta_m}{r}\right)
-    -
-    \frac{T_{ld}}{r}
-    \right].
-    \label{eq:omega_dot_acoplada}
+	v_{ds}^{r}(t)
+	=
+	R_s\left(T_s^{\circ}\right)i_{ds}^{r}(t)
+	+
+	L_d\frac{di_{ds}^{r}(t)}{dt}
+	-
+	L_q i_{qs}^{r}(t)\omega_r(t).
+	\label{eq:vd_balance_p2}
 \end{equation}
 
-El acoplamiento es bidireccional: la dinámica eléctrica genera el torque que acelera el eje mecánico, mientras que la velocidad mecánica determina la velocidad eléctrica \(\omega_r=P_p\omega_m\), la cual aparece en las ecuaciones de tensión de la máquina.
-
-\subsubsection{Modelo térmico del estator}
-
-Las pérdidas eléctricas por efecto Joule pueden calcularse en coordenadas \(qd0\). Considerando \(i_{0s}=0\), se tiene
+Despejando las derivadas de corriente e incorporando \(\omega_r=P_p\omega_m\), se obtiene
 
 \begin{equation}
-    P_{s,perd}(t)
-    =
-    R_s\left(T_s^{\circ}\right)
-    \frac{3}{2}
-    \left[
-    \left(i_{qs}^{r}(t)\right)^2+
-    \left(i_{ds}^{r}(t)\right)^2
-    \right].
-    \label{eq:perdidas_joule_qd}
+	\frac{di_{qs}^{r}}{dt}
+	=
+	\frac{
+		v_{qs}^{r}
+		-R_s\left(T_s^{\circ}\right)i_{qs}^{r}
+		-\left(\lambda_m^{\prime r}+L_d i_{ds}^{r}\right)P_p\omega_m
+	}{L_q},
+	\label{eq:diq_dt_p2}
 \end{equation}
 
-El balance térmico simplificado del estator se expresa como
-
 \begin{equation}
-    P_{s,perd}(t)
-    =
-    C_{ts}\frac{dT_s^{\circ}(t)}{dt}
-    +
-    \frac{1}{R_{ts-amb}}
-    \left[T_s^{\circ}(t)-T_{amb}^{\circ}(t)\right].
-    \label{eq:balance_termico}
+	\frac{di_{ds}^{r}}{dt}
+	=
+	\frac{
+		v_{ds}^{r}
+		-R_s\left(T_s^{\circ}\right)i_{ds}^{r}
+		+L_q i_{qs}^{r}P_p\omega_m
+	}{L_d}.
+	\label{eq:did_dt_p2}
 \end{equation}
 
-Por lo tanto,
+\paragraph{Acoplamiento con el subsistema mecánico equivalente.}
+La ecuación mecánica equivalente referida al eje del motor, obtenida en el punto 1, es
 
 \begin{equation}
-    \frac{dT_s^{\circ}}{dt}
-    =
-    \frac{1}{C_{ts}}
-    \left[
-    P_{s,perd}
-    -
-    \frac{T_s^{\circ}-T_{amb}^{\circ}}{R_{ts-amb}}
-    \right].
-    \label{eq:ts_dot}
+	J_{eq}\dot{\omega}_m(t)
+	=
+	T_m(t)
+	-b_{eq}\omega_m(t)
+	-\frac{gk_l}{r}\sin\left(\frac{\theta_m(t)}{r}\right)
+	-\frac{T_{ld}(t)}{r}.
+	\label{eq:mecanica_equiv_p2}
 \end{equation}
 
-\subsubsection{Ecuaciones no lineales de estado}
-
-Reuniendo las expresiones anteriores, el modelo dinámico global no lineal queda dado por
+Sustituyendo el torque electromagnético de la PMSM, resulta
 
 \begin{equation}
-    \boxed{
-    \begin{aligned}
-        \dot{x}_1 &= x_2,\\[2mm]
-        \dot{x}_2 &=
-        \frac{1}{J_{eq}}
-        \left[
-        K_t x_3
-        +
-        K_{rel}x_4x_3
-        -
-        b_{eq}x_2
-        -
-        \frac{gk_l}{r}\sin\left(\frac{x_1}{r}\right)
-        -
-        \frac{u_3}{r}
-        \right],\\[2mm]
-        \dot{x}_3 &=
-        \frac{
-        u_1
-        -
-        R_s(x_5)x_3
-        -
-        \left(\lambda_m^{\prime r}+L_d x_4\right)P_p x_2
-        }{L_q},\\[2mm]
-        \dot{x}_4 &=
-        \frac{
-        u_2
-        -
-        R_s(x_5)x_4
-        +
-        L_q x_3 P_p x_2
-        }{L_d},\\[2mm]
-        \dot{x}_5 &=
-        \frac{1}{C_{ts}}
-        \left[
-        R_s(x_5)\frac{3}{2}\left(x_3^2+x_4^2\right)
-        -
-        \frac{x_5-u_4}{R_{ts-amb}}
-        \right].
-    \end{aligned}
-    }
-    \label{eq:modelo_global_nl}
+	\dot{\omega}_m(t)
+	=
+	\frac{1}{J_{eq}}
+	\left[
+	K_t i_{qs}^{r}
+	+K_{rel}i_{ds}^{r}i_{qs}^{r}
+	-b_{eq}\omega_m
+	-\frac{gk_l}{r}\sin\left(\frac{\theta_m}{r}\right)
+	-\frac{T_{ld}}{r}
+	\right].
+	\label{eq:omega_global_p2}
+\end{equation}
+
+Esta ecuación representa el acoplamiento electromecánico: las corrientes eléctricas generan torque, y el torque modifica la velocidad y posición del rotor.
+
+\paragraph{Modelo térmico del estator.}
+Las pérdidas eléctricas por efecto Joule, considerando \(i_{0s}=0\), se calculan como
+
+\begin{equation}
+	P_{s,perd}(t)
+	=
+	\frac{3}{2}R_s\left(T_s^{\circ}\right)
+	\left[
+	\left(i_{qs}^{r}(t)\right)^2+
+	\left(i_{ds}^{r}(t)\right)^2
+	\right].
+	\label{eq:perdidas_joule_p2}
+\end{equation}
+
+El balance térmico del estator se escribe como
+
+\begin{equation}
+	P_{s,perd}(t)
+	=
+	C_{ts}\frac{dT_s^{\circ}(t)}{dt}
+	+
+	\frac{T_s^{\circ}(t)-T_{amb}^{\circ}(t)}{R_{ts-amb}}.
+	\label{eq:balance_termico_p2}
+\end{equation}
+
+Despejando,
+
+\begin{equation}
+	\frac{dT_s^{\circ}}{dt}
+	=
+	\frac{1}{C_{ts}}
+	\left[
+	\frac{3}{2}R_s\left(T_s^{\circ}\right)
+	\left(\left(i_{qs}^{r}\right)^2+\left(i_{ds}^{r}\right)^2\right)
+	-
+	\frac{T_s^{\circ}-T_{amb}^{\circ}}{R_{ts-amb}}
+	\right].
+	\label{eq:dts_dt_p2}
+\end{equation}
+
+\paragraph{Modelo global no lineal en espacio de estados.}
+Juntando las ecuaciones mecánicas, eléctricas y térmicas, el modelo global no lineal queda
+
+\begin{equation}
+	\boxed{
+		\begin{aligned}
+			\dot{x}_1 &= x_2,\\[1mm]
+			\dot{x}_2 &=
+			\frac{1}{J_{eq}}
+			\left[
+			K_t x_3
+			+K_{rel}x_4x_3
+			-b_{eq}x_2
+			-\frac{gk_l}{r}\sin\left(\frac{x_1}{r}\right)
+			-\frac{u_3}{r}
+			\right],\\[1mm]
+			\dot{x}_3 &=
+			\frac{
+				u_1
+				-R_s(x_5)x_3
+				-\left(\lambda_m^{\prime r}+L_d x_4\right)P_p x_2
+			}{L_q},\\[1mm]
+			\dot{x}_4 &=
+			\frac{
+				u_2
+				-R_s(x_5)x_4
+				+L_q x_3P_p x_2
+			}{L_d},\\[1mm]
+			\dot{x}_5 &=
+			\frac{1}{C_{ts}}
+			\left[
+			\frac{3}{2}R_s(x_5)\left(x_3^2+x_4^2\right)
+			-
+			\frac{x_5-u_4}{R_{ts-amb}}
+			\right].
+	\end{aligned}}
+	\label{eq:modelo_global_nl_p2}
 \end{equation}
 
 La salida principal es
 
 \begin{equation}
-    y(t)=q(t)=\frac{x_1(t)}{r}.
-    \label{eq:salida_global_nl}
+	y(t)=\frac{x_1(t)}{r}.
+	\label{eq:salida_modelo_global_p2}
 \end{equation}
 
-El estado inicial genérico se define como
+El modelo \eqref{eq:modelo_global_nl_p2} es no lineal por el producto \(x_4x_3\) en el torque, los productos \(x_4x_2\) y \(x_3x_2\) en las ecuaciones eléctricas, la dependencia \(R_s(x_5)\), los términos cuadráticos de corriente en el modelo térmico y el término gravitacional \(\sin(x_1/r)\).
+
+% ---------------------------------------------------------
+\subsubsection{2.b) Linealización Jacobiana: modelo global LPV}
+
+\paragraph{Objetivo del inciso.}
+El modelo global no lineal obtenido en \eqref{eq:modelo_global_nl_p2} representa la planta física completa, pero no es directamente conveniente para aplicar herramientas lineales clásicas. Por ello se realiza una linealización Jacobiana en un punto genérico de operación. El resultado es un modelo lineal local cuyas matrices dependen del punto de operación, por lo que se obtiene un modelo LPV, del inglés \textit{Linear Parameter Varying}.
+
+\paragraph{Pequeñas variaciones alrededor de un punto de operación.}
+Sea el sistema no lineal
 
 \begin{equation}
-    \mathbf{x}(t_0)=
-    \begin{bmatrix}
-        \theta_m(t_0) & \omega_m(t_0) & i_{qs}^{r}(t_0) & i_{ds}^{r}(t_0) & T_s^{\circ}(t_0)
-    \end{bmatrix}^{T}.
-    \label{eq:estado_inicial_generico}
+	\dot{x}(t)=f(x(t),u(t)),
+	\qquad
+	y(t)=g(x(t),u(t)).
 \end{equation}
 
-Para las simulaciones iniciales del sistema detenido en equilibrio se adoptará
+Se define un punto genérico de operación
 
 \begin{equation}
-    \theta_m(t_0)=0,
-    \qquad
-    \omega_m(t_0)=0,
-    \qquad
-    i_{qs}^{r}(t_0)=0,
-    \qquad
-    i_{ds}^{r}(t_0)=0,
-    \qquad
-    T_s^{\circ}(t_0)=T_{amb}^{\circ}(t_0)=\SI{40}{\celsius}.
-    \label{eq:estado_inicial_equilibrio}
+	x^o=\begin{bmatrix}
+		\theta_m^o & \omega_m^o & I_q^o & I_d^o & T_s^o
+	\end{bmatrix}^{T},
+	\qquad
+	u^o=\begin{bmatrix}
+		V_q^o & V_d^o & T_{ld}^o & T_{amb}^o
+	\end{bmatrix}^{T}.
+	\label{eq:punto_operacion_p2}
 \end{equation}
 
-\subsubsection{Parámetros eléctricos y térmicos nominales}
-
-En la Tabla \ref{tab:parametros_electricos_termicos} se resumen los parámetros eléctricos y térmicos utilizados para el modelo global.
-
-\begin{table}[H]
-    \centering
-    \caption{Parámetros eléctricos y térmicos nominales de la PMSM.}
-    \label{tab:parametros_electricos_termicos}
-    \begin{tabular}{lll}
-        \toprule
-        Parámetro & Descripción & Valor nominal \\
-        \midrule
-        \(P_p\) & Pares de polos magnéticos & \(3\) \\
-        \(\lambda_m^{\prime r}\) & Flujo de imanes concatenado & \(\SI{0.016}{\weber}\) \\
-        \(L_q\) & Inductancia eje \(q\) & \(\SI{5.8e-3}{\henry}\) \\
-        \(L_d\) & Inductancia eje \(d\) & \(\SI{6.6e-3}{\henry}\) \\
-        \(L_{ls}\) & Inductancia de dispersión & \(\SI{0.8e-3}{\henry}\) \\
-        \(R_{sREF}\) & Resistencia de estator a \(\SI{20}{\celsius}\) & \(\SI{1.02}{\ohm}\) \\
-        \(\alpha_{Cu}\) & Coeficiente térmico del cobre & \(3.9\times10^{-3}\ \si{\per\celsius}\) \\
-        \(C_{ts}\) & Capacitancia térmica del estator & \(\SI{0.818}{\watt\per\celsius\per\second}\) \\
-        \(R_{ts-amb}\) & Resistencia térmica estator-ambiente & \(\SI{146.7}{\celsius\per\watt}\) \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-\subsection{Linealización Jacobiana y modelo LPV}
-
-El modelo no lineal obtenido en \eqref{eq:modelo_global_nl} puede linealizarse localmente alrededor de un punto genérico de operación. Se define el punto de operación
+Las pequeñas variaciones se definen como
 
 \begin{equation}
-    \mathbf{x}^{o}=
-    \begin{bmatrix}
-        \theta_m^{o}\\
-        \omega_m^{o}\\
-        I_q^{o}\\
-        I_d^{o}\\
-        T_s^{o}
-    \end{bmatrix},
-    \qquad
-    \mathbf{u}^{o}=
-    \begin{bmatrix}
-        V_q^{o}\\
-        V_d^{o}\\
-        T_{ld}^{o}\\
-        T_{amb}^{o}
-    \end{bmatrix}.
-    \label{eq:punto_operacion_generico}
+	x(t)=x^o+\Delta x(t),
+	\qquad
+	u(t)=u^o+\Delta u(t).
 \end{equation}
 
-El modelo linealizado en pequeñas variaciones queda expresado como
+Aplicando una serie de Taylor truncada a primer orden alrededor de \((x^o,u^o)\), se obtiene
 
 \begin{equation}
-    \Delta \dot{\mathbf{x}}(t)
-    =
-    A\left(\mathbf{x}^{o},\mathbf{u}^{o}\right)\Delta\mathbf{x}(t)
-    +
-    B\left(\mathbf{x}^{o},\mathbf{u}^{o}\right)\Delta\mathbf{u}(t),
-    \label{eq:modelo_lpv}
+	\Delta\dot{x}(t)
+	=
+	A(x^o,u^o)\Delta x(t)
+	+
+	B(x^o,u^o)\Delta u(t),
+	\label{eq:lpv_estado_p2}
 \end{equation}
 
 \begin{equation}
-    \Delta \mathbf{y}(t)
-    =
-    C\Delta\mathbf{x}(t)+D\Delta\mathbf{u}(t),
-    \label{eq:salida_lpv}
+	\Delta y(t)
+	=
+	C(x^o,u^o)\Delta x(t)
+	+
+	D(x^o,u^o)\Delta u(t).
+	\label{eq:lpv_salida_p2}
+\end{equation}
+
+Las matrices Jacobianas se calculan como
+
+\begin{equation}
+	A_{ij}
+	=
+	\left.
+	\frac{\partial f_i}{\partial x_j}
+	\right|_{x^o,u^o},
+	\qquad
+	B_{ij}
+	=
+	\left.
+	\frac{\partial f_i}{\partial u_j}
+	\right|_{x^o,u^o}.
+	\label{eq:jacobianas_p2}
+\end{equation}
+
+\paragraph{Espacio de operación global no lineal cuasi-estacionario.}
+El punto de operación debe ser compatible con el modelo global no lineal y con las restricciones físicas del accionamiento. Para un punto de operación cuasi-estacionario se imponen, al menos, las condiciones eléctricas y térmicas de régimen local:
+
+\begin{equation}
+	\begin{aligned}
+		0 &\approx
+		K_t I_q^o
+		+K_{rel}I_d^o I_q^o
+		-b_{eq}\omega_m^o
+		-\frac{gk_l}{r}\sin\left(\frac{\theta_m^o}{r}\right)
+		-\frac{T_{ld}^o}{r},\\[1mm]
+		0 &\approx
+		V_q^o
+		-R_s^o I_q^o
+		-\left(\lambda_m^{\prime r}+L_d I_d^o\right)P_p\omega_m^o,\\[1mm]
+		0 &\approx
+		V_d^o
+		-R_s^o I_d^o
+		+L_q I_q^o P_p\omega_m^o,\\[1mm]
+		0 &\approx
+		\frac{3}{2}R_s^o\left[(I_q^o)^2+(I_d^o)^2\right]
+		-\frac{T_s^o-T_{amb}^o}{R_{ts-amb}},
+	\end{aligned}
+	\label{eq:condiciones_operacion_p2}
+\end{equation}
+
+donde
+
+\begin{equation}
+	R_s^o=R_s(T_s^o).
+\end{equation}
+
+Para un equilibrio estricto de posición se cumple además \(\omega_m^o=0\). En cambio, si se analiza operación a velocidad aproximadamente constante, el punto se interpreta como un punto congelado o cuasi-estacionario, útil para estudiar pequeñas variaciones locales de la dinámica.
+
+\paragraph{Matriz \(A\) del modelo LPV.}
+Definiendo
+
+\begin{equation}
+	\kappa_R=\frac{dR_s}{dT_s^{\circ}}=R_{sREF}\alpha_{Cu},
+\end{equation}
+
+la matriz \(A\) del modelo linealizado queda
+
+\begin{equation}
+	A(x^o,u^o)=
+	\begin{bmatrix}
+		0 & 1 & 0 & 0 & 0\\[1mm]
+		A_{21} & A_{22} & A_{23} & A_{24} & 0\\[1mm]
+		0 & A_{32} & A_{33} & A_{34} & A_{35}\\[1mm]
+		0 & A_{42} & A_{43} & A_{44} & A_{45}\\[1mm]
+		0 & 0 & A_{53} & A_{54} & A_{55}
+	\end{bmatrix},
+	\label{eq:a_lpv_compacta_p2}
+\end{equation}
+
+con
+
+\begin{align}
+	A_{21} &= -\frac{gk_l}{J_{eq}r^2}\cos\left(\frac{\theta_m^o}{r}\right),
+	&
+	A_{22} &= -\frac{b_{eq}}{J_{eq}},
+	\\
+	A_{23} &= \frac{K_t+K_{rel}I_d^o}{J_{eq}},
+	&
+	A_{24} &= \frac{K_{rel}I_q^o}{J_{eq}},
+	\\
+	A_{32} &= -\frac{P_p\left(\lambda_m^{\prime r}+L_d I_d^o\right)}{L_q},
+	&
+	A_{33} &= -\frac{R_s^o}{L_q},
+	\\
+	A_{34} &= -\frac{L_dP_p\omega_m^o}{L_q},
+	&
+	A_{35} &= -\frac{\kappa_R I_q^o}{L_q},
+	\\
+	A_{42} &= \frac{L_qP_pI_q^o}{L_d},
+	&
+	A_{43} &= \frac{L_qP_p\omega_m^o}{L_d},
+	\\
+	A_{44} &= -\frac{R_s^o}{L_d},
+	&
+	A_{45} &= -\frac{\kappa_R I_d^o}{L_d},
+	\\
+	A_{53} &= \frac{3R_s^oI_q^o}{C_{ts}},
+	&
+	A_{54} &= \frac{3R_s^oI_d^o}{C_{ts}},
+	\\
+	A_{55} &= \frac{1}{C_{ts}}
+	\left[
+	\frac{3}{2}\kappa_R\left((I_q^o)^2+(I_d^o)^2\right)
+	-\frac{1}{R_{ts-amb}}
+	\right].
+\end{align}
+
+La matriz de entrada correspondiente a \(u=[v_q^r\ v_d^r\ T_{ld}\ T_{amb}^{\circ}]^T\) es
+
+\begin{equation}
+	B(x^o,u^o)=
+	\begin{bmatrix}
+		0 & 0 & 0 & 0\\[1mm]
+		0 & 0 & -\dfrac{1}{J_{eq}r} & 0\\[3mm]
+		\dfrac{1}{L_q} & 0 & 0 & 0\\[3mm]
+		0 & \dfrac{1}{L_d} & 0 & 0\\[3mm]
+		0 & 0 & 0 & \dfrac{1}{C_{ts}R_{ts-amb}}
+	\end{bmatrix}.
+	\label{eq:b_lpv_p2}
+\end{equation}
+
+La salida principal \(q=\theta_m/r\) da
+
+\begin{equation}
+	C=
+	\begin{bmatrix}
+		\dfrac{1}{r} & 0 & 0 & 0 & 0
+	\end{bmatrix},
+	\qquad
+	D=0.
+	\label{eq:c_lpv_p2}
+\end{equation}
+
+El modelo es LPV porque las matrices dependen del punto de operación a través de \(\theta_m^o\), \(\omega_m^o\), \(I_q^o\), \(I_d^o\), \(T_s^o\) y de la resistencia \(R_s^o\).
+
+% ---------------------------------------------------------
+\subsubsection{2.c) Linealización por retroalimentación no lineal y modelo LTI equivalente}
+
+La linealización por retroalimentación no lineal se utiliza para cancelar acoplamientos internos de la máquina y obtener una planta equivalente más simple para el diseño de control. En este proyecto se adopta la estrategia de control vectorial con campo orientado, imponiendo
+
+\begin{equation}
+	i_{ds}^{r}(t)\equiv 0.
+	\label{eq:campo_orientado_p2}
+\end{equation}
+
+Bajo esta condición, la corriente de eje \(q\) queda asociada directamente al torque, mientras que la corriente de eje \(d\) se mantiene nula para evitar pérdidas y acoplamientos no deseados.
+
+\paragraph{I) Ecuaciones vectoriales/matriciales LTI de estado y salida.}
+Si se impone \(i_d=0\), el torque electromagnético se reduce a
+
+\begin{equation}
+	T_m(t)=K_t i_q(t).
+	\label{eq:torque_lti_p2}
+\end{equation}
+
+Además, para obtener un modelo lineal alrededor de una posición de operación \(\theta_m^o\), se linealiza el término gravitacional como
+
+\begin{equation}
+	\frac{gk_l}{r}\sin\left(\frac{\theta_m}{r}\right)
+	\approx
+	\frac{gk_l}{r}\sin\left(\frac{\theta_m^o}{r}\right)
+	+
+	K_g^o\left(\theta_m-\theta_m^o\right),
 \end{equation}
 
 con
 
 \begin{equation}
-    A=\left.\frac{\partial \mathbf{f}}{\partial \mathbf{x}}\right|_{\mathbf{x}^{o},\mathbf{u}^{o}},
-    \qquad
-    B=\left.\frac{\partial \mathbf{f}}{\partial \mathbf{u}}\right|_{\mathbf{x}^{o},\mathbf{u}^{o}}.
-    \label{eq:jacobianos}
+	K_g^o=\frac{gk_l}{r^2}\cos\left(\frac{\theta_m^o}{r}\right).
+	\label{eq:kg_operacion_p2}
 \end{equation}
 
-Para abreviar, se define
+En el equilibrio estable \(\theta_m^o=0\), se tiene
 
 \begin{equation}
-    R_s^{o}=R_s(T_s^{o}),
-    \qquad
-    R_T=\frac{dR_s}{dT_s}=R_{sREF}\alpha_{Cu}.
-    \label{eq:rs_rt_lpv}
+	K_g^o=\frac{gk_l}{r^2}.
 \end{equation}
 
-La matriz jacobiana de estado queda
+Luego de aplicar los desacoplamientos eléctricos que se desarrollan en los apartados siguientes, se define la entrada auxiliar \(u_q(t)\) para el eje \(q\). El modelo LTI equivalente aumentado puede escribirse con el estado
 
 \begin{equation}
-\small
-    A=
-    \begin{bmatrix}
-        0 & 1 & 0 & 0 & 0\\[1mm]
-        -\dfrac{gk_l}{J_{eq}r^2}\cos\left(\dfrac{\theta_m^{o}}{r}\right)
-        & -\dfrac{b_{eq}}{J_{eq}}
-        & \dfrac{K_t+K_{rel}I_d^{o}}{J_{eq}}
-        & \dfrac{K_{rel}I_q^{o}}{J_{eq}}
-        & 0\\[4mm]
-        0
-        & -\dfrac{P_p\left(\lambda_m^{\prime r}+L_dI_d^{o}\right)}{L_q}
-        & -\dfrac{R_s^{o}}{L_q}
-        & -\dfrac{L_dP_p\omega_m^{o}}{L_q}
-        & -\dfrac{R_T I_q^{o}}{L_q}\\[4mm]
-        0
-        & \dfrac{L_qP_pI_q^{o}}{L_d}
-        & \dfrac{L_qP_p\omega_m^{o}}{L_d}
-        & -\dfrac{R_s^{o}}{L_d}
-        & -\dfrac{R_T I_d^{o}}{L_d}\\[4mm]
-        0
-        & 0
-        & \dfrac{3R_s^{o}I_q^{o}}{C_{ts}}
-        & \dfrac{3R_s^{o}I_d^{o}}{C_{ts}}
-        & \dfrac{\frac{3}{2}R_T\left[(I_q^{o})^2+(I_d^{o})^2\right]-\frac{1}{R_{ts-amb}}}{C_{ts}}
-    \end{bmatrix}.
-    \label{eq:matriz_a_lpv}
+	x_{LTI}(t)=
+	\begin{bmatrix}
+		\theta_m(t)\\
+		\omega_m(t)\\
+		i_q(t)\\
+		i_d(t)\\
+		T_s^{\circ}(t)
+	\end{bmatrix}.
 \end{equation}
 
-La matriz de entrada, considerando \(\Delta\mathbf{u}=[\Delta v_q\;\Delta v_d\;\Delta T_{ld}\;\Delta T_{amb}^{\circ}]^T\), es
+Considerando \(R_s\) fijo en el valor del punto de operación y desacoplando el subsistema térmico de la realimentación no lineal sobre \(R_s\), se obtiene
 
 \begin{equation}
-    B=
-    \begin{bmatrix}
-        0 & 0 & 0 & 0\\[1mm]
-        0 & 0 & -\dfrac{1}{J_{eq}r} & 0\\[4mm]
-        \dfrac{1}{L_q} & 0 & 0 & 0\\[4mm]
-        0 & \dfrac{1}{L_d} & 0 & 0\\[4mm]
-        0 & 0 & 0 & \dfrac{1}{R_{ts-amb}C_{ts}}
-    \end{bmatrix}.
-    \label{eq:matriz_b_lpv}
+	\begin{aligned}
+		\dot{\theta}_m &= \omega_m,\\[1mm]
+		\dot{\omega}_m &=
+		-\frac{K_g^o}{J_{eq}}\theta_m
+		-\frac{b_{eq}}{J_{eq}}\omega_m
+		+\frac{K_t}{J_{eq}}i_q
+		-\frac{1}{J_{eq}r}T_{ld},\\[1mm]
+		\dot{i}_q &=
+		-\frac{R_s}{L_q}i_q
+		+\frac{1}{L_q}u_q,\\[1mm]
+		\dot{i}_d &=
+		-\frac{R_s}{L_d}i_d
+		+\frac{1}{L_d}u_d,\\[1mm]
+		\dot{T}_s^{\circ} &=
+		-\frac{1}{R_{ts-amb}C_{ts}}T_s^{\circ}
+		+\frac{1}{C_{ts}}P_J
+		+\frac{1}{R_{ts-amb}C_{ts}}T_{amb}^{\circ}.
+	\end{aligned}
+	\label{eq:lti_ecuaciones_p2}
 \end{equation}
 
-Para la salida principal \(q(t)=\theta_m(t)/r\), se tiene
+En \eqref{eq:lti_ecuaciones_p2}, \(u_d\) representa una entrada auxiliar del eje directo. Para el caso de campo orientado ideal se adopta \(u_d=0\). La potencia \(P_J\) se considera una entrada térmica equivalente para conservar la dinámica lineal del subsistema térmico sin introducir nuevamente el acoplamiento no lineal \(P_J\propto i_q^2+i_d^2\).
+
+En forma matricial,
 
 \begin{equation}
-    C_q=
-    \begin{bmatrix}
-        \frac{1}{r} & 0 & 0 & 0 & 0
-    \end{bmatrix},
-    \qquad
-    D_q=
-    \begin{bmatrix}
-        0 & 0 & 0 & 0
-    \end{bmatrix}.
-    \label{eq:c_d_q_lpv}
+	\dot{x}_{LTI}=A_{LTI}x_{LTI}+B_{LTI}u_{LTI},
+	\qquad
+	y=C_{LTI}x_{LTI},
 \end{equation}
 
-Este modelo se denomina LPV porque las matrices dependen del punto de operación. En particular, aparecen como parámetros variables \(\theta_m^{o}\), \(\omega_m^{o}\), \(I_q^{o}\), \(I_d^{o}\) y \(T_s^{o}\). Por lo tanto, el comportamiento local del sistema cambia cuando se modifica la velocidad, la carga, las corrientes de operación o la temperatura del bobinado.
-
-\subsection{Linealización por retroalimentación y modelo LTI equivalente}
-
-La estrategia de control vectorial con campo orientado impone la condición
+con
 
 \begin{equation}
-    i_{ds}^{r}(t)\equiv 0.
-    \label{eq:id_cero}
-\end{equation}
-
-Con esta condición, el eje \(d\) queda asociado al flujo y el eje \(q\) queda asociado principalmente a la producción de torque. En consecuencia, el torque electromagnético se reduce a
-
-\begin{equation}
-    T_m(t)=K_t i_{qs}^{r}(t),
-    \label{eq:torque_id_cero}
-\end{equation}
-
-ya que el término de reluctancia desaparece.
-
-\subsubsection{Ley mínima de desacoplamiento en eje \(d\)}
-
-La dinámica del eje \(d\) está dada por
-
-\begin{equation}
-    \dot{i}_{ds}^{r}
-    =
-    \frac{
-    v_{ds}^{r}
-    -
-    R_s i_{ds}^{r}
-    +
-    L_q i_{qs}^{r}\omega_r
-    }{L_d}.
-    \label{eq:dinamica_d_desacople}
-\end{equation}
-
-Para imponer \(i_{ds}^{r}(t)=0\) en forma invariante se requiere también \(\dot{i}_{ds}^{r}(t)=0\). Si \(i_{ds}^{r}=0\), resulta
-
-\begin{equation}
-    0=
-    \frac{
-    v_{ds}^{r}
-    +
-    L_q i_{qs}^{r}\omega_r
-    }{L_d}.
-\end{equation}
-
-Por lo tanto, la ley mínima de control no lineal en eje \(d\) es
-
-\begin{equation}
-    \boxed{
-    v_{ds}^{r*}(t)
-    =
-    -L_q i_{qs}^{r}(t)\omega_r(t)
-    =
-    -L_q i_{qs}^{r}(t)P_p\omega_m(t)
-    }.
-    \label{eq:ley_desacople_d}
-\end{equation}
-
-Esta ley permite cumplir \(i_{ds}^{r}(t)\equiv0\) siempre que se verifique la hipótesis de estado inicial
-
-\begin{equation}
-    i_{ds}^{r}(t_0)=0.
-    \label{eq:hipotesis_id0}
-\end{equation}
-
-\subsubsection{Dinámica residual en eje \(d\)}
-
-Si se aplica la ley \eqref{eq:ley_desacople_d}, pero el estado inicial no cumple \(i_{ds}^{r}(t_0)=0\), la dinámica residual del eje \(d\) queda
-
-\begin{equation}
-    \dot{i}_{ds}^{r}(t)
-    =
-    -\frac{R_s}{L_d}i_{ds}^{r}(t).
-    \label{eq:dinamica_residual_id}
-\end{equation}
-
-Por lo tanto,
-
-\begin{equation}
-    i_{ds}^{r}(t)
-    =
-    i_{ds}^{r}(t_0)e^{-\frac{R_s}{L_d}(t-t_0)}.
-    \label{eq:solucion_residual_id}
-\end{equation}
-
-Con \(R_s=\SI{1.02}{\ohm}\) y \(L_d=\SI{6.6e-3}{\henry}\), la constante de tiempo eléctrica residual es
-
-\begin{equation}
-    \tau_d=\frac{L_d}{R_s}=\frac{6.6\times10^{-3}}{1.02}\approx\SI{6.47}{\milli\second}.
-    \label{eq:tau_d_residual}
-\end{equation}
-
-Esto implica que un error inicial en \(i_d\) desaparece mucho más rápido que la dinámica mecánica. El acoplamiento residual no lineal asociado aparece en el torque de reluctancia \(K_{rel}i_d i_q\). Dicho término puede despreciarse en régimen forzado cuando \(i_d\) decae hacia cero y cuando \(K_{rel}\) es pequeño frente al término principal \(K_t i_q\).
-
-\subsubsection{Ley complementaria de desacoplamiento en eje \(q\)}
-
-La dinámica del eje \(q\) incluye el término de fuerza contraelectromotriz
-
-\begin{equation}
-    \left(\lambda_m^{\prime r}+L_d i_{ds}^{r}\right)\omega_r.
-\end{equation}
-
-Para eliminar este acoplamiento, se define una nueva entrada auxiliar \(u_q(t)\) tal que
-
-\begin{equation}
-    \boxed{
-    v_{qs}^{r}(t)
-    =
-    u_q(t)
-    +
-    \left(\lambda_m^{\prime r}+L_d i_{ds}^{r}(t)\right)\omega_r(t)
-    }.
-    \label{eq:ley_desacople_q}
-\end{equation}
-
-Sustituyendo \eqref{eq:ley_desacople_q} en la dinámica de \(i_q\), se obtiene
-
-\begin{equation}
-    \dot{i}_{qs}^{r}(t)
-    =
-    -\frac{R_s}{L_q}i_{qs}^{r}(t)
-    +
-    \frac{1}{L_q}u_q(t).
-    \label{eq:iq_desacoplada}
-\end{equation}
-
-Si además se cumple \(i_{ds}^{r}(t)=0\), el sistema eléctrico queda desacoplado y lineal en el eje \(q\).
-
-\subsubsection{Modelo LTI equivalente aumentado}
-
-Para obtener un modelo LTI equivalente se considera la dinámica alrededor del equilibrio mecánico \(\theta_m=0\). En ese entorno,
-
-\begin{equation}
-    \sin\left(\frac{\theta_m}{r}\right)
-    \approx
-    \frac{\theta_m}{r}.
-    \label{eq:aprox_seno}
-\end{equation}
-
-Entonces el torque gravitacional equivalente puede aproximarse como
-
-\begin{equation}
-    \frac{gk_l}{r}\sin\left(\frac{\theta_m}{r}\right)
-    \approx
-    \frac{gk_l}{r^2}\theta_m.
-    \label{eq:torque_gravitacional_lti}
-\end{equation}
-
-El modelo LTI equivalente aumentado queda
-
-\begin{equation}
-    \dot{\theta}_m=\omega_m,
-    \label{eq:lti_theta_dot}
+	A_{LTI}=
+	\begin{bmatrix}
+		0 & 1 & 0 & 0 & 0\\[1mm]
+		-\dfrac{K_g^o}{J_{eq}} & -\dfrac{b_{eq}}{J_{eq}} & \dfrac{K_t}{J_{eq}} & 0 & 0\\[3mm]
+		0 & 0 & -\dfrac{R_s}{L_q} & 0 & 0\\[3mm]
+		0 & 0 & 0 & -\dfrac{R_s}{L_d} & 0\\[3mm]
+		0 & 0 & 0 & 0 & -\dfrac{1}{R_{ts-amb}C_{ts}}
+	\end{bmatrix},
+	\label{eq:a_lti_p2}
 \end{equation}
 
 \begin{equation}
-    \dot{\omega}_m
-    =
-    -\frac{gk_l}{J_{eq}r^2}\theta_m
-    -
-    \frac{b_{eq}}{J_{eq}}\omega_m
-    +
-    \frac{K_t}{J_{eq}}i_q
-    -
-    \frac{1}{J_{eq}r}T_{ld},
-    \label{eq:lti_omega_dot}
+	B_{LTI}=
+	\begin{bmatrix}
+		0 & 0 & 0 & 0 & 0\\[1mm]
+		0 & 0 & -\dfrac{1}{J_{eq}r} & 0 & 0\\[3mm]
+		\dfrac{1}{L_q} & 0 & 0 & 0 & 0\\[3mm]
+		0 & \dfrac{1}{L_d} & 0 & 0 & 0\\[3mm]
+		0 & 0 & 0 & \dfrac{1}{C_{ts}} & \dfrac{1}{R_{ts-amb}C_{ts}}
+	\end{bmatrix},
+	\label{eq:b_lti_p2}
 \end{equation}
 
 \begin{equation}
-    \dot{i}_q
-    =
-    -\frac{R_s}{L_q}i_q
-    +
-    \frac{1}{L_q}u_q,
-    \label{eq:lti_iq_dot}
+	u_{LTI}=\begin{bmatrix}
+		u_q & u_d & T_{ld} & P_J & T_{amb}^{\circ}
+	\end{bmatrix}^{T},
+	\qquad
+	C_{LTI}=\begin{bmatrix}
+		\dfrac{1}{r} & 0 & 0 & 0 & 0
+	\end{bmatrix}.
+	\label{eq:c_lti_p2}
+\end{equation}
+
+\paragraph{II) Diagrama de bloques de estado.}
+No se incorpora en esta versión el diagrama de bloques, ya que será generado en Simulink. El diagrama debe representar la cadena principal
+
+\begin{equation}
+	u_q \rightarrow i_q \rightarrow T_m \rightarrow \omega_m \rightarrow \theta_m \rightarrow q,
+\end{equation}
+
+incluyendo la entrada de perturbación \(T_{ld}\), la realimentación gravitacional linealizada mediante \(K_g^o\), la dinámica residual de \(i_d\) y la dinámica térmica lineal de \(T_s^{\circ}\).
+
+\textit{Epígrafe sugerido para figura pendiente: Diagrama de bloques de estado del modelo LTI equivalente aumentado, con entrada auxiliar \(u_q(t)\), perturbación \(T_{ld}(t)\), estado eléctrico \(i_q(t)\), dinámica mecánica \(\omega_m(t),\theta_m(t)\), dinámica residual de \(i_d(t)\) y dinámica térmica lineal del estator.}
+
+\paragraph{III) Ley de control mínima para imponer \(i_{ds}^{r}(t)\equiv0\).}
+Para imponer \(i_d(t)\equiv0\), se parte de la ecuación del eje directo:
+
+\begin{equation}
+	\dot{i}_d
+	=
+	\frac{
+		v_d
+		-R_si_d
+		+L_qi_qP_p\omega_m
+	}{L_d}.
+	\label{eq:id_para_ley_minima_p2}
+\end{equation}
+
+La condición deseada es
+
+\begin{equation}
+	i_d(t)\equiv0,
+	\qquad
+	\dot{i}_d(t)\equiv0.
+\end{equation}
+
+Reemplazando en \eqref{eq:id_para_ley_minima_p2}, se obtiene
+
+\begin{equation}
+	0=\frac{v_d+L_qi_qP_p\omega_m}{L_d}.
+\end{equation}
+
+Por lo tanto, la ley mínima de control que debe aplicarse sobre la tensión virtual del eje directo es
+
+\begin{equation}
+	\boxed{
+		v_{ds}^{r*}(t)
+		=
+		-L_q i_{qs}^{r}(t)P_p\omega_m(t)
+		=
+		-L_q i_{qs}^{r}(t)\omega_r(t).
+	}
+	\label{eq:ley_minima_vd_p2}
+\end{equation}
+
+Esta ley cancela el acoplamiento natural que aparece en la ecuación del eje \(d\). Para que se cumpla exactamente \(i_d(t)\equiv0\) desde el inicio, debe asumirse
+
+\begin{equation}
+	i_d(t_0)=0.
+	\label{eq:hipotesis_inicial_id_p2}
+\end{equation}
+
+Si esta condición inicial no se cumple, la ley \eqref{eq:ley_minima_vd_p2} no hace que \(i_d\) sea instantáneamente nula, pero sí genera una dinámica residual estable que hace decaer \(i_d\) hacia cero.
+
+\paragraph{IV) Implementación de la ley de desacoplamiento en el modelo global no lineal.}
+La ley \eqref{eq:ley_minima_vd_p2} se implementa como un controlador parcial entre las variables medidas y el inversor. El controlador parcial no reemplaza a la planta: solamente calcula las tensiones virtuales de referencia que luego se transforman a tensiones reales de fase.
+
+El procedimiento de implementación es el siguiente:
+
+\begin{enumerate}[leftmargin=*]
+	\item Se miden las corrientes reales de fase \(i_{as}(t)\), \(i_{bs}(t)\), \(i_{cs}(t)\) y la posición del rotor \(\theta_m(t)\).
+	\item Se calcula la posición eléctrica del rotor \(\theta_r(t)=P_p\theta_m(t)\).
+	\item Mediante la transformación de Park directa se obtienen las corrientes \(i_q(t)\) e \(i_d(t)\).
+	\item Se mide o estima la velocidad \(\omega_m(t)\), y se calcula \(\omega_r(t)=P_p\omega_m(t)\).
+	\item Se calcula la tensión de desacoplamiento del eje directo:
+	\begin{equation}
+		v_d^*(t)=-L_qi_q(t)P_p\omega_m(t).
+	\end{equation}
+	\item Se calcula la tensión de eje \(q\), sea como señal física \(v_q^*(t)\) o como entrada auxiliar desacoplada \(u_q(t)\), según el esquema de control adoptado.
+	\item Se forma el vector virtual \(v_{qd0}^{r*}(t)=[v_q^*(t)\ v_d^*(t)\ 0]^T\).
+	\item Mediante la transformación de Park inversa se obtienen las tensiones de fase \(v_{as}^*(t)\), \(v_{bs}^*(t)\), \(v_{cs}^*(t)\), que son aplicadas por el inversor trifásico idealizado.
+\end{enumerate}
+
+\textit{Epígrafe sugerido para figura pendiente: Implementación del controlador parcial de desacoplamiento sobre el modelo no lineal completo, mostrando medición de corrientes \(abc\), transformación de Park directa, cálculo de \(v_d^*\) y \(v_q^*\), transformación de Park inversa e inversor trifásico idealizado.}
+
+\paragraph{V) Dinámica residual equivalente para \(i_{ds}^{r}(t)\).}
+Si la condición inicial \eqref{eq:hipotesis_inicial_id_p2} no se cumple, es decir, si
+
+\begin{equation}
+	i_d(t_0)\neq0,
+\end{equation}
+
+la ley mínima \eqref{eq:ley_minima_vd_p2} conduce a una dinámica residual. Sustituyendo \(v_d^*=-L_qi_qP_p\omega_m\) en \eqref{eq:id_para_ley_minima_p2}, se obtiene
+
+\begin{equation}
+	\dot{i}_d
+	=
+	\frac{
+		-L_qi_qP_p\omega_m
+		-R_si_d
+		+L_qi_qP_p\omega_m
+	}{L_d}.
+\end{equation}
+
+Los términos de acoplamiento se cancelan y queda
+
+\begin{equation}
+	\boxed{
+		\dot{i}_d=-\frac{R_s}{L_d}i_d.
+	}
+	\label{eq:dinamica_residual_id_p2}
+\end{equation}
+
+La solución de \eqref{eq:dinamica_residual_id_p2} es
+
+\begin{equation}
+	i_d(t)=i_d(t_0)e^{-\frac{R_s}{L_d}(t-t_0)}.
+	\label{eq:solucion_id_residual_p2}
+\end{equation}
+
+Como \(R_s>0\) y \(L_d>0\), el polo residual
+
+\begin{equation}
+	p_d=-\frac{R_s}{L_d}
+\end{equation}
+
+está siempre en el semiplano izquierdo. Por lo tanto, la corriente \(i_d\) decae exponencialmente a cero.
+
+La constante de tiempo asociada es
+
+\begin{equation}
+	\tau_d=\frac{L_d}{R_s}.
+\end{equation}
+
+Con los valores nominales \(L_d=6.6\times10^{-3}\,\si{H}\) y \(R_s=1.02\,\si{\ohm}\), resulta
+
+\begin{equation}
+	\tau_d\approx 6.47\times10^{-3}\,\si{s}.
+\end{equation}
+
+Por lo tanto, luego de algunos múltiplos de \(\tau_d\), el valor de \(i_d\) resulta prácticamente despreciable frente a la dinámica mecánica.
+
+El acoplamiento residual no lineal aparece en el torque electromagnético:
+
+\begin{equation}
+	T_m=K_ti_q+K_{rel}i_di_q.
+\end{equation}
+
+El término residual es
+
+\begin{equation}
+	T_{rel,res}=K_{rel}i_di_q.
+\end{equation}
+
+Este término puede despreciarse en régimen forzado porque \(i_d(t)\rightarrow0\) de manera exponencial y porque el torque principal \(K_ti_q\) domina el comportamiento electromecánico.
+
+\paragraph{VI) Ley complementaria mínima en el eje \(q\).}
+La ley del eje \(d\) cancela el acoplamiento que afecta a \(i_d\), pero la ecuación del eje \(q\) todavía contiene la fuerza contraelectromotriz y el acoplamiento asociado a \(i_d\):
+
+\begin{equation}
+	\dot{i}_q
+	=
+	\frac{
+		v_q
+		-R_si_q
+		-\left(\lambda_m^{\prime r}+L_di_d\right)P_p\omega_m
+	}{L_q}.
+	\label{eq:iq_con_acople_p2}
+\end{equation}
+
+Para cancelar dicho término, se define una entrada auxiliar \(u_q(t)\) y se aplica
+
+\begin{equation}
+	\boxed{
+		v_q^*(t)
+		=
+		u_q(t)
+		+
+		\left(\lambda_m^{\prime r}+L_di_d(t)\right)P_p\omega_m(t).
+	}
+	\label{eq:ley_complementaria_vq_p2}
+\end{equation}
+
+Sustituyendo \eqref{eq:ley_complementaria_vq_p2} en \eqref{eq:iq_con_acople_p2}, se obtiene
+
+\begin{equation}
+	\boxed{
+		\dot{i}_q
+		=
+		-\frac{R_s}{L_q}i_q
+		+
+		\frac{1}{L_q}u_q.
+	}
+	\label{eq:iq_desacoplado_p2}
+\end{equation}
+
+De manera análoga, puede escribirse la ley general del eje directo como
+
+\begin{equation}
+	v_d^*(t)=u_d(t)-L_qi_q(t)P_p\omega_m(t),
+	\label{eq:ley_general_vd_p2}
+\end{equation}
+
+lo que conduce a
+
+\begin{equation}
+	\dot{i}_d=-\frac{R_s}{L_d}i_d+\frac{1}{L_d}u_d.
+	\label{eq:id_desacoplado_general_p2}
+\end{equation}
+
+Para campo orientado ideal se toma \(u_d=0\), de forma que \(i_d\) decae a cero si hubo un error inicial, o permanece nula si \(i_d(t_0)=0\).
+
+Con las leyes \eqref{eq:ley_complementaria_vq_p2} y \eqref{eq:ley_general_vd_p2}, los canales eléctricos de eje \(q\) y eje \(d\) quedan desacoplados. El modelo resultante conserva la dinámica residual de \(i_d\), pero permite trabajar con un modelo lineal equivalente aumentado para el diseño posterior de control.
+
+% ---------------------------------------------------------
+\subsubsection{2.d) Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}
+
+El modelo LPV y el modelo LTI equivalente aumentado cumplen funciones distintas. El modelo LPV se obtiene por linealización Jacobiana del modelo global no lineal y conserva la dependencia de las matrices con el punto de operación. En cambio, el modelo LTI equivalente aumentado se obtiene luego de aplicar leyes de desacoplamiento y fijar un punto de operación nominal, generalmente con campo orientado \(I_d^o=0\).
+
+Para comparar ambos modelos resulta útil definir las ganancias equivalentes variables
+
+\begin{equation}
+	K_T(I_d^o)=K_t+K_{rel}I_d^o
+	=
+	\frac{3}{2}P_p
+	\left[
+	\lambda_m^{\prime r}+\left(L_d-L_q\right)I_d^o
+	\right],
+	\label{eq:kt_variable_p2}
 \end{equation}
 
 \begin{equation}
-    \dot{i}_d
-    =
-    -\frac{R_s}{L_d}i_d.
-    \label{eq:lti_id_dot}
+	K_E(I_d^o)=P_p\left(\lambda_m^{\prime r}+L_dI_d^o\right).
+	\label{eq:ke_variable_p2}
 \end{equation}
 
-Para conservar la dinámica térmica como modo lineal independiente, se toma la potencia de pérdidas \(P_{s,perd}\) como entrada auxiliar:
+La ganancia \(K_T(I_d^o)\) determina el torque incremental producido por la corriente \(i_q\), mientras que \(K_E(I_d^o)\) determina el acoplamiento de velocidad en la ecuación de tensión del eje \(q\), asociado a la fuerza contraelectromotriz.
+
+\paragraph{Caso \(I_d^o=0\).}
+Si el punto de operación cumple
 
 \begin{equation}
-    \dot{T}_s^{\circ}
-    =
-    -\frac{1}{R_{ts-amb}C_{ts}}T_s^{\circ}
-    +
-    \frac{1}{C_{ts}}P_{s,perd}
-    +
-    \frac{1}{R_{ts-amb}C_{ts}}T_{amb}^{\circ}.
-    \label{eq:lti_ts_dot}
+	I_d^o=0,
 \end{equation}
 
-Tomando
+entonces
 
 \begin{equation}
-    \mathbf{x}_{LTI}=\begin{bmatrix}\theta_m & \omega_m & i_q & i_d & T_s^{\circ}\end{bmatrix}^{T},
-    \qquad
-    \mathbf{u}_{LTI}=\begin{bmatrix}u_q & T_{ld} & P_{s,perd} & T_{amb}^{\circ}\end{bmatrix}^{T},
-    \label{eq:x_u_lti}
+	K_T(0)=K_t,
+	\qquad
+	K_E(0)=P_p\lambda_m^{\prime r}.
+\end{equation}
+
+En este caso el modelo LPV linealizado alrededor del punto de campo orientado coincide, en sus términos electromecánicos principales, con el modelo LTI equivalente aumentado. Por esta razón el modelo LTI es adecuado como modelo de diseño alrededor de la condición nominal \(i_d=0\).
+
+\paragraph{Caso \(I_d^o<0\): debilitamiento de campo.}
+Si
+
+\begin{equation}
+	I_d^o<0,
+\end{equation}
+
+la ganancia de fuerza contraelectromotriz disminuye:
+
+\begin{equation}
+	K_E(I_d^o)<K_E(0).
+\end{equation}
+
+Esto permite operar a mayores velocidades antes de alcanzar el límite de tensión del inversor, porque se reduce la tensión necesaria para compensar la fuerza contraelectromotriz. Sin embargo, como en la máquina considerada \(L_d>L_q\), se tiene \(K_{rel}>0\), y por lo tanto
+
+\begin{equation}
+	K_T(I_d^o)<K_T(0).
+\end{equation}
+
+Es decir, el debilitamiento de campo aumenta el margen de velocidad, pero reduce el torque disponible por ampere de corriente \(i_q\). Además, al circular corriente de eje \(d\), aumentan las pérdidas Joule totales.
+
+\paragraph{Caso \(I_d^o>0\): reforzamiento de campo.}
+Si
+
+\begin{equation}
+	I_d^o>0,
 \end{equation}
 
 se obtiene
 
 \begin{equation}
-    \dot{\mathbf{x}}_{LTI}=A_{LTI}\mathbf{x}_{LTI}+B_{LTI}\mathbf{u}_{LTI},
-    \label{eq:ss_lti}
+	K_E(I_d^o)>K_E(0),
+	\qquad
+	K_T(I_d^o)>K_T(0).
 \end{equation}
 
-con
+Esto implica mayor torque por ampere de eje \(q\), pero también mayor fuerza contraelectromotriz y, por lo tanto, mayor tensión requerida en el eje \(q\). Además, las pérdidas por efecto Joule aumentan porque la potencia disipada depende de
 
 \begin{equation}
-    A_{LTI}=
-    \begin{bmatrix}
-        0 & 1 & 0 & 0 & 0\\[1mm]
-        -\dfrac{gk_l}{J_{eq}r^2} & -\dfrac{b_{eq}}{J_{eq}} & \dfrac{K_t}{J_{eq}} & 0 & 0\\[4mm]
-        0 & 0 & -\dfrac{R_s}{L_q} & 0 & 0\\[4mm]
-        0 & 0 & 0 & -\dfrac{R_s}{L_d} & 0\\[4mm]
-        0 & 0 & 0 & 0 & -\dfrac{1}{R_{ts-amb}C_{ts}}
-    \end{bmatrix},
-    \label{eq:a_lti_simbolica}
+	P_{s,perd}\propto i_q^2+i_d^2.
 \end{equation}
+
+\paragraph{Migración de propiedades dinámicas.}
+En el modelo LPV, modificar \(I_d^o\) cambia directamente varios términos de la matriz \(A\). Por ejemplo,
 
 \begin{equation}
-    B_{LTI}=
-    \begin{bmatrix}
-        0 & 0 & 0 & 0\\[1mm]
-        0 & -\dfrac{1}{J_{eq}r} & 0 & 0\\[4mm]
-        \dfrac{1}{L_q} & 0 & 0 & 0\\[4mm]
-        0 & 0 & 0 & 0\\[4mm]
-        0 & 0 & \dfrac{1}{C_{ts}} & \dfrac{1}{R_{ts-amb}C_{ts}}
-    \end{bmatrix}.
-    \label{eq:b_lti_simbolica}
+	A_{23}=\frac{K_t+K_{rel}I_d^o}{J_{eq}},
 \end{equation}
 
-Para la salida articular,
+que representa la influencia de \(i_q\) sobre la aceleración mecánica, y
 
 \begin{equation}
-    C_q=\begin{bmatrix}\dfrac{1}{r} & 0 & 0 & 0 & 0\end{bmatrix},
-    \qquad
-    D_q=\begin{bmatrix}0 & 0 & 0 & 0\end{bmatrix}.
-    \label{eq:cq_lti}
+	A_{32}=-\frac{P_p\left(\lambda_m^{\prime r}+L_dI_d^o\right)}{L_q},
 \end{equation}
 
-\subsubsection{Matrices LTI nominales}
+que representa el acoplamiento de velocidad sobre la dinámica eléctrica del eje \(q\). Al variar estos términos, migran los polos, las ganancias, el amortiguamiento y la respuesta transitoria local del sistema. Por eso el modelo LPV resulta más adecuado para evaluar el rango de validez del modelo LTI y para estudiar la operación fuera del punto nominal.
 
-Utilizando los valores nominales sin carga útil y \(R_s=R_{sREF}=\SI{1.02}{\ohm}\), se obtienen los siguientes coeficientes:
+% ---------------------------------------------------------
+\subsubsection{2.e) Funciones de transferencia del modelo LTI equivalente aumentado}
+
+Las funciones de transferencia se obtienen a partir del modelo LTI equivalente aumentado, considerando condiciones iniciales nulas:
 
 \begin{equation}
-    \frac{gk_l}{J_{eq}r^2}=8.605,
-    \qquad
-    \frac{b_{eq}}{J_{eq}}=1.109,
-    \qquad
-    \frac{K_t}{J_{eq}}=3639.172,
+	x_{LTI}(0)=0.
 \end{equation}
+
+Esta hipótesis es necesaria porque la función de transferencia clásica relaciona salida y entrada bajo condiciones iniciales nulas. Si el estado inicial no fuese nulo, aparecerían términos adicionales en la transformada de Laplace que no forman parte de la función de transferencia.
+
+A partir de \eqref{eq:lti_ecuaciones_p2}, la dinámica del eje \(q\) desacoplado es
 
 \begin{equation}
-    \frac{R_s}{L_q}=175.862,
-    \qquad
-    \frac{R_s}{L_d}=154.545,
-    \qquad
-    \frac{1}{R_{ts-amb}C_{ts}}=0.00833.
+	L_q\dot{i}_q+R_si_q=u_q.
 \end{equation}
 
-Por lo tanto,
+Aplicando transformada de Laplace,
 
 \begin{equation}
-    A_{LTI}\approx
-    \begin{bmatrix}
-        0 & 1 & 0 & 0 & 0\\
-        -8.605 & -1.109 & 3639.172 & 0 & 0\\
-        0 & 0 & -175.862 & 0 & 0\\
-        0 & 0 & 0 & -154.545 & 0\\
-        0 & 0 & 0 & 0 & -0.00833
-    \end{bmatrix},
-    \label{eq:a_lti_numerica}
+	\frac{I_q(s)}{U_q(s)}=\frac{1}{L_qs+R_s}.
+	\label{eq:ft_iq_uq_p2}
 \end{equation}
+
+La dinámica mecánica linealizada es
 
 \begin{equation}
-    B_{LTI}\approx
-    \begin{bmatrix}
-        0 & 0 & 0 & 0\\
-        0 & -421.200 & 0 & 0\\
-        172.414 & 0 & 0 & 0\\
-        0 & 0 & 0 & 0\\
-        0 & 0 & 1.222 & 0.00833
-    \end{bmatrix}.
-    \label{eq:b_lti_numerica}
+	J_{eq}\ddot{\theta}_m
+	+b_{eq}\dot{\theta}_m
+	+K_g^o\theta_m
+	=
+	K_ti_q
+	-\frac{1}{r}T_{ld}.
+	\label{eq:mecanica_laplace_base_p2}
 \end{equation}
 
-\subsubsection{Funciones de transferencia hacia \(\theta_m(t)\)}
-
-A partir del modelo LTI equivalente aumentado se pueden obtener las funciones de transferencia desde la entrada auxiliar de tensión \(u_q(t)\) y desde la perturbación \(T_{ld}(t)\) hacia la posición del eje del motor \(\theta_m(t)\). Se considera estado inicial nulo para la obtención de funciones de transferencia.
-
-Desde \(u_q(t)\) hasta \(\theta_m(t)\):
+\paragraph{Función de transferencia desde \(u_q(t)\) hacia \(\theta_m(t)\).}
+Si se considera \(T_{ld}(t)=0\), se obtiene
 
 \begin{equation}
-    \frac{\Theta_m(s)}{U_q(s)}
-    =
-    \frac{
-    \dfrac{K_t}{J_{eq}}\dfrac{1}{L_q}
-    }{
-    \left(s+\dfrac{R_s}{L_q}\right)
-    \left(
-    s^2+\dfrac{b_{eq}}{J_{eq}}s+\dfrac{gk_l}{J_{eq}r^2}
-    \right)
-    }.
-    \label{eq:ft_theta_uq_simbolica}
+	\boxed{
+		\frac{\Theta_m(s)}{U_q(s)}
+		=
+		\frac{K_t}
+		{\left(L_qs+R_s\right)
+			\left(J_{eq}s^2+b_{eq}s+K_g^o\right)}.
+	}
+	\label{eq:ft_theta_uq_p2}
 \end{equation}
 
-Numéricamente,
+En forma normalizada,
 
 \begin{equation}
-    \frac{\Theta_m(s)}{U_q(s)}
-    \approx
-    \frac{6.2744\times10^{5}}{s^3+176.971s^2+203.665s+1513.354}.
-    \label{eq:ft_theta_uq_numerica}
+	\frac{\Theta_m(s)}{U_q(s)}
+	=
+	\frac{\dfrac{K_t}{J_{eq}L_q}}
+	{\left(s+\dfrac{R_s}{L_q}\right)
+		\left(s^2+\dfrac{b_{eq}}{J_{eq}}s+\dfrac{K_g^o}{J_{eq}}\right)}.
 \end{equation}
 
-Desde la perturbación \(T_{ld}(t)\) hasta \(\theta_m(t)\):
+\paragraph{Función de transferencia desde \(T_{ld}(t)\) hacia \(\theta_m(t)\).}
+Si se considera \(u_q(t)=0\), se obtiene
 
 \begin{equation}
-    \frac{\Theta_m(s)}{T_{ld}(s)}
-    =
-    \frac{
-    -\dfrac{1}{J_{eq}r}
-    }{
-    s^2+\dfrac{b_{eq}}{J_{eq}}s+\dfrac{gk_l}{J_{eq}r^2}
-    }.
-    \label{eq:ft_theta_tld_simbolica}
+	\boxed{
+		\frac{\Theta_m(s)}{T_{ld}(s)}
+		=
+		\frac{-\dfrac{1}{r}}
+		{J_{eq}s^2+b_{eq}s+K_g^o}.
+	}
+	\label{eq:ft_theta_tld_p2}
 \end{equation}
 
-Numéricamente,
+En forma normalizada,
 
 \begin{equation}
-    \frac{\Theta_m(s)}{T_{ld}(s)}
-    \approx
-    \frac{-421.200}{s^2+1.109s+8.605}.
-    \label{eq:ft_theta_tld_numerica}
+	\frac{\Theta_m(s)}{T_{ld}(s)}
+	=
+	\frac{-\dfrac{1}{J_{eq}r}}
+	{s^2+\dfrac{b_{eq}}{J_{eq}}s+\dfrac{K_g^o}{J_{eq}}}.
 \end{equation}
 
-Los estados \(i_d\) y \(T_s^{\circ}\) no aparecen en las funciones de transferencia anteriores hacia \(\theta_m\) porque, bajo la linealización por retroalimentación propuesta, quedan desacoplados de la dinámica mecánica dominante. El estado \(i_d\) queda como modo eléctrico residual y la temperatura queda como una dinámica térmica lenta excitada por la potencia de pérdidas.
+La salida física de interés es la posición de la carga
+
+\begin{equation}
+	\theta_l(t)=q(t)=\frac{\theta_m(t)}{r}.
+\end{equation}
+
+Por lo tanto, las funciones de transferencia hacia \(\theta_l(t)\) se obtienen multiplicando por \(1/r\):
+
+\begin{equation}
+	\frac{\Theta_l(s)}{U_q(s)}
+	=
+	\frac{1}{r}\frac{\Theta_m(s)}{U_q(s)},
+	\qquad
+	\frac{\Theta_l(s)}{T_{ld}(s)}
+	=
+	\frac{1}{r}\frac{\Theta_m(s)}{T_{ld}(s)}.
+	\label{eq:ft_theta_l_p2}
+\end{equation}
+
+\paragraph{Aclaración sobre \(u_q(t)\) y \(v_{qs}^{r}(t)\).}
+La consigna menciona la entrada \(v_{qs}^{r}(t)\), que corresponde a la tensión virtual total aplicada en el eje \(q\). En el modelo desacoplado se utiliza la entrada auxiliar \(u_q(t)\), relacionada con la tensión real de eje \(q\) por
+
+\begin{equation}
+	v_q^*(t)
+	=
+	u_q(t)
+	+
+	\left(\lambda_m^{\prime r}+L_di_d(t)\right)P_p\omega_m(t).
+\end{equation}
+
+Por lo tanto, las funciones \eqref{eq:ft_theta_uq_p2} y \eqref{eq:ft_theta_tld_p2} corresponden a la planta equivalente luego del desacoplamiento. Si se desea trabajar directamente desde \(v_q^r(t)\) sin compensación de fuerza contraelectromotriz, reaparece el acoplamiento eléctrico con \(\omega_m(t)\), y el modelo resultante ya no coincide con la planta LTI desacoplada usada para diseño.
+
+\paragraph{Estados internos que no aparecen directamente en las funciones de transferencia.}
+Los estados \(i_d(t)\) y \(T_s^{\circ}(t)\) no aparecen directamente en las funciones de transferencia hacia \(\theta_m(t)\) dadas por \eqref{eq:ft_theta_uq_p2} y \eqref{eq:ft_theta_tld_p2}. Esto ocurre porque, bajo las leyes de desacoplamiento adoptadas, \(i_d(t)\) queda como un modo residual estable y la temperatura se conserva como una dinámica térmica lineal desacoplada de la dinámica electromecánica principal. En el modelo no lineal completo, en cambio, ambos estados sí influyen indirectamente a través del torque de reluctancia, las pérdidas Joule y la variación térmica de \(R_s\).
+
+\paragraph{Síntesis del punto 2.}
+El modelo no lineal global representa la planta física completa y permite simular el comportamiento acoplado de la máquina, la carga y el calentamiento del estator. El modelo LPV permite estudiar pequeñas variaciones locales y la migración de propiedades con el punto de operación. Finalmente, el modelo LTI equivalente aumentado permite disponer de una planta lineal de diseño, obtenida mediante control vectorial y desacoplamiento no lineal de los ejes \(q\) y \(d\).
 
 \subsection{Análisis a lazo abierto}
 \textit{Sección pendiente. Aquí se analizarán polos, ceros, estabilidad, controlabilidad, observabilidad y respuestas temporales del sistema físico sin controlador externo de movimiento.}
@@ -1726,19 +1979,19 @@ Hasta esta etapa se obtuvo el modelo mecánico equivalente referido al eje del m
 % REFERENCIAS
 % ---------------------------------------------------------
 \begin{thebibliography}{9}
-
-\bibitem{guia_trabajo}
-G. L. Julián, \textit{Proyecto Global Integrador: Guía de Trabajo y Especificaciones}, Espacio Curricular: Automática y Máquinas Eléctricas, Facultad de Ingeniería, Universidad Nacional de Cuyo, Rev. 0, 2026.
-
-\bibitem{guia_informe}
-G. L. Julián, \textit{Proyecto Global Integrador: Guía para preparar Informe Técnico}, Espacio Curricular: Automática y Máquinas Eléctricas, Facultad de Ingeniería, Universidad Nacional de Cuyo, Rev. 0, 2025.
-
-\bibitem{krause}
-P. C. Krause, O. Wasynczuk, S. D. Sudhoff y S. Pekarek, \textit{Analysis of Electric Machinery and Drive Systems}, 3rd ed. Hoboken, NJ, USA: Wiley-IEEE Press, 2013.
-
-\bibitem{astrom}
-K. J. Åström y R. M. Murray, \textit{Feedback Systems: An Introduction for Scientists and Engineers}. Princeton, NJ, USA: Princeton University Press, 2008.
-
+	
+	\bibitem{guia_trabajo}
+	G. L. Julián, \textit{Proyecto Global Integrador: Guía de Trabajo y Especificaciones}, Espacio Curricular: Automática y Máquinas Eléctricas, Facultad de Ingeniería, Universidad Nacional de Cuyo, Rev. 0, 2026.
+	
+	\bibitem{guia_informe}
+	G. L. Julián, \textit{Proyecto Global Integrador: Guía para preparar Informe Técnico}, Espacio Curricular: Automática y Máquinas Eléctricas, Facultad de Ingeniería, Universidad Nacional de Cuyo, Rev. 0, 2025.
+	
+	\bibitem{krause}
+	P. C. Krause, O. Wasynczuk, S. D. Sudhoff y S. Pekarek, \textit{Analysis of Electric Machinery and Drive Systems}, 3rd ed. Hoboken, NJ, USA: Wiley-IEEE Press, 2013.
+	
+	\bibitem{astrom}
+	K. J. Åström y R. M. Murray, \textit{Feedback Systems: An Introduction for Scientists and Engineers}. Princeton, NJ, USA: Princeton University Press, 2008.
+	
 \end{thebibliography}
 
 \end{document}
