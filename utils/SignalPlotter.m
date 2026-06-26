@@ -143,12 +143,21 @@ classdef SignalPlotter < handle
                 Y (:,:) double
                 paramVals (1,:) double
                 paramName (1,1) string
-                options.Title string = "Respuesta al Escalón"
-                options.WindowPosition (1,4) double = [200, 150, 700, 450]
+                options.Title string = "" % Dejado en blanco por defecto para mejor control
+                options.WindowPosition (1,4) double = [200, 150, 850, 500]
             end
             
             numSteps = length(paramVals);
-            colores = turbo(numSteps); % Genera la paleta de colores
+            
+            % --- LÓGICA DE COLORES INTELIGENTE ---
+            % Si son pocas curvas, usamos la paleta categórica de alto contraste.
+            % Si son muchas, usamos un gradiente continuo elegante (parula).
+            if numSteps <= length(obj.ColorPalette)
+                colores = obj.ColorPalette(1:numSteps); % Toma colores distintos (HEX)
+            else
+                matrizRGB = parula(numSteps);
+                colores = num2cell(matrizRGB, 2);       % Convierte a celdas RGB
+            end
             
             fig = figure('Color', 'w', 'Position', options.WindowPosition);
             ax = axes(fig);
@@ -157,11 +166,19 @@ classdef SignalPlotter < handle
             legendStrings = strings(numSteps, 1);
             
             for i = 1:numSteps
-                plot(ax, t, Y(:, i), 'Color', colores(i, :), 'LineWidth', obj.LineWidth);
+                % Graficar usando la celda de color correspondiente
+                plot(ax, t, Y(:, i), 'Color', colores{i}, 'LineWidth', obj.LineWidth);
                 legendStrings(i) = sprintf('%s = %0.3g', paramName, paramVals(i));
             end
             
-            title(ax, sprintf('%s para distintos %s', options.Title, paramName), 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeTitle);
+            % --- LÓGICA DE TÍTULO ---
+            if options.Title == ""
+                tituloFinal = sprintf('Análisis de Sensibilidad variando %s', paramName);
+            else
+                tituloFinal = options.Title;
+            end
+            
+            title(ax, tituloFinal, 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeTitle, 'FontWeight', 'bold');
             xlabel(ax, 'Tiempo (s)', 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeLabel);
             ylabel(ax, 'Amplitud', 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeLabel);
             set(ax, 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeTicks, 'GridColor', obj.GridColor, 'GridAlpha', obj.GridAlpha);
