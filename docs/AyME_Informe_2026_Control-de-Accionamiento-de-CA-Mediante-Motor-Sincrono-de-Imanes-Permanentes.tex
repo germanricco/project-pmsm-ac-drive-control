@@ -827,7 +827,7 @@ El bloque equivalente tiene como entrada principal el torque electromagnético \
 A partir de las ecuaciones de la carga, la transmisión y el rotor del motor se obtuvo un modelo mecánico equivalente referido al eje del motor. El modelo conserva como estados principales la posición y velocidad del rotor, e incorpora la dinámica de la carga a través de parámetros equivalentes de inercia y fricción. Además, el torque gravitacional y la perturbación externa se reflejan al eje del motor mediante el factor \(1/r\). Este resultado permite utilizar el torque electromagnético \(T_m(t)\) como entrada mecánica directa del subsistema equivalente, lo cual será necesario para acoplar el modelo con las ecuaciones electromagnéticas de la PMSM.
 
 % ---------------------------------------------------------
-% SECCIONES PENDIENTES PARA COMPLETAR EL INFORME
+% PUNTO 2
 % ---------------------------------------------------------
 
 \subsection{Punto 2: Modelo dinámico del sistema físico completo}
@@ -953,15 +953,43 @@ Se adopta como vector de estado global
 	\label{eq:estado_global_p2}
 \end{equation}
 
-Las entradas externas del modelo se organizan como
+Las entradas externas del modelo se separan en entradas de control y de perturbación respectivamente:
+
+\begin{equation}
+	u_c(t)=
+	\begin{bmatrix}
+		u_{c1}(t)\\
+		u_{c2}(t)
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		v_{qs}^{r}(t)\\
+		v_{ds}^{r}(t)
+	\end{bmatrix},
+	\label{eq:entradas_control_global_p2}
+\end{equation}
+
+\begin{equation}
+	u_d(t)=
+	\begin{bmatrix}
+		u_{d1}(t)\\
+		u_{d2}(t)
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		T_{ld}(t)\\
+		T_{amb}^{\circ}(t)
+	\end{bmatrix}.
+	\label{eq:entradas_perturbacion_global_p2}
+\end{equation}
+
+Cuando resulte conveniente escribir el modelo en forma compacta, se utilizará el vector aumentado
 
 \begin{equation}
 	u(t)=
 	\begin{bmatrix}
-		u_1(t)\\
-		u_2(t)\\
-		u_3(t)\\
-		u_4(t)
+		u_c(t)\\
+		u_d(t)
 	\end{bmatrix}
 	=
 	\begin{bmatrix}
@@ -969,18 +997,47 @@ Las entradas externas del modelo se organizan como
 		v_{ds}^{r}(t)\\
 		T_{ld}(t)\\
 		T_{amb}^{\circ}(t)
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		u_1(t)\\
+		u_2(t)\\
+		u_3(t)\\
+		u_4(t)
 	\end{bmatrix}.
 	\label{eq:entradas_global_p2}
 \end{equation}
 
-La salida principal de interés para el control de movimiento es la posición angular de la carga:
+La salida principal de interés para el control de movimiento es la posición angular de la carga o articulación. Como el modelo equivalente fue referido al eje del motor, el primer estado es \(\theta_m(t)\); sin embargo, la variable física a controlar es
 
 \begin{equation}
-	y(t)=q(t)=\theta_l(t)=\frac{\theta_m(t)}{r}=\frac{x_1(t)}{r}.
+	y_p(t)=q(t)=\theta_l(t)=\frac{\theta_m(t)}{r}=\frac{x_1(t)}{r}.
 	\label{eq:salida_q_p2}
 \end{equation}
 
-También pueden considerarse como salidas medidas o reconstruidas \(\theta_m(t)\), \(\omega_m(t)\), las corrientes de fase \(i_{as}(t)\), \(i_{bs}(t)\), \(i_{cs}(t)\) y la temperatura de estator \(T_s^{\circ}(t)\).
+Por lo tanto, la matriz de salida asociada a la variable controlada es
+
+\begin{equation}
+	C_p=
+	\begin{bmatrix}
+		\dfrac{1}{r} & 0 & 0 & 0 & 0
+	\end{bmatrix}.
+	\label{eq:cp_salida_controlada_p2}
+\end{equation}
+
+A su vez, el sensor de posición se encuentra montado sobre el eje del motor, por lo que la salida medida por el encoder es
+
+\begin{equation}
+	y_s(t)=\theta_m(t)=x_1(t),
+	\qquad
+	C_s=
+	\begin{bmatrix}
+		1 & 0 & 0 & 0 & 0
+	\end{bmatrix}.
+	\label{eq:cs_salida_medida_p2}
+\end{equation}
+
+Es importante distinguir dos conceptos: \(y_p(t)=q(t)\) es la salida controlada de proceso, mientras que \(y_s(t)=\theta_m(t)\) es la salida medida para retroalimentación. Para comparar el seguimiento de referencia en la articulación se usará \(q(t)\); si una señal se obtiene desde el encoder, se convierte mediante \(q(t)=\theta_m(t)/r\). 
 
 \paragraph{Resistencia de estator dependiente de la temperatura.}
 La resistencia de fase del estator aumenta con la temperatura del bobinado. Se modela mediante
