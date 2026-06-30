@@ -1177,28 +1177,34 @@ Sustituyendo el torque electromagnético de la PMSM, resulta
 Esta ecuación representa el acoplamiento electromecánico: las corrientes eléctricas generan torque, y el torque modifica la velocidad y posición del rotor.
 
 \paragraph{Modelo térmico del estator.}
-Las pérdidas eléctricas por efecto Joule, considerando \(i_{0s}=0\), se calculan como
-
+Las pérdidas eléctricas consideradas en el bobinado del estator corresponden a pérdidas resistivas por efecto Joule. En coordenadas reales de fase, la potencia disipada puede escribirse como
 \begin{equation}
-	P_{s,perd}(t)
+	P_{s,\mathrm{perd}}^{abc}(t)
 	=
-	\frac{3}{2}R_s\left(T_s^{\circ}\right)
+	R_s(T_s^\circ(t))
 	\left[
-	\left(i_{qs}^{r}(t)\right)^2+
-	\left(i_{ds}^{r}(t)\right)^2
+	i_{as}^2(t)+i_{bs}^2(t)+i_{cs}^2(t)
 	\right].
-	\label{eq:perdidas_joule_p2}
 \end{equation}
 
-El balance térmico del estator se escribe como
-
+Esta expresión representa la potencia eléctrica transformada en calor en las resistencias de fase del estator. Aplicando la transformación de Park adoptada en este trabajo, dicha potencia puede expresarse en coordenadas virtuales $qd0$ como
 \begin{equation}
-	P_{s,perd}(t)
+	P_{s,\mathrm{perd}}(t)
 	=
-	C_{ts}\frac{dT_s^{\circ}(t)}{dt}
-	+
-	\frac{T_s^{\circ}(t)-T_{amb}^{\circ}(t)}{R_{ts-amb}}.
-	\label{eq:balance_termico_p2}
+	\frac{3}{2}R_s(T_s^\circ(t))
+	\left[
+	(i_{qs}^r(t))^2+(i_{ds}^r(t))^2+2i_{0s}^2(t)
+	\right].
+\end{equation}
+
+Como la máquina se considera conectada en estrella con neutro flotante, no existe circulación de corriente homopolar, por lo que $i_{0s}(t)\equiv 0$. Entonces,
+\begin{equation}
+	P_{s,\mathrm{perd}}(t)
+	=
+	\frac{3}{2}R_s(T_s^\circ(t))
+	\left[
+	(i_{qs}^r(t))^2+(i_{ds}^r(t))^2
+	\right].
 \end{equation}
 
 Despejando,
