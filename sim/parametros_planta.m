@@ -1,3 +1,6 @@
+% NOTA IMPORTANTE. PARAMETROS MECANICOS, ELECTRICOS Y TERMICOS SEPARADOS POR MODULARIDAD 
+% FALTAN SEPARAR LAS CONDICIONES INICIALES. LAS MATRICES LTI Y FUNCIONES AUXILIARES NO SE QUE ONDA
+% 
 % Contiene parámetros mecánicos, eléctricos, térmicos, condiciones iniciales,
 % matrices LTI nominales y funciones auxiliares para linealización LPV.
 
