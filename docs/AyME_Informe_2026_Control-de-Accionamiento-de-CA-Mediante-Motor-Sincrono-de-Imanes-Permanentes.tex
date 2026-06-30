@@ -2014,8 +2014,589 @@ Los estados \(i_d(t)\) y \(T_s^{\circ}(t)\) no aparecen directamente en las func
 \paragraph{Síntesis del punto 2.}
 El modelo no lineal global representa la planta física completa y permite simular el comportamiento acoplado de la máquina, la carga y el calentamiento del estator. El modelo LPV permite estudiar pequeñas variaciones locales y la migración de propiedades con el punto de operación. Finalmente, el modelo LTI equivalente aumentado permite disponer de una planta lineal de diseño, obtenida mediante control vectorial y desacoplamiento no lineal de los ejes \(q\) y \(d\).
 
-\subsection{Análisis a lazo abierto}
-\textit{Sección pendiente. Aquí se analizarán polos, ceros, estabilidad, controlabilidad, observabilidad y respuestas temporales del sistema físico sin controlador externo de movimiento.}
+\subsection{Punto 3: Análisis de estabilidad a lazo abierto del modelo LTI equivalente aumentado}
+
+En este punto se analiza la estabilidad a lazo abierto del modelo LTI equivalente aumentado obtenido en el punto 2.c.VI. Para evitar repetir desarrollos ya realizados, se parte directamente de la matriz \(A_{LTI}\) definida en \eqref{eq:a_lti_p2} y de las funciones de transferencia obtenidas en \eqref{eq:ft_theta_uq_p2} y \eqref{eq:ft_theta_tld_p2}. El objetivo es determinar los autovalores, polos y ceros de la planta, asociarlos con los modos físicos del accionamiento, y evaluar la estabilidad parcial y completa del sistema.
+
+El análisis se realiza alrededor del punto de operación nominal
+
+\begin{equation}
+	\theta_m^o=0,\qquad
+	\omega_m^o=0,\qquad
+	i_d^o=0,\qquad
+	T_{ld}^o=0,\qquad
+	T_s^{\circ o}=T_{amb}^{\circ o}=20\,^{\circ}\mathrm{C}.
+	\label{eq:punto_operacion_p3}
+\end{equation}
+
+En esta condición, la carga se encuentra en el equilibrio estable definido respecto de la vertical hacia abajo. Por lo tanto,
+
+\begin{equation}
+	\cos\left(\frac{\theta_m^o}{r}\right)=1,
+\end{equation}
+
+y la rigidez gravitacional linealizada queda
+
+\begin{equation}
+	K_g^o=\frac{gk_l}{r^2}.
+	\label{eq:kg_nominal_p3}
+\end{equation}
+
+Esta aclaración es importante porque el modelo LTI aumentado conserva la acción restauradora de la gravedad linealizada. Por ello, la dinámica mecánica analizada en este punto no presenta un polo en el origen, sino un par de polos asociados al segundo orden mecánico.
+
+% ---------------------------------------------------------
+\subsubsection{3.a) Autovalores, polos, ceros y modos físicos}
+
+La matriz \(A_{LTI}\) posee una estructura por bloques. El primer bloque corresponde a la dinámica mecánica linealizada, el segundo a la dinámica de corriente del eje \(q\), el tercero a la dinámica residual de corriente del eje \(d\), y el último a la dinámica térmica del estator. Por lo tanto, los autovalores del modelo aumentado pueden asociarse directamente con modos físicos del sistema.
+
+\paragraph{Modo mecánico.}
+
+A partir de la ecuación mecánica linealizada,
+
+\begin{equation}
+	J_{eq}\ddot{\theta}_m
+	+
+	b_{eq}\dot{\theta}_m
+	+
+	K_g^o\theta_m
+	=
+	K_ti_q
+	-\frac{1}{r}T_{ld},
+	\label{eq:mecanica_p3}
+\end{equation}
+
+el polinomio característico del subsistema mecánico es
+
+\begin{equation}
+	J_{eq}s^2+b_{eq}s+K_g^o=0.
+	\label{eq:polinomio_mecanico_p3}
+\end{equation}
+
+Dividiendo por \(J_{eq}\),
+
+\begin{equation}
+	s^2+\frac{b_{eq}}{J_{eq}}s+\frac{K_g^o}{J_{eq}}=0.
+	\label{eq:polinomio_mecanico_normalizado_p3}
+\end{equation}
+
+Comparando con el polinomio característico de un sistema de segundo orden,
+
+\begin{equation}
+	s^2+2\zeta_m\omega_{n,m}s+\omega_{n,m}^2=0,
+	\label{eq:segundo_orden_p3}
+\end{equation}
+
+se obtiene
+
+\begin{equation}
+	\omega_{n,m}
+	=
+	\sqrt{\frac{K_g^o}{J_{eq}}},
+	\label{eq:wn_m_p3}
+\end{equation}
+
+\begin{equation}
+	\zeta_m
+	=
+	\frac{b_{eq}}
+	{2\sqrt{J_{eq}K_g^o}},
+	\label{eq:zeta_m_p3}
+\end{equation}
+
+\begin{equation}
+	\sigma_m
+	=
+	\zeta_m\omega_{n,m}
+	=
+	\frac{b_{eq}}{2J_{eq}},
+	\label{eq:sigma_m_p3}
+\end{equation}
+
+\begin{equation}
+	\omega_{d,m}
+	=
+	\omega_{n,m}\sqrt{1-\zeta_m^2}.
+	\label{eq:wd_m_p3}
+\end{equation}
+
+Por lo tanto, los polos mecánicos son
+
+\begin{equation}
+	p_{m,1,2}
+	=
+	-\zeta_m\omega_{n,m}
+	\pm j\omega_{d,m}
+	=
+	-\sigma_m\pm j\omega_{d,m}.
+	\label{eq:polos_mecanicos_p3}
+\end{equation}
+
+Estos polos representan la dinámica conjunta de posición y velocidad del eje mecánico equivalente. Cuando \(\zeta_m<1\), el modo es subamortiguado: la posición y la velocidad presentan oscilaciones que se atenúan por efecto de la fricción viscosa equivalente.
+
+\paragraph{Modo eléctrico del eje \(q\).}
+
+La dinámica desacoplada del eje \(q\) es
+
+\begin{equation}
+	\dot{i}_q
+	=
+	-\frac{R_s}{L_q}i_q
+	+
+	\frac{1}{L_q}u_q.
+	\label{eq:iq_p3}
+\end{equation}
+
+Por lo tanto, el polo asociado al eje \(q\) es
+
+\begin{equation}
+	p_q=-\frac{R_s}{L_q},
+	\label{eq:pq_p3}
+\end{equation}
+
+con constante de tiempo
+
+\begin{equation}
+	\tau_q=\frac{L_q}{R_s}.
+	\label{eq:tauq_p3}
+\end{equation}
+
+Este modo representa la velocidad con que la corriente \(i_q\), responsable de la producción principal de torque, responde ante la entrada auxiliar \(u_q\).
+
+\paragraph{Modo eléctrico residual del eje \(d\).}
+
+La dinámica del eje \(d\) queda dada por
+
+\begin{equation}
+	\dot{i}_d
+	=
+	-\frac{R_s}{L_d}i_d
+	+
+	\frac{1}{L_d}u_d.
+	\label{eq:id_p3}
+\end{equation}
+
+Para el caso de campo orientado ideal, se adopta \(u_d=0\). El polo residual asociado es
+
+\begin{equation}
+	p_d=-\frac{R_s}{L_d},
+	\label{eq:pd_p3}
+\end{equation}
+
+y su constante de tiempo es
+
+\begin{equation}
+	\tau_d=\frac{L_d}{R_s}.
+	\label{eq:taud_p3}
+\end{equation}
+
+Este modo indica que, si existe una condición inicial no nula en \(i_d\), dicha corriente decae exponencialmente hacia cero.
+
+\paragraph{Modo térmico.}
+
+La dinámica térmica lineal del estator se expresa como
+
+\begin{equation}
+	\dot{T}_s^{\circ}
+	=
+	-\frac{1}{R_{ts-amb}C_{ts}}T_s^{\circ}
+	+
+	\frac{1}{C_{ts}}P_J
+	+
+	\frac{1}{R_{ts-amb}C_{ts}}T_{amb}^{\circ}.
+	\label{eq:termico_p3}
+\end{equation}
+
+El polo térmico es
+
+\begin{equation}
+	p_T=-\frac{1}{R_{ts-amb}C_{ts}},
+	\label{eq:pt_p3}
+\end{equation}
+
+con constante de tiempo
+
+\begin{equation}
+	\tau_T=R_{ts-amb}C_{ts}.
+	\label{eq:taut_p3}
+\end{equation}
+
+Este modo es mucho más lento que los modos eléctricos y mecánicos, debido a la inercia térmica del bobinado de estator.
+
+\paragraph{Valores numéricos nominales.}
+
+Para la condición nominal sin carga útil,
+
+\begin{equation}
+	m_l=0,\qquad b_l=0.1\,\frac{\mathrm{N\,m}}{\mathrm{rad/s}},
+\end{equation}
+
+se tienen los valores ya calculados en el punto 1:
+
+\begin{equation}
+	J_{eq}=1.978\times10^{-5}\,\si{\kilogram\meter\squared},
+	\qquad
+	b_{eq}=2.194\times10^{-5}\,\si{\newton\meter\second\per\radian}.
+\end{equation}
+
+Además,
+
+\begin{equation}
+	k_l=0.25\,\si{\kilogram\meter},
+	\qquad
+	K_g^o=\frac{gk_l}{r^2}=1.703\times10^{-4}\,\si{\newton\meter\per\radian}.
+\end{equation}
+
+Con estos valores, los parámetros del modo mecánico resultan
+
+\begin{equation}
+	\omega_{n,m}=2.933\,\si{\radian\per\second},
+	\qquad
+	\zeta_m=0.189,
+\end{equation}
+
+\begin{equation}
+	\sigma_m=0.555\,\si{\radian\per\second},
+	\qquad
+	\omega_{d,m}=2.881\,\si{\radian\per\second}.
+\end{equation}
+
+Por lo tanto,
+
+\begin{equation}
+	p_{m,1,2}
+	=
+	-0.555
+	\pm j\,2.881
+	\quad [\si{\radian\per\second}].
+	\label{eq:polos_mecanicos_nominales_p3}
+\end{equation}
+
+Para los modos eléctricos, usando \(R_s=1.02\,\si{\ohm}\), \(L_q=5.8\times10^{-3}\,\si{\henry}\) y \(L_d=6.6\times10^{-3}\,\si{\henry}\), se obtiene
+
+\begin{equation}
+	p_q=-175.862\,\si{\radian\per\second},
+	\qquad
+	\tau_q=5.686\times10^{-3}\,\si{\second},
+\end{equation}
+
+\begin{equation}
+	p_d=-154.545\,\si{\radian\per\second},
+	\qquad
+	\tau_d=6.471\times10^{-3}\,\si{\second}.
+\end{equation}
+
+Para el modo térmico, usando \(R_{ts-amb}=146.7\,^{\circ}\mathrm{C/W}\) y \(C_{ts}=0.818\,\mathrm{J}/^{\circ}\mathrm{C}\), se obtiene
+
+\begin{equation}
+	\tau_T\simeq 120\,\si{\second},
+	\qquad
+	p_T=-8.33\times10^{-3}\,\si{\radian\per\second}.
+\end{equation}
+
+En consecuencia, los autovalores nominales del modelo LTI aumentado son
+
+\begin{equation}
+	\lambda(A_{LTI})
+	=
+	\left\{
+	-0.555\pm j\,2.881,\;
+	-175.862,\;
+	-154.545,\;
+	-0.00833
+	\right\}.
+	\label{eq:autovalores_nominales_p3}
+\end{equation}
+
+La Tabla \ref{tab:autovalores_nominales_p3} resume la correspondencia entre autovalores, modos físicos y parámetros dinámicos.
+
+\begin{table}[H]
+	\centering
+	\caption{Autovalores nominales del modelo LTI equivalente aumentado.}
+	\label{tab:autovalores_nominales_p3}
+	\begin{tabular}{>{\centering\arraybackslash}p{2.8cm}
+			>{\centering\arraybackslash}p{3.5cm}
+			>{\centering\arraybackslash}p{3.6cm}
+			>{\centering\arraybackslash}p{4.2cm}}
+		\toprule
+		\textbf{Modo} & \textbf{Autovalor o polos} & \textbf{Parámetro asociado} & \textbf{Interpretación física} \\
+		\midrule
+		Mecánico &
+		\(-0.555\pm j\,2.881\) &
+		\(\omega_{n,m}=2.933\,\si{\radian\per\second}\), \(\zeta_m=0.189\) &
+		Oscilación amortiguada de posición y velocidad \\
+		\midrule
+		Eléctrico \(q\) &
+		\(-175.862\) &
+		\(\tau_q=5.686\,\si{\milli\second}\) &
+		Dinámica de corriente generadora de torque \\
+		\midrule
+		Eléctrico \(d\) &
+		\(-154.545\) &
+		\(\tau_d=6.471\,\si{\milli\second}\) &
+		Decaimiento residual de la corriente directa \\
+		\midrule
+		Térmico &
+		\(-0.00833\) &
+		\(\tau_T\simeq120\,\si{\second}\) &
+		Calentamiento/enfriamiento del bobinado \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\paragraph{Ceros de las funciones de transferencia.}
+
+A partir de las funciones de transferencia mínimas ya obtenidas, se observa que
+
+\begin{equation}
+	\frac{\Theta_m(s)}{U_q(s)}
+	=
+	\frac{K_t}
+	{\left(L_qs+R_s\right)
+		\left(J_{eq}s^2+b_{eq}s+K_g^o\right)}
+\end{equation}
+
+no posee ceros finitos, porque su numerador es constante. De la misma manera,
+
+\begin{equation}
+	\frac{\Theta_m(s)}{T_{ld}(s)}
+	=
+	\frac{-\dfrac{1}{r}}
+	{J_{eq}s^2+b_{eq}s+K_g^o}
+\end{equation}
+
+tampoco posee ceros finitos. Por lo tanto, en las transferencias mínimas hacia la posición no aparecen ceros de fase no mínima ni ceros que introduzcan inversión inicial de respuesta. La forma de la respuesta queda determinada por la ubicación de los polos.
+
+La Tabla \ref{tab:ceros_p3} resume el resultado.
+
+\begin{table}[H]
+	\centering
+	\caption{Ceros finitos de las funciones de transferencia mínimas hacia \(\theta_m(t)\).}
+	\label{tab:ceros_p3}
+	\begin{tabular}{>{\centering\arraybackslash}p{5.2cm}
+			>{\centering\arraybackslash}p{4.2cm}
+			>{\centering\arraybackslash}p{5.2cm}}
+		\toprule
+		\textbf{Función de transferencia} & \textbf{Ceros finitos} & \textbf{Efecto dinámico} \\
+		\midrule
+		\(\Theta_m(s)/U_q(s)\) & No presenta & La respuesta queda determinada por el polo eléctrico \(q\) y el par mecánico \\
+		\midrule
+		\(\Theta_m(s)/T_{ld}(s)\) & No presenta & La perturbación excita directamente la dinámica mecánica \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\paragraph{Mapa de polos y ceros en el plano \(s\).}
+
+La Fig. \ref{fig:pzmap_nominal_p3} muestra el mapa de polos y ceros nominal del modelo LTI aumentado. Dado que los polos eléctricos se encuentran alrededor de \(-150\) a \(-176\,\si{\radian\per\second}\), mientras que los polos mecánicos y térmico se encuentran mucho más cerca del origen, será conveniente incluir además un zoom cercano al origen, como se indica en la Fig. \ref{fig:pzmap_zoom_p3}.
+
+\begin{figure}[H]
+	\centering
+	\fbox{
+		\begin{minipage}[c][5.2cm][c]{0.88\textwidth}
+			\centering
+			\textit{ mapa de polos y ceros nominal del modelo LTI aumentado.}\\[2mm]
+
+		\end{minipage}
+	}
+	\caption{Mapa de polos y ceros nominal del modelo LTI equivalente aumentado en el plano \(s\).}
+	\label{fig:pzmap_nominal_p3}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\fbox{
+		\begin{minipage}[c][5.2cm][c]{0.88\textwidth}
+			\centering
+			\textit{zoom del mapa de polos y ceros cerca del origen.}\\[2mm]
+			\textit{visualizar el polo térmico y el par de polos mecánicos.}
+		\end{minipage}
+	}
+	\caption{Detalle del mapa de polos y ceros nominal cerca del origen.}
+	\label{fig:pzmap_zoom_p3}
+\end{figure}
+
+% ---------------------------------------------------------
+\subsubsection{3.b) Estabilidad parcial, estabilidad completa y efecto de los ceros}
+
+\paragraph{Estabilidad completa.}
+
+La estabilidad completa del modelo aumentado se evalúa mediante todos los autovalores de la matriz \(A_{LTI}\). Para el punto de operación nominal se obtuvo
+
+\begin{equation}
+	\operatorname{Re}\{\lambda_i(A_{LTI})\}<0
+	\qquad
+	\forall i.
+\end{equation}
+
+Por lo tanto, el modelo LTI equivalente aumentado es internamente estable alrededor del punto de operación considerado.
+
+Este resultado puede justificarse también a partir de la estructura de los subsistemas. El modo mecánico tiene polinomio
+
+\begin{equation}
+	J_{eq}s^2+b_{eq}s+K_g^o,
+\end{equation}
+
+cuyos coeficientes son positivos para \(J_{eq}>0\), \(b_{eq}>0\) y \(K_g^o>0\). Por lo tanto, el par mecánico se ubica en el semiplano izquierdo. A su vez, los polos eléctricos son negativos porque \(R_s>0\), \(L_q>0\) y \(L_d>0\), mientras que el polo térmico es negativo porque \(R_{ts-amb}>0\) y \(C_{ts}>0\).
+
+\paragraph{Estabilidad parcial.}
+
+La estabilidad parcial se analiza observando las funciones de transferencia particulares entre una entrada y una salida. En este caso, desde la entrada auxiliar \(u_q(t)\) hacia la posición \(\theta_m(t)\) aparecen el polo eléctrico del eje \(q\) y los polos mecánicos. En cambio, desde la perturbación \(T_{ld}(t)\) hacia \(\theta_m(t)\) aparece únicamente el modo mecánico.
+
+Los modos \(i_d(t)\) y \(T_s^{\circ}(t)\) no aparecen directamente en las funciones de transferencia mecánicas obtenidas en \eqref{eq:ft_theta_uq_p2} y \eqref{eq:ft_theta_tld_p2}. Sin embargo, sí forman parte del modelo aumentado y por eso deben incluirse al evaluar la estabilidad completa. Esta distinción es importante: una función de transferencia puede mostrar solamente los modos observables y excitables desde un par entrada-salida, mientras que la estabilidad interna exige analizar todos los autovalores del sistema.
+
+\paragraph{Efecto de los ceros.}
+
+Como las funciones de transferencia mínimas hacia \(\theta_m(t)\) no presentan ceros finitos, no se observa modificación de la respuesta debida a ceros. En particular, no existen ceros de fase no mínima que provoquen inversión inicial de la salida, ni ceros dominantes que reduzcan o aumenten el sobrepico de manera significativa. Por lo tanto, la respuesta transitoria de la planta queda gobernada principalmente por el par de polos mecánicos y, en el canal \(u_q\rightarrow\theta_m\), por el polo eléctrico del eje \(q\).
+
+% ---------------------------------------------------------
+\subsubsection{Migración de propiedades ante variación de parámetros de carga}
+
+La consigna indica evaluar la migración de propiedades ante variaciones de carga. Para ello se considera la variación de la masa útil
+
+\begin{equation}
+	m_l\in[0,\;1.5]\,\si{\kilogram},
+\end{equation}
+
+y la incertidumbre en la fricción viscosa de la carga
+
+\begin{equation}
+	b_l=0.1\pm0.03\,
+	\frac{\si{\newton\meter}}{\si{\radian\per\second}}.
+\end{equation}
+
+Estas variaciones modifican principalmente el subsistema mecánico. La masa útil modifica simultáneamente la inercia de la carga y el coeficiente gravitacional:
+
+\begin{equation}
+	J_l=mL_{cm}^2+J_{cm}+m_lL_l^2,
+	\qquad
+	k_l=mL_{cm}+m_lL_l.
+\end{equation}
+
+Por lo tanto, al variar \(m_l\), cambian
+
+\begin{equation}
+	J_{eq}=J_m+\frac{J_l}{r^2},
+	\qquad
+	K_g^o=\frac{gk_l}{r^2}.
+\end{equation}
+
+En cambio, la variación de \(b_l\) modifica solamente la fricción equivalente:
+
+\begin{equation}
+	b_{eq}=b_m+\frac{b_l}{r^2}.
+\end{equation}
+
+Los polos eléctricos \(p_q\), \(p_d\) y el polo térmico \(p_T\) no dependen directamente de \(m_l\) ni de \(b_l\), siempre que se mantengan constantes \(R_s\), \(L_q\), \(L_d\), \(R_{ts-amb}\) y \(C_{ts}\). Por esta razón, la migración ante variación de carga se concentra en el par de polos mecánicos.
+
+\paragraph{Variación de masa útil con fricción nominal.}
+
+La Tabla \ref{tab:migracion_ml_p3} muestra la migración del modo mecánico para \(b_l=0.1\,\mathrm{N\,m/(rad/s)}\) y distintos valores de \(m_l\).
+
+\begin{table}[H]
+	\centering
+	\caption{Migración de polos mecánicos al variar \(m_l\), manteniendo \(b_l=0.1\,\mathrm{N\,m/(rad/s)}\).}
+	\label{tab:migracion_ml_p3}
+	\begin{tabular}{>{\centering\arraybackslash}p{1.8cm}
+			>{\centering\arraybackslash}p{2.7cm}
+			>{\centering\arraybackslash}p{2.7cm}
+			>{\centering\arraybackslash}p{2.4cm}
+			>{\centering\arraybackslash}p{2.2cm}
+			>{\centering\arraybackslash}p{3.0cm}}
+		\toprule
+		\(\boldsymbol{m_l}\) [kg] &
+		\(\boldsymbol{J_{eq}}\) [kg m\(^2\)] &
+		\(\boldsymbol{K_g^o}\) [N m/rad] &
+		\(\boldsymbol{\omega_{n,m}}\) [rad/s] &
+		\(\boldsymbol{\zeta_m}\) &
+		\(\boldsymbol{p_{m,1,2}}\) [rad/s] \\
+		\midrule
+		0 &
+		\(1.978\times10^{-5}\) &
+		\(1.703\times10^{-4}\) &
+		2.933 &
+		0.189 &
+		\(-0.555\pm j\,2.881\) \\
+		\midrule
+		0.75 &
+		\(3.281\times10^{-5}\) &
+		\(4.256\times10^{-4}\) &
+		3.602 &
+		0.093 &
+		\(-0.334\pm j\,3.586\) \\
+		\midrule
+		1.5 &
+		\(4.583\times10^{-5}\) &
+		\(6.810\times10^{-4}\) &
+		3.855 &
+		0.062 &
+		\(-0.239\pm j\,3.848\) \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+Al aumentar la masa útil, aumenta la inercia equivalente, pero también aumenta el coeficiente gravitacional \(k_l\). Para los valores considerados, el aumento de \(K_g^o\) hace que la frecuencia natural mecánica aumente. Sin embargo, la relación de amortiguamiento disminuye, porque la fricción equivalente no crece en la misma proporción que la inercia y la rigidez gravitacional. En consecuencia, los polos mecánicos permanecen en el semiplano izquierdo, pero se vuelven menos amortiguados y la respuesta resulta más oscilatoria.
+
+\paragraph{Variación de fricción viscosa con masa nominal.}
+
+La Tabla \ref{tab:migracion_bl_p3} muestra la migración del modo mecánico para \(m_l=0\) y distintos valores de \(b_l\).
+
+\begin{table}[H]
+	\centering
+	\caption{Migración de polos mecánicos al variar \(b_l\), manteniendo \(m_l=0\).}
+	\label{tab:migracion_bl_p3}
+	\begin{tabular}{>{\centering\arraybackslash}p{2.2cm}
+			>{\centering\arraybackslash}p{3.0cm}
+			>{\centering\arraybackslash}p{2.5cm}
+			>{\centering\arraybackslash}p{2.4cm}
+			>{\centering\arraybackslash}p{3.2cm}}
+		\toprule
+		\(\boldsymbol{b_l}\) [N m/(rad/s)] &
+		\(\boldsymbol{b_{eq}}\) [N m s/rad] &
+		\(\boldsymbol{\omega_{n,m}}\) [rad/s] &
+		\(\boldsymbol{\zeta_m}\) &
+		\(\boldsymbol{p_{m,1,2}}\) [rad/s] \\
+		\midrule
+		0.07 &
+		\(1.986\times10^{-5}\) &
+		2.933 &
+		0.171 &
+		\(-0.502\pm j\,2.890\) \\
+		\midrule
+		0.10 &
+		\(2.194\times10^{-5}\) &
+		2.933 &
+		0.189 &
+		\(-0.555\pm j\,2.881\) \\
+		\midrule
+		0.13 &
+		\(2.403\times10^{-5}\) &
+		2.933 &
+		0.207 &
+		\(-0.607\pm j\,2.870\) \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+Al aumentar \(b_l\), aumenta \(b_{eq}\) y, por lo tanto, aumenta el amortiguamiento relativo. Esto desplaza los polos mecánicos levemente hacia la izquierda y reduce ligeramente la frecuencia amortiguada. El efecto es moderado porque la fricción de la carga se refleja al eje del motor dividida por \(r^2\).
+
+\begin{figure}[H]
+	\centering
+	\fbox{
+		\begin{minipage}[c][5.4cm][c]{0.88\textwidth}
+			\centering
+			\textit{Figura de la migración de polos mecánicos ante variación de \(m_l\) y \(b_l\).}\\[2mm]
+			\textit{Se recomienda graficar únicamente el par mecánico para visualizar con claridad la migración.}
+		\end{minipage}
+	}
+	\caption{Migración de polos mecánicos en el plano \(s\) ante variación de los parámetros de carga.}
+	\label{fig:migracion_polos_p3}
+\end{figure}
+
+En todos los casos evaluados, los polos mecánicos permanecen en el semiplano izquierdo. Por lo tanto, la variación de \(m_l\) y \(b_l\) dentro de los rangos especificados no provoca pérdida de estabilidad a lazo abierto del modelo LTI aumentado. No obstante, sí modifica la calidad dinámica de la respuesta: una mayor carga útil reduce el amortiguamiento relativo y vuelve el comportamiento mecánico más oscilatorio, mientras que un aumento de fricción incrementa el amortiguamiento y mejora la disipación de las oscilaciones.
+
+\paragraph{Síntesis del punto 3.}
+
+El modelo LTI equivalente aumentado presenta cinco autovalores: un par complejo conjugado asociado al modo mecánico, dos polos eléctricos reales correspondientes a las corrientes \(i_q\) e \(i_d\), y un polo térmico real asociado a la temperatura del estator. Para la condición nominal, todos los autovalores tienen parte real negativa, por lo que el sistema aumentado es internamente estable alrededor del equilibrio considerado. Las funciones de transferencia mínimas hacia la posición no presentan ceros finitos, de modo que la dinámica transitoria queda determinada por la ubicación de los polos. Finalmente, al variar la masa útil y la fricción de carga, los polos mecánicos migran dentro del semiplano izquierdo, manteniendo la estabilidad pero modificando la frecuencia natural y el amortiguamiento del modo mecánico.
 
 \subsection{Diseño del sistema de control}
 \textit{Sección pendiente. Aquí se desarrollarán el modulador de torque, los lazos de corriente, el observador de estado y el controlador externo de movimiento.}
