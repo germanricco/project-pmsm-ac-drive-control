@@ -221,7 +221,7 @@ El modelado se realiza bajo las siguientes hipótesis:
 
 \subsubsection{Carga mecánica}
 
-La carga mecánica se modela como un sistema rotacional de un grado de libertad, cuya coordenada articular es \(q(t)\). Aplicando la segunda ley de Newton para movimiento rotacional, se obtiene
+La carga mecánica se modela como un sistema rotacional de un grado de libertad, cuya coordenada articular es \(q(t)\). Aplicando la segunda ley de Newton para movimiento rotacional, se obtiene:
 
 \begin{equation}
     J_l \ddot{q}(t)
@@ -249,7 +249,7 @@ El torque resistente de carga se compone de un término gravitacional y una pert
 
 donde \(g\) es la aceleración de la gravedad, \(k_l\) es el coeficiente gravitacional de la carga y \(T_{ld}(t)\) representa una perturbación externa aplicada sobre la articulación.
 
-El coeficiente gravitacional se define como
+El coeficiente gravitacional se define como:
 
 \begin{equation}
     k_l
@@ -262,7 +262,7 @@ El coeficiente gravitacional se define como
 
 donde \(m\) es la masa del eslabón, \(L_{cm}\) es la distancia desde la articulación hasta el centro de masa del eslabón, \(m_l\) es la masa de carga útil y \(L_l\) es la longitud del eslabón.
 
-El momento de inercia total de la carga queda dado por
+El momento de inercia total de la carga queda dado por:
 
 \begin{equation}
     J_l
@@ -279,7 +279,7 @@ donde \(J_{cm}\) es el momento de inercia propio del eslabón respecto de su cen
 
 \subsubsection{Tren de transmisión}
 
-El motor se encuentra acoplado a la carga mediante una caja reductora de relación de transmisión \(r\). Al considerarse ideal y rígida, la relación cinemática entre el eje del motor y el eje de salida queda dada por
+El motor se encuentra acoplado a la carga mediante una caja reductora de relación de transmisión \(r\). Al considerarse ideal y rígida, la relación cinemática entre el eje del motor y el eje de salida queda dada por:
 
 \begin{equation}
     \dot{q}(t)
@@ -310,7 +310,7 @@ donde \(T_d(t)\) representa el torque resistente reflejado por la transmisión s
 
 \subsubsection{Subsistema mecánico del motor}
 
-La dinámica mecánica del rotor del motor PMSM, referida al eje del motor, se expresa como
+La dinámica mecánica del rotor del motor PMSM, referida al eje del motor, se expresa como:
 
 \begin{equation}
     J_m \dot{\omega}_m(t)
@@ -336,27 +336,27 @@ donde \(J_m\) es la inercia del rotor más la inercia equivalente propia de la c
 
 Para obtener el modelo equivalente referido al eje del motor, se reemplazan las relaciones de transmisión dadas por \eqref{eq:velocidad_transmision}, \eqref{eq:posicion_transmision} y \eqref{eq:torque_transmision} en la ecuación de la carga \eqref{eq:carga_mecanica}. Como
 
-\begin{equation}
-    \dot{q}(t)
-    =
-    \frac{\omega_m(t)}{r},
-\end{equation}
-
-\begin{equation}
-    \ddot{q}(t)
-    =
-    \frac{\dot{\omega}_m(t)}{r},
-\end{equation}
-
-\begin{equation}
+\begin{equation*}
     q(t)
     =
     \frac{\theta_m(t)}{r},
-\end{equation}
+\end{equation*}
 
-reemplazando en \eqref{eq:carga_mecanica} se obtiene
+\begin{equation*}
+    \dot{q}(t)
+    =
+    \frac{\omega_m(t)}{r},
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
+    \ddot{q}(t)
+    =
+    \frac{\dot{\omega}_m(t)}{r},
+\end{equation*}
+
+Reemplazando en \eqref{eq:carga_mecanica} se obtiene:
+
+\begin{equation*}
     J_l \frac{\dot{\omega}_m(t)}{r}
     =
     r T_d(t)
@@ -365,11 +365,11 @@ reemplazando en \eqref{eq:carga_mecanica} se obtiene
     -
     T_l(t).
     \label{eq:carga_referida_1}
-\end{equation}
+\end{equation*}
 
 Despejando \(T_d(t)\):
 
-\begin{equation}
+\begin{equation*}
     T_d(t)
     =
     \frac{J_l}{r^2}\dot{\omega}_m(t)
@@ -378,11 +378,11 @@ Despejando \(T_d(t)\):
     +
     \frac{T_l(t)}{r}.
     \label{eq:td_reflejado}
-\end{equation}
+\end{equation*}
 
-Luego, reemplazando \eqref{eq:td_reflejado} en la ecuación mecánica del motor \eqref{eq:mecanica_motor}, resulta
+Reemplazando en la ecuación mecánica del motor \eqref{eq:mecanica_motor}, resulta:
 
-\begin{equation}
+\begin{equation*}
     J_m \dot{\omega}_m(t)
     =
     T_m(t)
@@ -397,11 +397,11 @@ Luego, reemplazando \eqref{eq:td_reflejado} en la ecuación mecánica del motor 
     \frac{T_l(t)}{r}
     \right].
     \label{eq:sustitucion_motor}
-\end{equation}
+\end{equation*}
 
-Agrupando términos se obtiene
+Agrupando términos se obtiene:
 
-\begin{equation}
+\begin{equation*}
     \left(
     J_m+
     \frac{J_l}{r^2}
@@ -418,36 +418,36 @@ Agrupando términos se obtiene
     -
     \frac{T_l(t)}{r}.
     \label{eq:modelo_eq_preliminar}
-\end{equation}
+\end{equation*}
 
-Se definen los parámetros equivalentes referidos al eje del motor como
+Se definen los parámetros equivalentes referidos al eje del motor como:
 
-\begin{equation}
+\begin{equation*}
     J_{eq}
     =
     J_m+
     \frac{J_l}{r^2},
     \label{eq:jeq}
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
     b_{eq}
     =
     b_m+
     \frac{b_l}{r^2},
     \label{eq:beq}
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
     T_{eq}(t)
     =
     \frac{T_l(t)}{r}.
     \label{eq:teq}
-\end{equation}
+\end{equation*}
 
-Como el torque de carga está dado por \eqref{eq:torque_carga} y \(q(t)=\theta_m(t)/r\), el torque equivalente de carga referido al eje del motor resulta
+Como el torque de carga está dado por \eqref{eq:torque_carga} y \(q(t)=\theta_m(t)/r\), el torque equivalente de carga referido al eje del motor resulta:
 
-\begin{equation}
+\begin{equation*}
     T_{eq}(t)
     =
     \frac{g k_l}{r}
@@ -457,7 +457,7 @@ Como el torque de carga está dado por \eqref{eq:torque_carga} y \(q(t)=\theta_m
     +
     \frac{T_{ld}(t)}{r}.
     \label{eq:torque_eq_completo}
-\end{equation}
+\end{equation*}
 
 Finalmente, el modelo mecánico equivalente referido al eje del motor queda dado por
 
@@ -477,8 +477,6 @@ Finalmente, el modelo mecánico equivalente referido al eje del motor queda dado
     \label{eq:modelo_mecanico_final}
 \end{equation}
 
-junto con
-
 \begin{equation}
     \dot{\theta}_m(t)
     =
@@ -486,7 +484,7 @@ junto con
     \label{eq:theta_dot_final}
 \end{equation}
 
-La salida mecánica de interés, correspondiente a la posición angular de la articulación, es
+La salida mecánica de interés, correspondiente a la posición angular de la articulación, es:
 
 \begin{equation}
     q(t)
@@ -499,24 +497,24 @@ La salida mecánica de interés, correspondiente a la posición angular de la ar
 
 Tomando como variables de estado
 
-\begin{equation}
+\begin{equation*}
     x_1(t)=\theta_m(t),
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
     x_2(t)=\omega_m(t),
-\end{equation}
+\end{equation*}
 
-se obtiene
+Se obtiene:
 
-\begin{equation}
+\begin{equation*}
     \dot{x}_1(t)
     =
     x_2(t),
     \label{eq:x1_mecanico}
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
     \dot{x}_2(t)
     =
     \frac{1}{J_{eq}}
@@ -533,9 +531,9 @@ se obtiene
     \frac{T_{ld}(t)}{r}
     \right].
     \label{eq:x2_mecanico}
-\end{equation}
+\end{equation*}
 
-Por lo tanto, el modelo mecánico equivalente queda representado por el sistema no lineal
+Por lo tanto, el modelo mecánico equivalente queda representado por el sistema no lineal:
 
 \begin{equation}
     \boxed{
@@ -558,22 +556,19 @@ Por lo tanto, el modelo mecánico equivalente queda representado por el sistema 
         \right)
         -
         \frac{T_{ld}(t)}{r}
-        \right]
+        \right],
+		\\
+		y(t)
+    	&=
+    	q(t)
+   		=
+    	\frac{x_1(t)}{r}.
     \end{aligned}
     }
     \label{eq:ss_mecanico}
 \end{equation}
 
-con salida
-
-\begin{equation}
-    y(t)
-    =
-    q(t)
-    =
-    \frac{x_1(t)}{r}.
-    \label{eq:salida_ss_mecanico}
-\end{equation}
+% Entra como comentario?
 
 \subsubsection{Parámetros mecánicos nominales}
 
@@ -602,9 +597,9 @@ Los parámetros nominales utilizados para el subsistema mecánico se resumen en 
     \end{tabular}
 \end{table}
 
-Con estos datos, para condición nominal sin carga útil se obtiene
+Con estos datos, para condición nominal sin carga útil se obtiene:
 
-\begin{equation}
+\begin{equation*}
     J_l
     =
     m L_{cm}^{2}
@@ -615,9 +610,9 @@ Con estos datos, para condición nominal sin carga útil se obtiene
     =
     \SI{0.0833}{\kilogram\meter\squared},
     \label{eq:jl_nominal}
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
     k_l
     =
     m L_{cm}
@@ -626,11 +621,11 @@ Con estos datos, para condición nominal sin carga útil se obtiene
     =
     \SI{0.25}{\kilogram\meter}.
     \label{eq:kl_nominal}
-\end{equation}
+\end{equation*}
 
-La inercia equivalente nominal resulta
+La inercia equivalente nominal resulta:
 
-\begin{equation}
+\begin{equation*}
     J_{eq}
     =
     J_m+
@@ -642,11 +637,11 @@ La inercia equivalente nominal resulta
     \approx
     \SI{1.978e-5}{\kilogram\meter\squared}.
     \label{eq:jeq_nominal}
-\end{equation}
+\end{equation*}
 
-La fricción viscosa equivalente nominal resulta
+La fricción viscosa equivalente nominal resulta:
 
-\begin{equation}
+\begin{equation*}
     b_{eq}
     =
     b_m+
@@ -658,22 +653,22 @@ La fricción viscosa equivalente nominal resulta
     \approx
     \SI{2.194e-5}{\newton\meter\second\per\radian}.
     \label{eq:beq_nominal}
-\end{equation}
+\end{equation*}
 
-El coeficiente del torque gravitacional equivalente referido al eje del motor es
+El coeficiente del torque gravitacional equivalente referido al eje del motor es:
 
-\begin{equation}
+\begin{equation*}
     \frac{g k_l}{r}
     =
     \frac{9.80665 \cdot 0.25}{120}
     \approx
     \SI{2.043e-2}{\newton\meter}.
     \label{eq:torque_grav_eq_nominal}
-\end{equation}
+\end{equation*}
 
-Por lo tanto,
+Por lo tanto:
 
-\begin{equation}
+\begin{equation*}
     T_{g,eq}(t)
     =
     0.02043
@@ -682,11 +677,11 @@ Por lo tanto,
     \right)
     \quad [\si{\newton\meter}].
     \label{eq:tg_eq_nominal}
-\end{equation}
+\end{equation*}
 
-La perturbación externa máxima referida al eje del motor es
+La perturbación externa máxima referida al eje del motor es:
 
-\begin{equation}
+\begin{equation*}
     T_{ld,eq,max}
     =
     \frac{T_{ld,max}}{r}
@@ -695,55 +690,55 @@ La perturbación externa máxima referida al eje del motor es
     \approx
     \SI{4.167e-2}{\newton\meter}.
     \label{eq:tld_eq_max}
-\end{equation}
+\end{equation*}
 
 \subsubsection{Variación de parámetros por carga útil e incertidumbre}
 
 La masa de carga útil modifica tanto la inercia equivalente como el torque gravitacional equivalente. Para los casos extremos de carga útil,
 
-\begin{equation}
+\begin{equation*}
     m_l \in [0,\;1.5]\ \si{\kilogram},
-\end{equation}
+\end{equation*}
 
-se obtiene
+Se obtiene:
 
-\begin{equation}
+\begin{equation*}
     J_{l,min}
     =
     0.0833\ \si{\kilogram\meter\squared},
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
     J_{l,max}
     =
     0.0833+1.5(0.5)^2
     =
     0.4583\ \si{\kilogram\meter\squared}.
-\end{equation}
+\end{equation*}
 
-Por lo tanto,
+Por lo tanto:
 
-\begin{equation}
+\begin{equation*}
     J_{eq,min}
     =
     J_m+
     \frac{J_{l,min}}{r^2}
     \approx
     \SI{1.978e-5}{\kilogram\meter\squared},
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
     J_{eq,max}
     =
     J_m+
     \frac{J_{l,max}}{r^2}
     \approx
     \SI{4.582e-5}{\kilogram\meter\squared}.
-\end{equation}
+\end{equation*}
 
 Además, considerando una variación de fricción de la carga,
 
-\begin{equation}
+\begin{equation*}
     b_l
     =
     0.1 \pm 0.03
@@ -751,36 +746,36 @@ Además, considerando una variación de fricción de la carga,
     \left[
     \frac{\si{\newton\meter}}{\si{\radian\per\second}}
     \right],
-\end{equation}
+\end{equation*}
 
-resulta
+Resulta:
 
-\begin{equation}
+\begin{equation*}
     b_{eq,min}
     =
     b_m+
     \frac{0.07}{r^2}
     \approx
     \SI{1.986e-5}{\newton\meter\second\per\radian},
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
     b_{eq,nom}
     =
     b_m+
     \frac{0.10}{r^2}
     \approx
     \SI{2.194e-5}{\newton\meter\second\per\radian},
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
     b_{eq,max}
     =
     b_m+
     \frac{0.13}{r^2}
     \approx
     \SI{2.403e-5}{\newton\meter\second\per\radian}.
-\end{equation}
+\end{equation*}
 
 Los valores equivalentes principales se resumen en la Tabla \ref{tab:parametros_equivalentes}.
 
@@ -837,32 +832,35 @@ En este punto se incorpora al modelo mecánico equivalente obtenido en el punto 
 El desarrollo se organiza respetando los incisos de la consigna: primero se obtiene el modelo global no lineal en coordenadas virtuales \(qd0\), luego se realiza la linealización Jacobiana para obtener un modelo LPV, y finalmente se construye un modelo LTI equivalente mediante linealización por retroalimentación no lineal y control vectorial con campo orientado.
 
 % ---------------------------------------------------------
-\subsubsection{2.a) Modelo global no lineal del sistema físico completo, para \(i_{ds}^{r}(t)\neq 0\)}
+\subsubsection{2.a) Modelo global no lineal del sistema físico completo, para \texorpdfstring{$i_{ds}^{r}(t)\neq 0$}{idsr(t)\textasciitilde 0}}
 
 \paragraph{Objetivo del inciso.}
 El objetivo de este inciso es obtener un modelo dinámico global no lineal del accionamiento completo, incorporando la dinámica mecánica equivalente, la dinámica electromagnética de la PMSM y la dinámica térmica del estator. En esta primera formulación no se impone la condición de campo orientado, por lo que se considera el caso general
 
-\begin{equation}
+\begin{equation*}
 	i_{ds}^{r}(t)\neq 0.
-\end{equation}
+\end{equation*}
 
 Esto implica que el torque electromagnético conserva tanto el término debido a los imanes permanentes como el término de reluctancia. Por lo tanto, el modelo resultante es no lineal y acoplado.
 
 \paragraph{Transformaciones de Park y acceso físico a variables reales.}
-El modelo electromagnético se escribe en coordenadas virtuales de rotor \(qd0\), porque en ese sistema de referencia las ecuaciones de la PMSM toman una forma más compacta para el análisis y el diseño de control. Sin embargo, físicamente el inversor y los sensores trabajan sobre variables trifásicas reales de estator \(abc\). Por ese motivo es necesario incorporar explícitamente las transformaciones de Park directa e inversa.
+El modelo electromagnético se escribe en coordenadas virtuales de rotor \(qd0\),
+porque en ese sistema de referencia las ecuaciones de la PMSM toman una forma más compacta para el análisis y el diseño de control. 
+Sin embargo, físicamente el inversor y los sensores trabajan sobre variables trifásicas reales de estator \(abc\). 
+Por ese motivo es necesario incorporar explícitamente las transformaciones de Park directa e inversa.
 
-Para una variable trifásica genérica
+Para una variable trifásica genérica:
 
-\begin{equation}
+\begin{equation*}
 	\mathbf{f}_{abcs}(t)=
 	\begin{bmatrix}
 		f_{as}(t) & f_{bs}(t) & f_{cs}(t)
 	\end{bmatrix}^{T},
-\end{equation}
+\end{equation*}
 
-donde \(f\) puede representar tensión, corriente o flujo concatenado, se adopta la transformación directa
+Donde \(f\) puede representar tensión, corriente o flujo concatenado, se adopta la transformación directa
 
-\begin{equation}
+\begin{equation*}
 	\begin{bmatrix}
 		f_{qs}^{r}(t)\\
 		f_{ds}^{r}(t)\\
@@ -881,11 +879,11 @@ donde \(f\) puede representar tensión, corriente o flujo concatenado, se adopta
 		f_{cs}(t)
 	\end{bmatrix}.
 	\label{eq:park_directa_p2}
-\end{equation}
+\end{equation*}
 
 La transformación inversa permite volver desde las coordenadas virtuales \(qd0\) a las variables físicas reales de fase:
 
-\begin{equation}
+\begin{equation*}
 	\begin{bmatrix}
 		f_{as}(t)\\
 		f_{bs}(t)\\
@@ -903,9 +901,9 @@ La transformación inversa permite volver desde las coordenadas virtuales \(qd0\
 		f_{0s}(t)
 	\end{bmatrix}.
 	\label{eq:park_inversa_p2}
-\end{equation}
+\end{equation*}
 
-La posición eléctrica del rotor se relaciona con la posición mecánica mediante
+La posición eléctrica del rotor se relaciona con la posición mecánica mediante:
 
 \begin{equation}
 	\theta_r(t)=P_p\theta_m(t),
@@ -916,21 +914,23 @@ La posición eléctrica del rotor se relaciona con la posición mecánica median
 
 donde \(P_p\) es el número de pares de polos de la máquina.
 
-Como la PMSM se encuentra conectada en estrella con neutro flotante no accesible, no existe camino físico para la circulación de corriente homopolar. Por lo tanto, para el modelo principal se adopta
+Como la PMSM se encuentra conectada en estrella con neutro flotante no accesible, no existe camino físico para la circulación de corriente homopolar.
+Por lo tanto, para el modelo principal se adopta:
 
-\begin{equation}
+\begin{equation*}
 	i_{0s}(t)\equiv 0.
-\end{equation}
+\end{equation*}
 
-Si además se considera alimentación trifásica equilibrada, también se tiene
+Si además se considera alimentación trifásica equilibrada, también se tiene:
 
-\begin{equation}
+\begin{equation*}
 	v_{0s}(t)\equiv 0.
-\end{equation}
+\end{equation*}
 
 \textit{Epígrafe sugerido para figura pendiente: Diagrama de bloques del modelo global no lineal del sistema físico completo, incluyendo inversor trifásico idealizado, transformación de Park directa, modelo PMSM en coordenadas \(qd0\), subsistema mecánico equivalente, subsistema térmico, sensores y transformación de Park inversa para reconstrucción de variables reales \(abc\).}
 
 \paragraph{Variables de estado, entradas y salida.}
+
 Se adopta como vector de estado global
 
 \begin{equation}
@@ -1015,7 +1015,7 @@ La salida principal de interés para el control de movimiento es la posición an
 	\label{eq:salida_q_p2}
 \end{equation}
 
-Por lo tanto, la matriz de salida asociada a la variable controlada es
+Por lo tanto, la matriz de salida asociada a la variable controlada es:
 
 \begin{equation}
 	C_p=
@@ -1025,7 +1025,7 @@ Por lo tanto, la matriz de salida asociada a la variable controlada es
 	\label{eq:cp_salida_controlada_p2}
 \end{equation}
 
-A su vez, el sensor de posición se encuentra montado sobre el eje del motor, por lo que la salida medida por el encoder es
+A su vez, el sensor de posición se encuentra montado sobre el eje del motor, por lo que la salida medida por el encoder es:
 
 \begin{equation}
 	y_s(t)=\theta_m(t)=x_1(t),
@@ -1040,7 +1040,7 @@ A su vez, el sensor de posición se encuentra montado sobre el eje del motor, po
 Es importante distinguir dos conceptos: \(y_p(t)=q(t)\) es la salida controlada de proceso, mientras que \(y_s(t)=\theta_m(t)\) es la salida medida para retroalimentación. Para comparar el seguimiento de referencia en la articulación se usará \(q(t)\); si una señal se obtiene desde el encoder, se convierte mediante \(q(t)=\theta_m(t)/r\). 
 
 \paragraph{Resistencia de estator dependiente de la temperatura.}
-La resistencia de fase del estator aumenta con la temperatura del bobinado. Se modela mediante
+La resistencia de fase del estator aumenta con la temperatura del bobinado. Este comportamiento se modela mediante:
 
 \begin{equation}
 	R_s\left(T_s^{\circ}\right)
@@ -1052,7 +1052,7 @@ La resistencia de fase del estator aumenta con la temperatura del bobinado. Se m
 	\label{eq:rs_temp_p2}
 \end{equation}
 
-En variables de estado,
+En variables de estado:
 
 \begin{equation}
 	R_s(x_5)
@@ -1067,7 +1067,8 @@ En variables de estado,
 Esta dependencia introduce un acoplamiento térmico-eléctrico, porque la temperatura modifica la resistencia, y la resistencia modifica tanto la dinámica de corriente como la potencia disipada por efecto Joule.
 
 \paragraph{Torque electromagnético.}
-El torque electromagnético de la PMSM está dado por
+
+El torque electromagnético de la PMSM está dado por:
 
 \begin{equation}
 	T_m(t)
@@ -1078,26 +1079,27 @@ El torque electromagnético de la PMSM está dado por
 	\label{eq:torque_pmsm_general_p2}
 \end{equation}
 
-Se definen las constantes
+Se definen las constantes:
 
-\begin{equation}
+\begin{equation*}
 	K_t=\frac{3}{2}P_p\lambda_m^{\prime r},
 	\qquad
 	K_{rel}=\frac{3}{2}P_p\left(L_d-L_q\right),
 	\label{eq:kt_krel_p2}
-\end{equation}
+\end{equation*}
 
-por lo que
+Por lo que:
 
 \begin{equation}
 	T_m(t)=K_t i_{qs}^{r}(t)+K_{rel}i_{ds}^{r}(t)i_{qs}^{r}(t).
 	\label{eq:torque_kt_krel_p2}
 \end{equation}
 
-El segundo término de \eqref{eq:torque_kt_krel_p2} muestra una de las no linealidades principales del modelo: el producto entre las corrientes de eje directo y eje en cuadratura.
+El segundo término de \eqref{eq:torque_kt_krel_p2} muestra una de las no linealidades principales del modelo: 
+el producto entre las corrientes de eje directo y eje en cuadratura (\(i_{ds}^{r}\) y \(i_{qs}^{r}\)) respectivamente.
 
 \paragraph{Ecuaciones eléctricas en coordenadas \(qd\).}
-El balance de tensiones de estator en coordenadas de rotor queda dado por
+El balance de tensiones de estator en coordenadas de rotor queda dado por:
 
 \begin{equation}
 	v_{qs}^{r}(t)
@@ -1121,7 +1123,7 @@ El balance de tensiones de estator en coordenadas de rotor queda dado por
 	\label{eq:vd_balance_p2}
 \end{equation}
 
-Despejando las derivadas de corriente e incorporando \(\omega_r=P_p\omega_m\), se obtiene
+Despejando las derivadas de corriente e incorporando \(\omega_r=P_p\omega_m\), se obtiene:
 
 \begin{equation}
 	\frac{di_{qs}^{r}}{dt}
@@ -1146,7 +1148,7 @@ Despejando las derivadas de corriente e incorporando \(\omega_r=P_p\omega_m\), s
 \end{equation}
 
 \paragraph{Acoplamiento con el subsistema mecánico equivalente.}
-La ecuación mecánica equivalente referida al eje del motor, obtenida en el punto 1, es
+La ecuación mecánica equivalente referida al eje del motor, obtenida en el punto 1, es:
 
 \begin{equation}
 	J_{eq}\dot{\omega}_m(t)
@@ -1158,7 +1160,7 @@ La ecuación mecánica equivalente referida al eje del motor, obtenida en el pun
 	\label{eq:mecanica_equiv_p2}
 \end{equation}
 
-Sustituyendo el torque electromagnético de la PMSM, resulta
+Sustituyendo el torque electromagnético de la PMSM, resulta:
 
 \begin{equation}
 	\dot{\omega}_m(t)
@@ -1237,13 +1239,15 @@ Juntando las ecuaciones mecánicas, eléctricas y térmicas, el modelo global no
 			-b_{eq}x_2
 			-\frac{gk_l}{r}\sin\left(\frac{x_1}{r}\right)
 			-\frac{u_3}{r}
-			\right],\\[1mm]
+			\right],
+			\\[1mm]
 			\dot{x}_3 &=
 			\frac{
 				u_1
 				-R_s(x_5)x_3
 				-\left(\lambda_m^{\prime r}+L_d x_4\right)P_p x_2
-			}{L_q},\\[1mm]
+			}{L_q},
+			\\[1mm]
 			\dot{x}_4 &=
 			\frac{
 				u_2
@@ -1256,16 +1260,11 @@ Juntando las ecuaciones mecánicas, eléctricas y térmicas, el modelo global no
 			\frac{3}{2}R_s(x_5)\left(x_3^2+x_4^2\right)
 			-
 			\frac{x_5-u_4}{R_{ts-amb}}
-			\right].
+			\right],
+			\\[1mm]
+			y(t)&=\frac{x_1(t)}{r}.
 	\end{aligned}}
 	\label{eq:modelo_global_nl_p2}
-\end{equation}
-
-La salida principal es
-
-\begin{equation}
-	y(t)=\frac{x_1(t)}{r}.
-	\label{eq:salida_modelo_global_p2}
 \end{equation}
 
 El modelo \eqref{eq:modelo_global_nl_p2} es no lineal por el producto \(x_4x_3\) en el torque, los productos \(x_4x_2\) y \(x_3x_2\) en las ecuaciones eléctricas, la dependencia \(R_s(x_5)\), los términos cuadráticos de corriente en el modelo térmico y el término gravitacional \(\sin(x_1/r)\).
