@@ -1043,6 +1043,19 @@ Sustituyendo el torque electromagnético de la PMSM dado por \eqref{eq:torque_kt
 
 Esta ecuación representa el acoplamiento electromecánico: las corrientes eléctricas generan torque, y el torque modifica la velocidad y posición del rotor.
 
+
+La Fig. \ref{fig:diagrama_electromecanico_equivalente} muestra el diagrama de bloques correspondiente al modelo electromecánico de la PMSM.
+
+\begin{figure}[H]
+	\centering
+	% Inserta la ruta y nombre exacto de tu archivo PNG aquí
+	\includegraphics[width=0.95\textwidth]{img/screenshot_subsistema_electromagnetico.png}
+	\caption{Diagrama de bloques del subsistema electromecánico de la máquina.}
+	\label{fig:diagrama_electromecanico_equivalente}
+\end{figure}
+
+
+
 \paragraph{Resistencia de estator dependiente de la temperatura.}
 La resistencia de fase del estator aumenta con la temperatura del bobinado. Este comportamiento se modela mediante:
 
@@ -1115,6 +1128,16 @@ Despejando,
 	\right].
 	\label{eq:dts_dt_p2}
 \end{equation}
+
+La Fig. \ref{fig:diagrama_termico_equivalente} muestra el diagrama de bloques correspondiente al modelo electromecánico de la PMSM.
+
+\begin{figure}[H]
+	\centering
+	% Inserta la ruta y nombre exacto de tu archivo PNG aquí
+	\includegraphics[width=0.95\textwidth]{img/screenshot_subsistema_termico.png}
+	\caption{Diagrama de bloques del subsistema térmico de la máquina.}
+	\label{fig:diagrama_termico_equivalente}
+\end{figure}
 
 
 \paragraph{Variables de estado, entradas y salida.}
