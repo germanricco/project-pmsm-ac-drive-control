@@ -52,6 +52,8 @@
     citecolor=black,
     urlcolor=blue
 }
+\setcounter{secnumdepth}{0}
+\setcounter{tocdepth}{3}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{4pt}
@@ -166,7 +168,7 @@
 % ---------------------------------------------------------
 % RESUMEN
 % ---------------------------------------------------------
-\section*{Resumen}
+\section{Resumen}
 \addcontentsline{toc}{section}{Resumen}
 
 En este informe se desarrolla el modelado, análisis, simulación y posterior diseño de control de un accionamiento electromecánico de corriente alterna basado en un motor sincrónico de imanes permanentes. El sistema bajo estudio está compuesto por una máquina PMSM trifásica alimentada por un inversor, acoplada mediante una transmisión planetaria a una carga mecánica equivalente de un grado de libertad. El objetivo general del proyecto es obtener un modelo dinámico del sistema físico, analizar su comportamiento a lazo abierto y diseñar posteriormente una estrategia de control de movimiento en cascada con control vectorial.
@@ -187,7 +189,7 @@ El trabajo se organiza siguiendo la guía del Proyecto Global Integrador \cite{g
 % ---------------------------------------------------------
 % DESARROLLO
 % ---------------------------------------------------------
-\section{Desarrollo}
+\section{Modelado, Análisis y Simulación dinámica a Lazo Abierto}
 
 \subsection{Definición del sistema bajo estudio}
 
@@ -204,7 +206,7 @@ El sistema físico analizado está compuesto por los siguientes subsistemas prin
 
 La primera etapa del desarrollo consiste en obtener un modelo mecánico equivalente que permita representar al motor, la caja reductora y la carga como un único sistema dinámico referido al eje del motor. Esta compactación es conveniente porque el torque electromagnético de la PMSM actúa sobre el eje del motor, mientras que la variable de interés del proceso es la posición angular de la carga.
 
-\subsection{Modelo matemático del subsistema mecánico}
+\subsection{1. Modelo matemático del subsistema mecánico}
 
 En esta sección se obtiene el modelo matemático equivalente de un grado de libertad del subsistema mecánico completo. Para ello se modelan por separado la carga, la transmisión y el eje mecánico del motor, y luego se reflejan las variables de la carga al eje del motor.
 
@@ -219,7 +221,7 @@ El modelado se realiza bajo las siguientes hipótesis:
     \item La fricción se modela como viscosa.
 \end{itemize}
 
-\subsubsection{Carga mecánica}
+\subsubsection{1.1. Carga mecánica}
 
 La carga mecánica se modela como un sistema rotacional de un grado de libertad, cuya coordenada articular es \(q(t)\). Aplicando la segunda ley de Newton para movimiento rotacional, se obtiene:
 
@@ -277,7 +279,7 @@ El momento de inercia total de la carga queda dado por:
 
 donde \(J_{cm}\) es el momento de inercia propio del eslabón respecto de su centro de masa.
 
-\subsubsection{Tren de transmisión}
+\subsubsection{1.2. Tren de transmisión}
 
 El motor se encuentra acoplado a la carga mediante una caja reductora de relación de transmisión \(r\). Al considerarse ideal y rígida, la relación cinemática entre el eje del motor y el eje de salida queda dada por:
 
@@ -308,7 +310,7 @@ La relación entre el torque de salida de la transmisión y el torque aplicado e
 
 donde \(T_d(t)\) representa el torque resistente reflejado por la transmisión sobre el eje del motor.
 
-\subsubsection{Subsistema mecánico del motor}
+\subsubsection{1.3. Subsistema mecánico del motor}
 
 La dinámica mecánica del rotor del motor PMSM, referida al eje del motor, se expresa como:
 
@@ -332,7 +334,7 @@ La dinámica mecánica del rotor del motor PMSM, referida al eje del motor, se e
 
 donde \(J_m\) es la inercia del rotor más la inercia equivalente propia de la caja reductora referida al eje del motor, \(b_m\) es el coeficiente de fricción viscosa del eje del motor, \(T_m(t)\) es el torque electromagnético generado por la máquina y \(T_d(t)\) es el torque resistente transmitido desde la carga hacia el eje del motor.
 
-\subsubsection{Obtención del modelo equivalente referido al eje del motor}
+\subsubsection{1.4. Obtención del modelo equivalente referido al eje del motor}
 
 Para obtener el modelo equivalente referido al eje del motor, se reemplazan las relaciones de transmisión dadas por \eqref{eq:velocidad_transmision}, \eqref{eq:posicion_transmision} y \eqref{eq:torque_transmision} en la ecuación de la carga \eqref{eq:carga_mecanica}. Como
 
@@ -493,7 +495,7 @@ La salida mecánica de interés, correspondiente a la posición angular de la ar
     \label{eq:salida_articulacion}
 \end{equation}
 
-\subsubsection{Modelo en espacio de estados}
+\subsubsection{1.5. Modelo en espacio de estados}
 
 Tomando como variables de estado
 
@@ -570,7 +572,7 @@ Por lo tanto, el modelo mecánico equivalente queda representado por el sistema 
 
 % Entra como comentario?
 
-\subsubsection{Parámetros mecánicos nominales}
+\subsubsection{1.6. Parámetros mecánicos nominales}
 
 Los parámetros nominales utilizados para el subsistema mecánico se resumen en la Tabla \ref{tab:parametros_mecanicos}.
 
@@ -692,7 +694,7 @@ La perturbación externa máxima referida al eje del motor es:
     \label{eq:tld_eq_max}
 \end{equation*}
 
-\subsubsection{Variación de parámetros por carga útil e incertidumbre}
+\subsubsection{1. 7. Variación de parámetros por carga útil e incertidumbre}
 
 La masa de carga útil modifica tanto la inercia equivalente como el torque gravitacional equivalente. Para los casos extremos de carga útil,
 
@@ -797,13 +799,13 @@ Los valores equivalentes principales se resumen en la Tabla \ref{tab:parametros_
     \end{tabular}
 \end{table}
 
-\subsubsection{Justificación de la compactación mecánica}
+\subsubsection{1.8. Justificación de la compactación mecánica}
 
 La compactación del subsistema mecánico es posible debido a que la transmisión se modela como rígida, ideal y sin pérdidas. En consecuencia, existe una relación cinemática fija entre el eje del motor y el eje de salida, dada por \(q(t)=\theta_m(t)/r\) y \(\dot{q}(t)=\omega_m(t)/r\). A su vez, la relación de torques de una transmisión ideal permite escribir \(T_q(t)=rT_d(t)\).
 
 Bajo estas condiciones, la inercia y la fricción de la carga se reflejan al eje del motor mediante el factor \(1/r^2\), mientras que los torques externos aplicados sobre la carga se reflejan mediante el factor \(1/r\). De esta forma, el motor, la transmisión y la carga pueden representarse como un único sistema mecánico equivalente de un grado de libertad referido al eje del motor.
 
-\subsubsection{Diagrama de bloques del subsistema mecánico equivalente}
+\subsubsection{1.9. Diagrama de bloques del subsistema mecánico equivalente}
 
 La Fig. \ref{fig:diagrama_mecanico_equivalente} muestra el diagrama de bloques correspondiente al modelo mecánico equivalente referido al eje del motor.
 
@@ -817,7 +819,7 @@ La Fig. \ref{fig:diagrama_mecanico_equivalente} muestra el diagrama de bloques c
 
 El bloque equivalente tiene como entrada principal el torque electromagnético \(T_m(t)\), como perturbación el torque externo \(T_{ld}(t)\), y como salida mecánica de interés la posición articular \(q(t)\). La no linealidad del modelo aparece en el término gravitacional \(\sin(\theta_m/r)\).
 
-\subsection{Síntesis parcial del punto 1}
+\subsection{1.10. Síntesis}
 
 A partir de las ecuaciones de la carga, la transmisión y el rotor del motor se obtuvo un modelo mecánico equivalente referido al eje del motor. El modelo conserva como estados principales la posición y velocidad del rotor, e incorpora la dinámica de la carga a través de parámetros equivalentes de inercia y fricción. Además, el torque gravitacional y la perturbación externa se reflejan al eje del motor mediante el factor \(1/r\). Este resultado permite utilizar el torque electromagnético \(T_m(t)\) como entrada mecánica directa del subsistema equivalente, lo cual será necesario para acoplar el modelo con las ecuaciones electromagnéticas de la PMSM.
 
@@ -825,17 +827,16 @@ A partir de las ecuaciones de la carga, la transmisión y el rotor del motor se 
 % PUNTO 2
 % ---------------------------------------------------------
 
-\subsection{Punto 2: Modelo dinámico del sistema físico completo}
+\subsection{2. Modelo dinámico del sistema físico completo}
 
-En este punto se incorpora al modelo mecánico equivalente obtenido en el punto 1 el subsistema electromagnético de la máquina PMSM y el subsistema térmico del bobinado de estator. El objetivo es pasar de una planta mecánica excitada por un torque genérico \(T_m(t)\) a un modelo físico completo donde dicho torque se obtiene a partir de las corrientes internas de la máquina, las tensiones aplicadas por el inversor y la temperatura del estator.
+En esta sección se incorpora, al modelo mecánico equivalente obtenido previamente, el subsistema electromagnético de la máquina PMSM y el subsistema térmico del bobinado de estator. El objetivo es pasar de una planta mecánica excitada por un torque genérico \(T_m(t)\) a un modelo físico completo donde dicho torque se obtiene a partir de las corrientes internas de la máquina, las tensiones aplicadas por el inversor y la temperatura del estator.
 
-El desarrollo se organiza respetando los incisos de la consigna: primero se obtiene el modelo global no lineal en coordenadas virtuales \(qd0\), luego se realiza la linealización Jacobiana para obtener un modelo LPV, y finalmente se construye un modelo LTI equivalente mediante linealización por retroalimentación no lineal y control vectorial con campo orientado.
+Para el desarrollo primero se obtiene el modelo global no lineal en coordenadas virtuales \(qd0\), luego se realiza la linealización Jacobiana para obtener un modelo LPV, y finalmente se construye un modelo LTI equivalente mediante linealización por retroalimentación no lineal y control vectorial con campo orientado.
 
 % ---------------------------------------------------------
-\subsubsection{2.a) Modelo global no lineal del sistema físico completo, para \texorpdfstring{$i_{ds}^{r}(t)\neq 0$}{idsr(t)\textasciitilde 0}}
+\subsubsection{2.1. Modelo global no lineal del sistema físico completo, para \texorpdfstring{$i_{ds}^{r}(t)\neq 0$}{idsr(t)\textasciitilde 0}}
 
-\paragraph{Objetivo del inciso.}
-El objetivo de este inciso es obtener un modelo dinámico global no lineal del accionamiento completo, incorporando la dinámica mecánica equivalente, la dinámica electromagnética de la PMSM y la dinámica térmica del estator. En esta primera formulación no se impone la condición de campo orientado, por lo que se considera el caso general
+Se busca obtener un modelo dinámico global no lineal del accionamiento completo, incorporando la dinámica mecánica equivalente, la dinámica electromagnética de la PMSM y la dinámica térmica del estator. En esta primera formulación no se impone la condición de campo orientado, por lo que se considera el caso general:
 
 \begin{equation*}
 	i_{ds}^{r}(t)\neq 0.
@@ -905,12 +906,12 @@ La transformación inversa permite volver desde las coordenadas virtuales \(qd0\
 
 La posición eléctrica del rotor se relaciona con la posición mecánica mediante:
 
-\begin{equation}
+\begin{equation*}
 	\theta_r(t)=P_p\theta_m(t),
 	\qquad
 	\omega_r(t)=P_p\omega_m(t),
 	\label{eq:theta_r_omega_r_p2}
-\end{equation}
+\end{equation*}
 
 donde \(P_p\) es el número de pares de polos de la máquina.
 
@@ -928,6 +929,193 @@ Si además se considera alimentación trifásica equilibrada, también se tiene:
 \end{equation*}
 
 \textit{Epígrafe sugerido para figura pendiente: Diagrama de bloques del modelo global no lineal del sistema físico completo, incluyendo inversor trifásico idealizado, transformación de Park directa, modelo PMSM en coordenadas \(qd0\), subsistema mecánico equivalente, subsistema térmico, sensores y transformación de Park inversa para reconstrucción de variables reales \(abc\).}
+
+
+\paragraph{Torque electromagnético.}
+
+El torque electromagnético de la PMSM está dado por:
+
+\begin{equation*}
+	T_m(t)
+	=
+	\frac{3}{2}P_p\lambda_m^{\prime r}i_{qs}^{r}(t)
+	+
+	\frac{3}{2}P_p\left(L_d-L_q\right)i_{ds}^{r}(t)i_{qs}^{r}(t).
+	\label{eq:torque_pmsm_general_p2}
+\end{equation*}
+
+Se definen las constantes:
+
+\begin{equation*}
+	K_t=\frac{3}{2}P_p\lambda_m^{\prime r},
+	\qquad
+	K_{rel}=\frac{3}{2}P_p\left(L_d-L_q\right),
+	\label{eq:kt_krel_p2}
+\end{equation*}
+
+Por lo que:
+
+\begin{equation}
+	T_m(t)=K_t i_{qs}^{r}(t)+K_{rel}i_{ds}^{r}(t)i_{qs}^{r}(t).
+	\label{eq:torque_kt_krel_p2}
+\end{equation}
+
+El segundo término de \eqref{eq:torque_kt_krel_p2} muestra una de las no linealidades principales del modelo: 
+el producto entre las corrientes de eje directo y eje en cuadratura (\(i_{ds}^{r}\) y \(i_{qs}^{r}\)) respectivamente.
+
+\paragraph{Ecuaciones eléctricas en coordenadas \(qd\).}
+El balance de tensiones de estator en coordenadas de rotor queda dado por:
+
+\begin{equation*}
+	v_{qs}^{r}(t)
+	=
+	R_s\left(T_s^{\circ}\right)i_{qs}^{r}(t)
+	+
+	L_q\frac{di_{qs}^{r}(t)}{dt}
+	+
+	\left[\lambda_m^{\prime r}+L_d i_{ds}^{r}(t)\right]\omega_r(t),
+	\label{eq:vq_balance_p2}
+\end{equation*}
+
+\begin{equation*}
+	v_{ds}^{r}(t)
+	=
+	R_s\left(T_s^{\circ}\right)i_{ds}^{r}(t)
+	+
+	L_d\frac{di_{ds}^{r}(t)}{dt}
+	-
+	L_q i_{qs}^{r}(t)\omega_r(t).
+	\label{eq:vd_balance_p2}
+\end{equation*}
+
+Despejando las derivadas de corriente e incorporando \(\omega_r=P_p\omega_m\), se obtiene:
+
+\begin{equation}
+	\frac{di_{qs}^{r}}{dt}
+	=
+	\frac{
+		v_{qs}^{r}
+		-R_s\left(T_s^{\circ}\right)i_{qs}^{r}
+		-\left(\lambda_m^{\prime r}+L_d i_{ds}^{r}\right)P_p\omega_m
+	}{L_q},
+	\label{eq:diq_dt_p2}
+\end{equation}
+
+\begin{equation}
+	\frac{di_{ds}^{r}}{dt}
+	=
+	\frac{
+		v_{ds}^{r}
+		-R_s\left(T_s^{\circ}\right)i_{ds}^{r}
+		+L_q i_{qs}^{r}P_p\omega_m
+	}{L_d}.
+	\label{eq:did_dt_p2}
+\end{equation}
+
+\paragraph{Acoplamiento con el subsistema mecánico equivalente.}
+La ecuación mecánica equivalente referida al eje del motor, obtenida en el punto 1, es:
+
+\begin{equation*}
+	J_{eq}\dot{\omega}_m(t)
+	=
+	T_m(t)
+	-b_{eq}\omega_m(t)
+	-\frac{gk_l}{r}\sin\left(\frac{\theta_m(t)}{r}\right)
+	-\frac{T_{ld}(t)}{r}.
+	\label{eq:mecanica_equiv_p2}
+\end{equation*}
+
+Sustituyendo el torque electromagnético de la PMSM dado por \eqref{eq:torque_kt_krel_p2}, resulta:
+
+\begin{equation}
+	\dot{\omega}_m(t)
+	=
+	\frac{1}{J_{eq}}
+	\left[
+	K_t i_{qs}^{r}
+	+K_{rel}i_{ds}^{r}i_{qs}^{r}
+	-b_{eq}\omega_m
+	-\frac{gk_l}{r}\sin\left(\frac{\theta_m}{r}\right)
+	-\frac{T_{ld}}{r}
+	\right].
+	\label{eq:omega_global_p2}
+\end{equation}
+
+Esta ecuación representa el acoplamiento electromecánico: las corrientes eléctricas generan torque, y el torque modifica la velocidad y posición del rotor.
+
+\paragraph{Resistencia de estator dependiente de la temperatura.}
+La resistencia de fase del estator aumenta con la temperatura del bobinado. Este comportamiento se modela mediante:
+
+\begin{equation*}
+	R_s\left(T_s^{\circ}\right)
+	=
+	R_{sREF}
+	\left[
+	1+\alpha_{Cu}\left(T_s^{\circ}-T_{sREF}^{\circ}\right)
+	\right].
+	\label{eq:rs_temp_p2}
+\end{equation*}
+
+En variables de estado:
+
+\begin{equation*}
+	R_s(x_5)
+	=
+	R_{sREF}
+	\left[
+	1+\alpha_{Cu}\left(x_5-T_{sREF}^{\circ}\right)
+	\right].
+	\label{eq:rs_estado_p2}
+\end{equation*}
+
+Esta dependencia introduce un acoplamiento térmico-eléctrico, porque la temperatura modifica la resistencia, y la resistencia modifica tanto la dinámica de corriente como la potencia disipada por efecto Joule.
+
+\paragraph{Modelo térmico del estator.}
+Las pérdidas eléctricas consideradas en el bobinado del estator corresponden a pérdidas resistivas por efecto Joule. En coordenadas reales de fase, la potencia disipada puede escribirse como
+\begin{equation*}
+	P_{s,\mathrm{perd}}^{abc}(t)
+	=
+	R_s(T_s^\circ(t))
+	\left[
+	i_{as}^2(t)+i_{bs}^2(t)+i_{cs}^2(t)
+	\right].
+\end{equation*}
+
+Esta expresión representa la potencia eléctrica transformada en calor en las resistencias de fase del estator. Aplicando la transformación de Park adoptada en este trabajo, dicha potencia puede expresarse en coordenadas virtuales $qd0$ como
+\begin{equation*}
+	P_{s,\mathrm{perd}}(t)
+	=
+	\frac{3}{2}R_s(T_s^\circ(t))
+	\left[
+	(i_{qs}^r(t))^2+(i_{ds}^r(t))^2+2i_{0s}^2(t)
+	\right].
+\end{equation*}
+
+Como la máquina se considera conectada en estrella con neutro flotante, no existe circulación de corriente homopolar, por lo que $i_{0s}(t)\equiv 0$. Entonces,
+\begin{equation*}
+	P_{s,\mathrm{perd}}(t)
+	=
+	\frac{3}{2}R_s(T_s^\circ(t))
+	\left[
+	(i_{qs}^r(t))^2+(i_{ds}^r(t))^2
+	\right].
+\end{equation*}
+
+Despejando,
+
+\begin{equation}
+	\frac{dT_s^{\circ}}{dt}
+	=
+	\frac{1}{C_{ts}}
+	\left[
+	\frac{3}{2}R_s\left(T_s^{\circ}\right)
+	\left(\left(i_{qs}^{r}\right)^2+\left(i_{ds}^{r}\right)^2\right)
+	-
+	\frac{T_s^{\circ}-T_{amb}^{\circ}}{R_{ts-amb}}
+	\right].
+	\label{eq:dts_dt_p2}
+\end{equation}
+
 
 \paragraph{Variables de estado, entradas y salida.}
 
@@ -1017,13 +1205,13 @@ La salida principal de interés para el control de movimiento es la posición an
 
 Por lo tanto, la matriz de salida asociada a la variable controlada es:
 
-\begin{equation}
+\begin{equation*}
 	C_p=
 	\begin{bmatrix}
 		\dfrac{1}{r} & 0 & 0 & 0 & 0
 	\end{bmatrix}.
 	\label{eq:cp_salida_controlada_p2}
-\end{equation}
+\end{equation*}
 
 A su vez, el sensor de posición se encuentra montado sobre el eje del motor, por lo que la salida medida por el encoder es:
 
@@ -1038,191 +1226,6 @@ A su vez, el sensor de posición se encuentra montado sobre el eje del motor, po
 \end{equation}
 
 Es importante distinguir dos conceptos: \(y_p(t)=q(t)\) es la salida controlada de proceso, mientras que \(y_s(t)=\theta_m(t)\) es la salida medida para retroalimentación. Para comparar el seguimiento de referencia en la articulación se usará \(q(t)\); si una señal se obtiene desde el encoder, se convierte mediante \(q(t)=\theta_m(t)/r\). 
-
-\paragraph{Resistencia de estator dependiente de la temperatura.}
-La resistencia de fase del estator aumenta con la temperatura del bobinado. Este comportamiento se modela mediante:
-
-\begin{equation}
-	R_s\left(T_s^{\circ}\right)
-	=
-	R_{sREF}
-	\left[
-	1+\alpha_{Cu}\left(T_s^{\circ}-T_{sREF}^{\circ}\right)
-	\right].
-	\label{eq:rs_temp_p2}
-\end{equation}
-
-En variables de estado:
-
-\begin{equation}
-	R_s(x_5)
-	=
-	R_{sREF}
-	\left[
-	1+\alpha_{Cu}\left(x_5-T_{sREF}^{\circ}\right)
-	\right].
-	\label{eq:rs_estado_p2}
-\end{equation}
-
-Esta dependencia introduce un acoplamiento térmico-eléctrico, porque la temperatura modifica la resistencia, y la resistencia modifica tanto la dinámica de corriente como la potencia disipada por efecto Joule.
-
-\paragraph{Torque electromagnético.}
-
-El torque electromagnético de la PMSM está dado por:
-
-\begin{equation}
-	T_m(t)
-	=
-	\frac{3}{2}P_p\lambda_m^{\prime r}i_{qs}^{r}(t)
-	+
-	\frac{3}{2}P_p\left(L_d-L_q\right)i_{ds}^{r}(t)i_{qs}^{r}(t).
-	\label{eq:torque_pmsm_general_p2}
-\end{equation}
-
-Se definen las constantes:
-
-\begin{equation*}
-	K_t=\frac{3}{2}P_p\lambda_m^{\prime r},
-	\qquad
-	K_{rel}=\frac{3}{2}P_p\left(L_d-L_q\right),
-	\label{eq:kt_krel_p2}
-\end{equation*}
-
-Por lo que:
-
-\begin{equation}
-	T_m(t)=K_t i_{qs}^{r}(t)+K_{rel}i_{ds}^{r}(t)i_{qs}^{r}(t).
-	\label{eq:torque_kt_krel_p2}
-\end{equation}
-
-El segundo término de \eqref{eq:torque_kt_krel_p2} muestra una de las no linealidades principales del modelo: 
-el producto entre las corrientes de eje directo y eje en cuadratura (\(i_{ds}^{r}\) y \(i_{qs}^{r}\)) respectivamente.
-
-\paragraph{Ecuaciones eléctricas en coordenadas \(qd\).}
-El balance de tensiones de estator en coordenadas de rotor queda dado por:
-
-\begin{equation}
-	v_{qs}^{r}(t)
-	=
-	R_s\left(T_s^{\circ}\right)i_{qs}^{r}(t)
-	+
-	L_q\frac{di_{qs}^{r}(t)}{dt}
-	+
-	\left[\lambda_m^{\prime r}+L_d i_{ds}^{r}(t)\right]\omega_r(t),
-	\label{eq:vq_balance_p2}
-\end{equation}
-
-\begin{equation}
-	v_{ds}^{r}(t)
-	=
-	R_s\left(T_s^{\circ}\right)i_{ds}^{r}(t)
-	+
-	L_d\frac{di_{ds}^{r}(t)}{dt}
-	-
-	L_q i_{qs}^{r}(t)\omega_r(t).
-	\label{eq:vd_balance_p2}
-\end{equation}
-
-Despejando las derivadas de corriente e incorporando \(\omega_r=P_p\omega_m\), se obtiene:
-
-\begin{equation}
-	\frac{di_{qs}^{r}}{dt}
-	=
-	\frac{
-		v_{qs}^{r}
-		-R_s\left(T_s^{\circ}\right)i_{qs}^{r}
-		-\left(\lambda_m^{\prime r}+L_d i_{ds}^{r}\right)P_p\omega_m
-	}{L_q},
-	\label{eq:diq_dt_p2}
-\end{equation}
-
-\begin{equation}
-	\frac{di_{ds}^{r}}{dt}
-	=
-	\frac{
-		v_{ds}^{r}
-		-R_s\left(T_s^{\circ}\right)i_{ds}^{r}
-		+L_q i_{qs}^{r}P_p\omega_m
-	}{L_d}.
-	\label{eq:did_dt_p2}
-\end{equation}
-
-\paragraph{Acoplamiento con el subsistema mecánico equivalente.}
-La ecuación mecánica equivalente referida al eje del motor, obtenida en el punto 1, es:
-
-\begin{equation}
-	J_{eq}\dot{\omega}_m(t)
-	=
-	T_m(t)
-	-b_{eq}\omega_m(t)
-	-\frac{gk_l}{r}\sin\left(\frac{\theta_m(t)}{r}\right)
-	-\frac{T_{ld}(t)}{r}.
-	\label{eq:mecanica_equiv_p2}
-\end{equation}
-
-Sustituyendo el torque electromagnético de la PMSM, resulta:
-
-\begin{equation}
-	\dot{\omega}_m(t)
-	=
-	\frac{1}{J_{eq}}
-	\left[
-	K_t i_{qs}^{r}
-	+K_{rel}i_{ds}^{r}i_{qs}^{r}
-	-b_{eq}\omega_m
-	-\frac{gk_l}{r}\sin\left(\frac{\theta_m}{r}\right)
-	-\frac{T_{ld}}{r}
-	\right].
-	\label{eq:omega_global_p2}
-\end{equation}
-
-Esta ecuación representa el acoplamiento electromecánico: las corrientes eléctricas generan torque, y el torque modifica la velocidad y posición del rotor.
-
-\paragraph{Modelo térmico del estator.}
-Las pérdidas eléctricas consideradas en el bobinado del estator corresponden a pérdidas resistivas por efecto Joule. En coordenadas reales de fase, la potencia disipada puede escribirse como
-\begin{equation}
-	P_{s,\mathrm{perd}}^{abc}(t)
-	=
-	R_s(T_s^\circ(t))
-	\left[
-	i_{as}^2(t)+i_{bs}^2(t)+i_{cs}^2(t)
-	\right].
-\end{equation}
-
-Esta expresión representa la potencia eléctrica transformada en calor en las resistencias de fase del estator. Aplicando la transformación de Park adoptada en este trabajo, dicha potencia puede expresarse en coordenadas virtuales $qd0$ como
-\begin{equation}
-	P_{s,\mathrm{perd}}(t)
-	=
-	\frac{3}{2}R_s(T_s^\circ(t))
-	\left[
-	(i_{qs}^r(t))^2+(i_{ds}^r(t))^2+2i_{0s}^2(t)
-	\right].
-\end{equation}
-
-Como la máquina se considera conectada en estrella con neutro flotante, no existe circulación de corriente homopolar, por lo que $i_{0s}(t)\equiv 0$. Entonces,
-\begin{equation}
-	P_{s,\mathrm{perd}}(t)
-	=
-	\frac{3}{2}R_s(T_s^\circ(t))
-	\left[
-	(i_{qs}^r(t))^2+(i_{ds}^r(t))^2
-	\right].
-\end{equation}
-
-Despejando,
-
-\begin{equation}
-	\frac{dT_s^{\circ}}{dt}
-	=
-	\frac{1}{C_{ts}}
-	\left[
-	\frac{3}{2}R_s\left(T_s^{\circ}\right)
-	\left(\left(i_{qs}^{r}\right)^2+\left(i_{ds}^{r}\right)^2\right)
-	-
-	\frac{T_s^{\circ}-T_{amb}^{\circ}}{R_{ts-amb}}
-	\right].
-	\label{eq:dts_dt_p2}
-\end{equation}
 
 \paragraph{Modelo global no lineal en espacio de estados.}
 Juntando las ecuaciones mecánicas, eléctricas y térmicas, el modelo global no lineal queda
@@ -1270,7 +1273,7 @@ Juntando las ecuaciones mecánicas, eléctricas y térmicas, el modelo global no
 El modelo \eqref{eq:modelo_global_nl_p2} es no lineal por el producto \(x_4x_3\) en el torque, los productos \(x_4x_2\) y \(x_3x_2\) en las ecuaciones eléctricas, la dependencia \(R_s(x_5)\), los términos cuadráticos de corriente en el modelo térmico y el término gravitacional \(\sin(x_1/r)\).
 
 % ---------------------------------------------------------
-\subsubsection{2.b) Linealización Jacobiana: modelo global LPV}
+\subsubsection{2.2 Linealización Jacobiana: modelo global LPV}
 
 \paragraph{Objetivo del inciso.}
 El modelo global no lineal obtenido en \eqref{eq:modelo_global_nl_p2} representa la planta física completa, pero no es directamente conveniente para aplicar herramientas lineales clásicas. Por ello se realiza una linealización Jacobiana en un punto genérico de operación. El resultado es un modelo lineal local cuyas matrices dependen del punto de operación, por lo que se obtiene un modelo LPV, del inglés \textit{Linear Parameter Varying}.
@@ -1278,15 +1281,15 @@ El modelo global no lineal obtenido en \eqref{eq:modelo_global_nl_p2} representa
 \paragraph{Pequeñas variaciones alrededor de un punto de operación.}
 Sea el sistema no lineal
 
-\begin{equation}
+\begin{equation*}
 	\dot{x}(t)=f(x(t),u(t)),
 	\qquad
 	y(t)=g(x(t),u(t)).
-\end{equation}
+\end{equation*}
 
 Se define un punto genérico de operación
 
-\begin{equation}
+\begin{equation*}
 	x^o=\begin{bmatrix}
 		\theta_m^o & \omega_m^o & I_q^o & I_d^o & T_s^o
 	\end{bmatrix}^{T},
@@ -1295,39 +1298,39 @@ Se define un punto genérico de operación
 		V_q^o & V_d^o & T_{ld}^o & T_{amb}^o
 	\end{bmatrix}^{T}.
 	\label{eq:punto_operacion_p2}
-\end{equation}
+\end{equation*}
 
 Las pequeñas variaciones se definen como
 
-\begin{equation}
+\begin{equation*}
 	x(t)=x^o+\Delta x(t),
 	\qquad
 	u(t)=u^o+\Delta u(t).
-\end{equation}
+\end{equation*}
 
 Aplicando una serie de Taylor truncada a primer orden alrededor de \((x^o,u^o)\), se obtiene
 
-\begin{equation}
+\begin{equation*}
 	\Delta\dot{x}(t)
 	=
 	A(x^o,u^o)\Delta x(t)
 	+
 	B(x^o,u^o)\Delta u(t),
 	\label{eq:lpv_estado_p2}
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
 	\Delta y(t)
 	=
 	C(x^o,u^o)\Delta x(t)
 	+
 	D(x^o,u^o)\Delta u(t).
 	\label{eq:lpv_salida_p2}
-\end{equation}
+\end{equation*}
 
 Las matrices Jacobianas se calculan como
 
-\begin{equation}
+\begin{equation*}
 	A_{ij}
 	=
 	\left.
@@ -1340,7 +1343,7 @@ Las matrices Jacobianas se calculan como
 	\frac{\partial f_i}{\partial u_j}
 	\right|_{x^o,u^o}.
 	\label{eq:jacobianas_p2}
-\end{equation}
+\end{equation*}
 
 \paragraph{Espacio de operación global no lineal cuasi-estacionario.}
 El punto de operación debe ser compatible con el modelo global no lineal y con las restricciones físicas del accionamiento. Para un punto de operación cuasi-estacionario se imponen, al menos, las condiciones eléctricas y térmicas de régimen local:
