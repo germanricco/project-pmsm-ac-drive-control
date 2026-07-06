@@ -494,7 +494,7 @@ Los resultados consolidados se sintetizan en la Tabla \ref{tab:parametros_equiva
     }
 \end{table}
 
-\subsection*{Síntesis del Modelo Mecánico}
+\subsubsection*{Síntesis del Modelo Mecánico}
 
 A partir de las ecuaciones fundamentales de la carga, la transmisión y el rotor, 
 se obtuvo un modelo mecánico compacto referido al eje del motor. 
@@ -515,7 +515,7 @@ En esta sección se incorpora, al modelo mecánico equivalente obtenido previame
 Para el desarrollo primero se obtiene el modelo global no lineal en coordenadas virtuales \(qd0\), luego se realiza la linealización Jacobiana para obtener un modelo LPV, y finalmente se construye un modelo LTI equivalente mediante linealización por retroalimentación no lineal y control vectorial con campo orientado.
 
 % ---------------------------------------------------------
-\subsubsection{Modelo global no lineal del sistema físico completo}
+\subsubsection{Modelo global NO LINEAL del sistema físico completo}
 
 Se busca obtener un modelo dinámico global no lineal del accionamiento completo, incorporando la dinámica mecánica equivalente, la dinámica electromagnética de la máquina PMSM y la dinámica térmica del estator. 
 En esta primera formulación no se impone la condición de campo orientado, por lo que se considera el caso general donde la corriente del eje directo no es nula ($i_{ds}^{r}(t)\neq 0$). 
@@ -841,6 +841,17 @@ los términos de inyección de potencia calorífica cuadráticos ($x_3^2, x_4^2$
 y el torque de carga gravitacional no lineal ($\sin(x_1/r)$).
 
 
+\paragraph{Modelo Global NL de la planta.}
+La Figura~\ref{fig:modelo_global_nl} muestra la implementación en Simulink del modelo global no lineal del sistema completo. En el esquema se observan los principales subsistemas que componen el accionamiento: el generador trifásico, la transformación de Park, el subsistema eléctrico de la PMSM, el subsistema mecánico equivalente, la transformación inversa de Park y el subsistema térmico del estator.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{img/modelo_global_nl.png}
+	\caption{Modelo global no lineal del accionamiento PMSM implementado en Simulink, compuesto por los subsistemas eléctrico, mecánico y térmico, junto con las transformaciones de Park directa e inversa.}
+	\label{fig:modelo_global_nl}
+\end{figure}
+
+
 % ---------------------------------------------------------
 \subsubsection{Linealización Jacobiana: Modelo global LPV}
 
@@ -1007,128 +1018,350 @@ la velocidad de régimen $\omega_m^o$, las corrientes de carga $I_q^o, I_d^o$,
 y el estado térmico de la resistencia del bobinado $R_s^o(T_s^o)$.
 
 % ---------------------------------------------------------
-\subsubsection{Linealización por retroalimentación no lineal y modelo LTI equivalente}
+\subsubsection{Linealización por retroalimentación NO LINEAL y modelo LTI equivalente}
 
 La linealización exacta por retroalimentación no lineal utiliza la capacidad de cálculo del controlador para cancelar activamente los acoplamientos y no linealidades internas de la máquina. 
 El resultado es una planta equivalente artificialmente simplificada, ideal para el diseño de lazos de control lineales.
 
-En este proyecto se adopta la estrategia de Control Vectorial con Campo Orientado (FOC, por sus siglas en inglés), la cual impone la siguiente restricción fundamental en el eje directo:
-
-\begin{equation}
-	i_{ds}^{r}(t)\equiv 0.
-	\label{eq:campo_orientado}
-\end{equation}
-
-Bajo esta condición, el flujo magnético del estator se alinea perfectamente de forma ortogonal al flujo de los imanes del rotor. 
-Como consecuencia, la corriente del eje en cuadratura ($i_{qs}^r$) queda asociada de manera exclusiva e independiente a la producción de torque, 
-mientras que la anulación de $i_{ds}^r$ minimiza pérdidas por efecto Joule y elimina acoplamientos estructurales indeseados.
 
 % ---------------------------------------------------------
 \paragraph{I) Ecuaciones vectoriales/matriciales LTI de estado.}
 
-Al imponer estrictamente $i_{ds}^r = 0$, el término de reluctancia en la ecuación \eqref{eq:torque_kt_krel} se anula, 
-reduciendo el torque electromagnético a una relación puramente lineal equivalente a la de una máquina de corriente continua:
+Para obtener el modelo LTI equivalente se parte del modelo global no lineal desarrollado previamente, aplicando las hipótesis propias del control vectorial con campo orientado. El objetivo de este inciso es obtener un modelo electromecánico reducido de tres estados, útil para el análisis a lazo abierto, la construcción del diagrama de bloques, las funciones de transferencia y los análisis posteriores de estabilidad, controlabilidad y observabilidad.
 
-\begin{equation}
-    T_m(t) = K_t i_{qs}^{r}(t).
-    \label{eq:torque_lti}
-\end{equation}
-
-En el dominio mecánico, la única no linealidad remanente es el torque gravitacional. Para obtener un modelo lineal alrededor de una posición de equilibrio operativa $\theta_m^o$, 
-se linealiza este término por aproximación de primer orden:
+La condición fundamental impuesta es:
 
 \begin{equation*}
-    \frac{g k_l}{r}\sin\left(\frac{\theta_m}{r}\right) \approx \frac{g k_l}{r}\sin\left(\frac{\theta_m^o}{r}\right) + K_g^o\left(\theta_m - \theta_m^o\right),
+	i_{ds}^r(t) \equiv 0.
 \end{equation*}
 
-donde la rigidez gravitacional equivalente local se define como:
-
-\begin{equation}
-    K_g^o = \frac{g k_l}{r^2}\cos\left(\frac{\theta_m^o}{r}\right).
-    \label{eq:kg_operacion}
-\end{equation}
-
-Para el caso particular del equilibrio estable pendular vertical ($\theta_m^o = 0$), la rigidez resulta máxima con valor $K_g^o = \frac{g k_l}{r^2}$.
-
-En el dominio eléctrico, el controlador calcula e inyecta tensiones que cancelan las fuerzas contraelectromotrices y las variaciones de la resistencia. Esto permite definir matemáticamente entradas virtuales o auxiliares de control, denotadas como $u_q(t)$ y $u_d(t)$, que actúan sobre un subsistema eléctrico puramente de primer orden. 
-
-Para conservar la linealidad global del espacio de estados, el acoplamiento térmico cuadrático se extrae de la matriz dinámica. La potencia disipada por efecto Joule se define como una entrada exógena auxiliar $P_J$, evitando el término no lineal proporcional a $(i_{qs}^r)^2$.
-
-Agrupando estas consideraciones y asumiendo $R_s$ constante en el valor del punto de operación, el vector de estados del modelo Lineal Invariante en el Tiempo (LTI) equivalente resulta:
+Bajo esta condición, el término de reluctancia del torque electromagnético se anula, ya que depende del producto $i_{ds}^r(t)i_{qs}^r(t)$. Por lo tanto, el torque queda determinado únicamente por la corriente del eje $q$:
 
 \begin{equation*}
-    x_{LTI}(t) = \begin{bmatrix}
-        \theta_m(t) \\ \omega_m(t) \\ i_{qs}^r(t) \\ i_{ds}^r(t) \\ T_s^{\circ}(t)
-    \end{bmatrix}.
+	T_m(t)
+	=
+	\frac{3}{2}P_p\lambda_m^{\prime r} i_{qs}^r(t).
 \end{equation*}
 
-Y el sistema de ecuaciones diferenciales LTI completamente desacoplado se expresa como:
+Se define la constante de torque:
+
+\begin{equation*}
+	K_t = \frac{3}{2}P_p\lambda_m^{\prime r},
+\end{equation*}
+
+por lo que:
+
+\begin{equation*}
+	T_m(t)=K_t i_{qs}^r(t).
+\end{equation*}
+
+En la ecuación eléctrica del eje $q$, al imponer $i_{ds}^r(t)=0$, desaparece el término asociado a $L_d i_{ds}^r(t)$. Además, como $\omega_r(t)=P_p\omega_m(t)$, se define la constante equivalente de fuerza contraelectromotriz:
+
+\begin{equation*}
+	K_E=P_p\lambda_m^{\prime r}.
+\end{equation*}
+
+Respecto del subsistema térmico, no se lo elimina físicamente del modelo, sino que se evita su acoplamiento no lineal con el subsistema eléctrico dentro del modelo LTI de diseño. En el modelo no lineal completo, la resistencia estatórica depende de la temperatura del bobinado. Si dicha dependencia se conserva dentro de la ecuación eléctrica, aparece un acoplamiento térmico-eléctrico, ya que $R_s(T_s)$ multiplica a las corrientes del estator.
+
+Para obtener el modelo LTI equivalente, se adopta una resistencia estatórica constante evaluada en un punto de referencia u operación:
+
+\begin{equation*}
+	R_s(T_s)\approx R_{s0}=R_s(T_{s0}).
+\end{equation*}
+
+En particular, puede tomarse $R_{s0}$ como la resistencia nominal correspondiente a una temperatura de referencia:
+
+\begin{equation*}
+	R_{s0}=R_s(T_{s,ref}),
+\end{equation*}
+
+o bien como la resistencia correspondiente a una temperatura de operación fija. Esta aproximación es razonable para el modelo de diseño porque la dinámica térmica es considerablemente más lenta que la dinámica eléctrica y mecánica. Por lo tanto, durante los transitorios principales de corriente, velocidad y posición, la variación instantánea de $R_s$ puede considerarse pequeña.
+
+Con estas consideraciones, la dinámica eléctrica del eje $q$ queda:
+
+\begin{equation*}
+	\dot{i}_{qs}^r(t)
+	=
+	-\frac{K_E}{L_q}\omega_m(t)
+	-\frac{R_{s0}}{L_q}i_{qs}^r(t)
+	+\frac{1}{L_q}v_{qs}^r(t).
+\end{equation*}
+
+Por otra parte, el torque gravitacional del modelo mecánico mantiene una dependencia no lineal con la posición angular:
+
+\begin{equation*}
+	T_{g,eq}(t)
+	=
+	\frac{gk_l}{r}
+	\sin\left(\frac{\theta_m(t)}{r}\right).
+\end{equation*}
+
+Para obtener un modelo lineal alrededor del equilibrio estable, se aplica la aproximación de Taylor de primer orden:
+
+\begin{equation*}
+	\sin(x)\approx x,
+	\qquad
+	x=\frac{\theta_m(t)}{r}.
+\end{equation*}
+
+Entonces:
+
+\begin{equation*}
+	\frac{gk_l}{r}
+	\sin\left(\frac{\theta_m(t)}{r}\right)
+	\approx
+	\frac{gk_l}{r^2}\theta_m(t).
+\end{equation*}
+
+Se define la rigidez gravitacional equivalente referida al eje del motor como:
+
+\begin{equation*}
+	K_g=\frac{gk_l}{r^2}.
+\end{equation*}
+
+Por lo tanto, el torque gravitacional linealizado queda:
+
+\begin{equation*}
+	T_{g,eq}(t)\approx K_g\theta_m(t).
+\end{equation*}
+
+Reemplazando el torque electromagnético, la fuerza contraelectromotriz y la gravedad linealizada en las ecuaciones del sistema, se obtiene el siguiente modelo LTI electromecánico de tres estados:
 
 \begin{equation}
-    \begin{aligned}
-        \dot{\theta}_m &= \omega_m,\\[1mm]
-        \dot{\omega}_m &= -\frac{K_g^o}{J_{eq}}\theta_m -\frac{b_{eq}}{J_{eq}}\omega_m +\frac{K_t}{J_{eq}}i_{qs}^r -\frac{1}{J_{eq}r}T_{ld},\\[1mm]
-        \dot{i}_{qs}^r &= -\frac{R_s}{L_q}i_{qs}^r +\frac{1}{L_q}u_q,\\[1mm]
-        \dot{i}_{ds}^r &= -\frac{R_s}{L_d}i_{ds}^r +\frac{1}{L_d}u_d,\\[1mm]
-        \dot{T}_s^{\circ} &= -\frac{1}{R_{ts-amb}C_{ts}}T_s^{\circ} +\frac{1}{C_{ts}}P_J +\frac{1}{R_{ts-amb}C_{ts}}T_{amb}^{\circ}.
-    \end{aligned}
-    \label{eq:lti_ecuaciones}
+	\begin{aligned}
+		\dot{\theta}_m(t) &= \omega_m(t),\\[1mm]
+		\dot{\omega}_m(t) &=
+		-\frac{K_g}{J_{eq}}\theta_m(t)
+		-\frac{b_{eq}}{J_{eq}}\omega_m(t)
+		+\frac{K_t}{J_{eq}}i_{qs}^r(t)
+		-\frac{1}{J_{eq}r}T_{ld}(t),\\[1mm]
+		\dot{i}_{qs}^r(t) &=
+		-\frac{K_E}{L_q}\omega_m(t)
+		-\frac{R_{s0}}{L_q}i_{qs}^r(t)
+		+\frac{1}{L_q}v_{qs}^r(t).
+	\end{aligned}
+	\label{eq:lti_3estados_ecuaciones}
 \end{equation}
 
-En operación ideal con campo orientado se asume que el lazo de corriente directo logra imponer la referencia nula, por lo que $u_d \approx 0$ en régimen estacionario.
+El vector de estado del modelo LTI reducido se define como:
 
-Representando la Ecuación \eqref{eq:lti_ecuaciones} en su forma canónica matricial $\dot{x}_{LTI} = A_{LTI} x_{LTI} + B_{LTI} u_{LTI}$ e $y = C_{LTI} x_{LTI}$, se definen la matriz dinámica y de entrada correspondientes:
+\begin{equation*}
+	x_{LTI}(t)
+	=
+	\begin{bmatrix}
+		\theta_m(t)\\
+		\omega_m(t)\\
+		i_{qs}^r(t)
+	\end{bmatrix},
+	\qquad
+	x_{LTI}(t_0)
+	=
+	\begin{bmatrix}
+		\theta_m(t_0)\\
+		\omega_m(t_0)\\
+		i_{qs}^r(t_0)
+	\end{bmatrix}.
+\end{equation*}
+
+La entrada de control es la tensión virtual del eje $q$:
+
+\begin{equation*}
+	u_c(t)=v_{qs}^r(t),
+\end{equation*}
+
+mientras que la perturbación mecánica externa se considera como:
+
+\begin{equation*}
+	u_d(t)=T_{ld}(t).
+\end{equation*}
+
+De esta manera, el modelo LTI electromecánico puede escribirse como:
 
 \begin{equation}
-    A_{LTI} =
-    \begin{bmatrix}
-        0 & 1 & 0 & 0 & 0\\[1mm]
-        -\dfrac{K_g^o}{J_{eq}} & -\dfrac{b_{eq}}{J_{eq}} & \dfrac{K_t}{J_{eq}} & 0 & 0\\[3mm]
-        0 & 0 & -\dfrac{R_s}{L_q} & 0 & 0\\[3mm]
-        0 & 0 & 0 & -\dfrac{R_s}{L_d} & 0\\[3mm]
-        0 & 0 & 0 & 0 & -\dfrac{1}{R_{ts-amb}C_{ts}}
-    \end{bmatrix},
-    \qquad
-    B_{LTI} =
-    \begin{bmatrix}
-        0 & 0 & 0 & 0 & 0\\[1mm]
-        0 & 0 & -\dfrac{1}{J_{eq}r} & 0 & 0\\[3mm]
-        \dfrac{1}{L_q} & 0 & 0 & 0 & 0\\[3mm]
-        0 & \dfrac{1}{L_d} & 0 & 0 & 0\\[3mm]
-        0 & 0 & 0 & \dfrac{1}{C_{ts}} & \dfrac{1}{R_{ts-amb}C_{ts}}
-    \end{bmatrix},
-    \label{eq:matrices_ab_lti}
+	\dot{x}_{LTI}(t)
+	=
+	A_{LTI}x_{LTI}(t)
+	+
+	B_cu_c(t)
+	+
+	B_du_d(t),
+	\label{eq:modelo_lti_3x3_general}
 \end{equation}
 
-asociadas al vector de entrada ampliado $u_{LTI} = \begin{bmatrix} u_q & u_d & T_{ld} & P_J & T_{amb}^{\circ} \end{bmatrix}^{T}$. La ecuación de salida controlada mantiene su estructura cinemática:
+donde:
 
 \begin{equation}
-    C_{LTI} = \begin{bmatrix} \dfrac{1}{r} & 0 & 0 & 0 & 0 \end{bmatrix}.
-    \label{eq:matriz_c_lti}
+	A_{LTI}
+	=
+	\begin{bmatrix}
+		0 & 1 & 0\\[2mm]
+		-\dfrac{K_g}{J_{eq}} & -\dfrac{b_{eq}}{J_{eq}} & \dfrac{K_t}{J_{eq}}\\[3mm]
+		0 & -\dfrac{K_E}{L_q} & -\dfrac{R_{s0}}{L_q}
+	\end{bmatrix},
+	\qquad
+	B_c
+	=
+	\begin{bmatrix}
+		0\\[2mm]
+		0\\[2mm]
+		\dfrac{1}{L_q}
+	\end{bmatrix},
+	\qquad
+	B_d
+	=
+	\begin{bmatrix}
+		0\\[2mm]
+		-\dfrac{1}{J_{eq}r}\\[2mm]
+		0
+	\end{bmatrix}.
+	\label{eq:matrices_lti_3x3}
 \end{equation}
 
+Si se define directamente el torque de perturbación equivalente referido al eje del motor como:
+
+\begin{equation*}
+	T_{ld,eq}(t)=\frac{T_{ld}(t)}{r},
+\end{equation*}
+
+entonces la matriz de perturbación puede escribirse alternativamente como:
+
+\begin{equation*}
+	B_{d,eq}
+	=
+	\begin{bmatrix}
+		0\\[2mm]
+		-\dfrac{1}{J_{eq}}\\[2mm]
+		0
+	\end{bmatrix}.
+\end{equation*}
+
+La salida física de interés para el control de posición de la articulación es:
+
+\begin{equation*}
+	q(t)=\frac{\theta_m(t)}{r}.
+\end{equation*}
+
+Por lo tanto, si la salida del modelo se toma como la posición angular de la carga:
+
+\begin{equation*}
+	y_p(t)=q(t)=C_p x_{LTI}(t),
+	\qquad
+	C_p=
+	\begin{bmatrix}
+		\dfrac{1}{r} & 0 & 0
+	\end{bmatrix}.
+\end{equation*}
+
+Si, en cambio, se considera como salida medida la posición del eje del motor, por ejemplo mediante encoder, se tiene:
+
+\begin{equation*}
+	y_s(t)=\theta_m(t)=C_s x_{LTI}(t),
+	\qquad
+	C_s=
+	\begin{bmatrix}
+		1 & 0 & 0
+	\end{bmatrix}.
+\end{equation*}
+
+En ambos casos:
+
+\begin{equation*}
+	D=0.
+\end{equation*}
+
+El modelo anterior constituye el sistema LTI principal de orden tres. En él se conservan las dinámicas de posición, velocidad y corriente de eje $q$, mientras que la corriente de eje directo $i_{ds}^r(t)$ no se incluye como estado porque se impone la condición de campo orientado $i_{ds}^r(t)\equiv 0$. La dinámica residual asociada al eje directo se analiza posteriormente al estudiar la ley mínima de control.
+
+\medskip
+
+\noindent\textbf{Dinámica térmica auxiliar desacoplada.}
+
+La dinámica térmica del estator se conserva separada del modelo LTI electromecánico de tres estados. Para ello se parte del balance térmico:
+
+\begin{equation*}
+	P_{s,\mathrm{perd}}(t)
+	=
+	C_{ts}\dot{T}_s(t)
+	+
+	\frac{T_s(t)-T_{amb}(t)}{R_{ts-amb}}.
+\end{equation*}
+
+Despejando la derivada de la temperatura:
+
+\begin{equation}
+	\dot{T}_s(t)
+	=
+	-\frac{1}{C_{ts}R_{ts-amb}}T_s(t)
+	+\frac{1}{C_{ts}}P_{s,\mathrm{perd}}(t)
+	+\frac{1}{C_{ts}R_{ts-amb}}T_{amb}(t).
+	\label{eq:termica_lineal_psperd}
+\end{equation}
+
+Esta ecuación puede representarse como un subsistema lineal de primer orden, tomando como estado térmico:
+
+\begin{equation*}
+	x_T(t)=T_s(t),
+\end{equation*}
+
+y como entradas térmicas:
+
+\begin{equation*}
+	u_T(t)=
+	\begin{bmatrix}
+		P_{s,\mathrm{perd}}(t)\\
+		T_{amb}(t)
+	\end{bmatrix}.
+\end{equation*}
+
+Entonces:
+
+\begin{equation}
+	\dot{x}_T(t)
+	=
+	A_Tx_T(t)+B_Tu_T(t),
+	\label{eq:termica_lineal_estado}
+\end{equation}
+
+con:
+
+\begin{equation*}
+	A_T
+	=
+	\begin{bmatrix}
+		-\dfrac{1}{C_{ts}R_{ts-amb}}
+	\end{bmatrix},
+	\qquad
+	B_T
+	=
+	\begin{bmatrix}
+		\dfrac{1}{C_{ts}} &
+		\dfrac{1}{C_{ts}R_{ts-amb}}
+	\end{bmatrix}.
+\end{equation*}
+
+En esta formulación, $P_{s,\mathrm{perd}}(t)$ se considera una entrada térmica equivalente. No se incorpora dentro del modelo LTI principal la expresión no lineal completa de las pérdidas, ya que si se reemplazara directamente:
+
+\begin{equation*}
+	P_{s,\mathrm{perd}}(t)
+	=
+	\frac{3}{2}R_{s0}\left(i_{qs}^{r}(t)\right)^2,
+\end{equation*}
+
+la relación entre la corriente de eje $q$ y la temperatura volvería a contener una no linealidad algebraica. En la simulación, dicha potencia de pérdidas puede calcularse externamente a partir de $i_{qs}^{r}(t)$, a partir de las corrientes reales de fase medidas, o mediante un valor equivalente representativo del régimen de operación. Lo importante es que $T_s(t)$ no se realimenta sobre $R_s$ dentro de la dinámica eléctrica del modelo LTI reducido.
+
+Por lo tanto, el sistema utilizado para los análisis de estabilidad, controlabilidad, observabilidad y funciones de transferencia es el modelo electromecánico LTI de tres estados dado por las matrices $A_{LTI}$, $B_c$ y $B_d$. La dinámica térmica queda como subsistema auxiliar desacoplado, útil para monitorear la temperatura del estator sin modificar la matriz de estado del modelo principal.
 % ---------------------------------------------------------
 \paragraph{II) Diagrama de bloques de estado.}
-No se incorpora en esta versión el diagrama de bloques, ya que será generado en Simulink. El diagrama debe representar la cadena principal
 
-\begin{equation}
-	u_q \rightarrow i_q \rightarrow T_m \rightarrow \omega_m \rightarrow \theta_m \rightarrow q,
-\end{equation}
+A partir de las ecuaciones obtenidas en el inciso anterior, se implementa en Simulink el diagrama de bloques del modelo LTI equivalente por realimentación no lineal. La rama principal corresponde al modelo electromecánico reducido de tres estados, cuyas variables son la posición angular del rotor $\theta_m(t)$, la velocidad angular $\omega_m(t)$ y la corriente de eje $q$, $i_{qs}^{r}(t)$.
 
-incluyendo la entrada de perturbación \(T_{ld}\), la realimentación gravitacional linealizada mediante \(K_g^o\), la dinámica residual de \(i_d\) y la dinámica térmica lineal de \(T_s^{\circ}\).
+En el mismo diagrama se incluye la perturbación mecánica externa $T_{ld}(t)$, el efecto gravitacional linealizado mediante la constante $K_g$ y una rama térmica auxiliar. Esta última recibe como entrada la potencia de pérdidas $P_{s,\mathrm{perd}}(t)$ y permite estimar la evolución de la temperatura del estator $T_s(t)$, sin realimentar dicha temperatura sobre la resistencia estatórica del modelo eléctrico. Por lo tanto, el sistema utilizado para análisis de estabilidad, controlabilidad, observabilidad y funciones de transferencia sigue siendo el modelo LTI electromecánico de orden tres.
 
-\textit{Epígrafe sugerido para figura pendiente: Diagrama de bloques de estado del modelo LTI equivalente aumentado, con entrada auxiliar \(u_q(t)\), perturbación \(T_{ld}(t)\), estado eléctrico \(i_q(t)\), dinámica mecánica \(\omega_m(t),\theta_m(t)\), dinámica residual de \(i_d(t)\) y dinámica térmica lineal del estator.}
-
-\paragraph{II) Diagrama de bloques de estado.}
-No se incorpora en esta versión el diagrama de bloques, ya que será generado en Simulink. El diagrama debe representar la cadena principal:
-
-\begin{equation*}
-    u_q \longrightarrow i_{qs}^r \longrightarrow T_m \longrightarrow \omega_m \longrightarrow \theta_m \longrightarrow q,
-\end{equation*}
-
-incluyendo la entrada de perturbación $T_{ld}$, la realimentación gravitacional linealizada mediante $K_g^o$, la dinámica residual de $i_{ds}^r$ y la dinámica térmica lineal de $T_s^{\circ}$.
-
-\textit{Epígrafe sugerido para figura pendiente: Diagrama de bloques de estado del modelo LTI equivalente aumentado, con entrada auxiliar $u_q(t)$, perturbación $T_{ld}(t)$, estado eléctrico $i_{qs}^r(t)$, dinámica mecánica $\omega_m(t), \theta_m(t)$, dinámica residual de $i_{ds}^r(t)$ y dinámica térmica lineal del estator.}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{img/modelo_lti_3x3.png}
+	\caption{Diagrama de bloques del modelo LTI electromecánico equivalente por realimentación no lineal. Se muestra la dinámica principal de tres estados $v_{qs}^r(t)\rightarrow i_{qs}^r(t)\rightarrow T_m(t)\rightarrow \omega_m(t)\rightarrow \theta_m(t)$, junto con la perturbación mecánica externa, la gravedad linealizada y la rama térmica auxiliar excitada por $P_{s,\mathrm{perd}}(t)$.}
+	\label{fig:sistema_lti_realimentacion_nl}
+\end{figure}
 
 \paragraph{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$.}
 
@@ -1399,7 +1632,7 @@ Las funciones de transferencia se obtienen a partir del modelo LTI equivalente a
 
 Esta hipótesis es necesaria porque la función de transferencia clásica relaciona salida y entrada bajo condiciones iniciales nulas. Si el estado inicial no fuese nulo, aparecerían términos adicionales en la transformada de Laplace que no forman parte de la función de transferencia.
 
-A partir de \eqref{eq:lti_ecuaciones}, la dinámica del eje \(q\) desacoplado es
+A partir de (), la dinámica del eje \(q\) desacoplado es
 
 \begin{equation}
 	L_q\dot{i}_q+R_si_q=u_q.
