@@ -1363,66 +1363,220 @@ En el mismo diagrama se incluye la perturbación mecánica externa $T_{ld}(t)$, 
 	\label{fig:sistema_lti_realimentacion_nl}
 \end{figure}
 
+% ---------------------------------------------------------
 \paragraph{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$.}
 
-Para imponer $i_{ds}^r(t)\equiv 0$, se parte de la ecuación dinámica del eje directo:
-
-\begin{equation}
-    \dot{i}_{ds}^r = \frac{v_{ds}^r - R_s i_{ds}^r + L_q i_{qs}^r P_p \omega_m}{L_d}.
-    \label{eq:id_para_ley_minima}
-\end{equation}
-
-La condición deseada de operación con campo orientado es:
+El modelo LTI equivalente obtenido en los incisos anteriores se basa en imponer la condición de campo orientado:
 
 \begin{equation*}
-    i_{ds}^r(t) \equiv 0, \qquad \dot{i}_{ds}^r(t) \equiv 0.
+	i_{ds}^r(t)\equiv 0.
 \end{equation*}
 
-Reemplazando estas condiciones nulas en \eqref{eq:id_para_ley_minima}, se obtiene:
+Esta condición no se cumple de manera natural en la máquina, sino que debe imponerse mediante una acción de control sobre la tensión virtual del eje directo $v_{ds}^r(t)$. Para determinar dicha ley mínima se parte de la ecuación dinámica del eje $d$:
+
+\begin{equation}
+	\dot{i}_{ds}^r(t)
+	=
+	\frac{1}{L_d}
+	\left[
+	v_{ds}^r(t)
+	-
+	R_s i_{ds}^r(t)
+	+
+	L_q i_{qs}^r(t)P_p\omega_m(t)
+	\right].
+	\label{eq:id_para_ley_minima}
+\end{equation}
+
+La condición deseada de desacoplamiento es:
 
 \begin{equation*}
-    0 = \frac{v_{ds}^r + L_q i_{qs}^r P_p \omega_m}{L_d}.
+	i_{ds}^r(t)\equiv 0,
+	\qquad
+	\dot{i}_{ds}^r(t)\equiv 0.
 \end{equation*}
 
-Por lo tanto, despejando la tensión, la ley mínima de control que debe aplicarse sobre la tensión virtual del eje directo es:
+Reemplazando estas condiciones en \eqref{eq:id_para_ley_minima}, resulta:
+
+\begin{equation*}
+	0
+	=
+	\frac{1}{L_d}
+	\left[
+	v_{ds}^r(t)
+	+
+	L_q i_{qs}^r(t)P_p\omega_m(t)
+	\right].
+\end{equation*}
+
+Por lo tanto, la restricción o ley de control mínima que debe aplicarse sobre el eje directo es:
 
 \begin{equation}
-    \boxed{
-        v_{ds}^{r*}(t) = -L_q i_{qs}^{r}(t) P_p \omega_m(t) = -L_q i_{qs}^{r}(t) \omega_r(t).
-    }
-    \label{eq:ley_minima_vd}
+	\boxed{
+		v_{ds}^{r*}(t)
+		=
+		-L_q i_{qs}^{r}(t)P_p\omega_m(t)
+		=
+		-L_q i_{qs}^{r}(t)\omega_r(t)
+	}
+	\label{eq:ley_minima_vd}
 \end{equation}
 
-Esta ley cancela el acoplamiento natural cruzado que aparece en la ecuación del eje $d$. Para que se cumpla exactamente $i_{ds}^r(t)\equiv 0$ desde el inicio, debe asumirse la siguiente hipótesis para el estado inicial:
+donde se utilizó:
+
+\begin{equation*}
+	\omega_r(t)=P_p\omega_m(t).
+\end{equation*}
+
+Esta ley cancela el acoplamiento cruzado que aparece en la ecuación del eje $d$, producido por el término $L_q i_{qs}^r(t)P_p\omega_m(t)$. De esta manera, el eje directo no participa en la generación de torque y se logra el desacoplamiento entre el canal de flujo magnético y el canal de torque.
+
+La condición inicial necesaria para que la restricción se cumpla exactamente desde el instante inicial es:
 
 \begin{equation}
-    i_{ds}^r(t_0) = 0.
-    \label{eq:hipotesis_inicial_id}
+	i_{ds}^r(t_0)=0.
+	\label{eq:hipotesis_inicial_id}
 \end{equation}
 
-Si esta condición inicial no se cumple, la ley \eqref{eq:ley_minima_vd} no hace que $i_{ds}^r$ sea instantáneamente nula, pero sí genera una dinámica residual estable que hace decaer $i_{ds}^r$ hacia cero.
+Bajo esta hipótesis, si se aplica la ley \eqref{eq:ley_minima_vd}, entonces $i_{ds}^r(t)$ permanece nula para todo $t\geq t_0$. Si la condición inicial no es nula, la corriente de eje directo no se anula instantáneamente, sino que aparece una dinámica residual estable que será analizada en el inciso correspondiente.
 
-\paragraph{IV) Implementación de la ley de desacoplamiento en el modelo global no lineal.}
-La ley \eqref{eq:ley_minima_vd} se implementa como un controlador parcial entre las variables medidas y el inversor. El controlador parcial no reemplaza a la planta: solamente calcula las tensiones virtuales de referencia que luego se transforman a tensiones reales de fase.
+\medskip
 
-El procedimiento de implementación lógico y secuencial es el siguiente:
+\noindent
+Es importante notar que la ley \eqref{eq:ley_minima_vd} está expresada en coordenadas virtuales rotóricas $qd0$. Sin embargo, el actuador real del sistema es un inversor trifásico que aplica tensiones en los bornes del estator, es decir, tensiones en coordenadas $abc$:
+
+\begin{equation*}
+	v_{abcs}(t)
+	=
+	\begin{bmatrix}
+		v_{as}(t)\\
+		v_{bs}(t)\\
+		v_{cs}(t)
+	\end{bmatrix}.
+\end{equation*}
+
+Por lo tanto, para implementar físicamente la ley de control mínima es necesario utilizar las transformaciones de Park. En primer lugar, las corrientes medidas en el estator se obtienen en coordenadas reales $abc$ mediante sensores de corriente. A partir de la posición angular del rotor se calcula el ángulo eléctrico:
+
+\begin{equation*}
+	\theta_r(t)=P_p\theta_m(t).
+\end{equation*}
+
+Con este ángulo se aplica la transformación directa de Park para obtener las corrientes virtuales necesarias para el cálculo de la ley de control:
+
+\begin{equation*}
+	\begin{bmatrix}
+		i_{qs}^r(t)\\
+		i_{ds}^r(t)\\
+		i_{0s}^r(t)
+	\end{bmatrix}
+	=
+	T_P(\theta_r)
+	\begin{bmatrix}
+		i_{as}(t)\\
+		i_{bs}(t)\\
+		i_{cs}(t)
+	\end{bmatrix}.
+\end{equation*}
+
+En particular, para la ley mínima se requiere conocer $i_{qs}^r(t)$ y $\omega_m(t)$. La tensión de eje $q$, $v_{qs}^{r*}(t)$, no queda fijada por esta restricción, sino que permanece como la entrada principal del modelo LTI equivalente o como la acción que luego será definida por el controlador de corriente, torque o movimiento.
+
+Además, debido a que el estator se considera trifásico equilibrado y con neutro flotante, la componente homopolar se toma nula:
+
+\begin{equation*}
+	v_{0s}^{r*}(t)=0.
+\end{equation*}
+
+Entonces, el vector de tensiones virtuales de referencia queda:
+
+\begin{equation*}
+	\mathbf{v}_{qd0s}^{r*}(t)
+	=
+	\begin{bmatrix}
+		v_{qs}^{r*}(t)\\
+		v_{ds}^{r*}(t)\\
+		v_{0s}^{r*}(t)
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		v_{qs}^{r*}(t)\\
+		-L_q i_{qs}^{r}(t)P_p\omega_m(t)\\
+		0
+	\end{bmatrix}.
+\end{equation*}
+
+Para aplicar estas tensiones sobre el inversor trifásico se utiliza la transformación inversa de Park:
+
+\begin{equation}
+	\begin{bmatrix}
+		v_{as}^{*}(t)\\
+		v_{bs}^{*}(t)\\
+		v_{cs}^{*}(t)
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\cos\theta_r(t) & \sin\theta_r(t) & 1\\
+		\cos\left(\theta_r(t)-\frac{2\pi}{3}\right) &
+		\sin\left(\theta_r(t)-\frac{2\pi}{3}\right) & 1\\
+		\cos\left(\theta_r(t)+\frac{2\pi}{3}\right) &
+		\sin\left(\theta_r(t)+\frac{2\pi}{3}\right) & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+		v_{qs}^{r*}(t)\\
+		v_{ds}^{r*}(t)\\
+		v_{0s}^{r*}(t)
+	\end{bmatrix}.
+	\label{eq:park_inversa_tensiones}
+\end{equation}
+
+Sustituyendo $v_{ds}^{r*}(t)$ por la ley mínima \eqref{eq:ley_minima_vd} y considerando $v_{0s}^{r*}(t)=0$, se obtienen las tensiones de fase que debe aplicar el inversor:
+
+\begin{equation}
+	\begin{aligned}
+		v_{as}^{*}(t)
+		&=
+		\cos\theta_r(t)\,v_{qs}^{r*}(t)
+		-
+		\sin\theta_r(t)\,L_q i_{qs}^{r}(t)P_p\omega_m(t),
+		\\[1mm]
+		v_{bs}^{*}(t)
+		&=
+		\cos\left(\theta_r(t)-\frac{2\pi}{3}\right)v_{qs}^{r*}(t)
+		-
+		\sin\left(\theta_r(t)-\frac{2\pi}{3}\right)
+		L_q i_{qs}^{r}(t)P_p\omega_m(t),
+		\\[1mm]
+		v_{cs}^{*}(t)
+		&=
+		\cos\left(\theta_r(t)+\frac{2\pi}{3}\right)v_{qs}^{r*}(t)
+		-
+		\sin\left(\theta_r(t)+\frac{2\pi}{3}\right)
+		L_q i_{qs}^{r}(t)P_p\omega_m(t).
+	\end{aligned}
+	\label{eq:vabc_ley_minima}
+\end{equation}
+
+De esta forma, la ley de control mínima se interpreta como una realimentación no lineal parcial de estado. En coordenadas virtuales, la ley fija la tensión $v_{ds}^{r*}(t)$ necesaria para imponer $i_{ds}^r(t)\equiv 0$. En coordenadas físicas, dicha ley se implementa mediante la transformación inversa de Park, generando las tensiones de fase $v_{as}^{*}(t)$, $v_{bs}^{*}(t)$ y $v_{cs}^{*}(t)$ que debe aplicar el inversor trifásico.
+
+En síntesis, el procedimiento de implementación de la ley mínima es:
 
 \begin{enumerate}[leftmargin=*, label=\arabic*.]
-    \item Se miden las corrientes reales de fase $i_{as}(t)$, $i_{bs}(t)$, $i_{cs}(t)$ y la posición del rotor $\theta_m(t)$.
-    \item Se calcula la posición eléctrica del rotor $\theta_r(t) = P_p\theta_m(t)$.
-    \item Mediante la Transformación de Park directa se obtienen las corrientes $i_{qs}^r(t)$ e $i_{ds}^r(t)$.
-    \item Se mide o estima la velocidad mecánica $\omega_m(t)$, y se calcula la eléctrica $\omega_r(t) = P_p\omega_m(t)$.
-    \item Se calcula la tensión de desacoplamiento del eje directo mediante la ley mínima:
-    \begin{equation*}
-        v_{ds}^{r*}(t) = -L_q i_{qs}^r(t) P_p \omega_m(t).
-    \end{equation*}
-    \item Se calcula la tensión de eje $q$, sea como señal física $v_{qs}^{r*}(t)$ o como entrada auxiliar desacoplada $u_q(t)$, según el esquema de control adoptado.
-    \item Se forma el vector virtual de referencias $\mathbf{v}_{qd0}^{r*}(t) = \begin{bmatrix} v_{qs}^{r*}(t) & v_{ds}^{r*}(t) & 0 \end{bmatrix}^T$.
-    \item Mediante la Transformación de Park inversa se obtienen las tensiones de fase $v_{as}^*(t)$, $v_{bs}^*(t)$, $v_{cs}^*(t)$, que son aplicadas por el inversor trifásico idealizado.
+	\item Medir las corrientes de fase $i_{as}(t)$, $i_{bs}(t)$ e $i_{cs}(t)$.
+	\item Medir la posición angular del rotor $\theta_m(t)$ y calcular $\theta_r(t)=P_p\theta_m(t)$.
+	\item Aplicar la transformación directa de Park para obtener $i_{qs}^r(t)$.
+	\item Medir o estimar la velocidad $\omega_m(t)$.
+	\item Calcular la tensión de desacoplamiento $v_{ds}^{r*}(t)$ mediante \eqref{eq:ley_minima_vd}.
+	\item Tomar $v_{0s}^{r*}(t)=0$ y mantener $v_{qs}^{r*}(t)$ como entrada principal de control.
+	\item Aplicar la transformación inversa de Park para obtener las tensiones trifásicas $v_{as}^{*}(t)$, $v_{bs}^{*}(t)$ y $v_{cs}^{*}(t)$.
 \end{enumerate}
 
-\textit{Epígrafe sugerido para figura pendiente: Implementación del controlador parcial de desacoplamiento sobre el modelo no lineal completo, mostrando medición de corrientes $abc$, transformación de Park directa, cálculo de $v_{ds}^{r*}$ y $v_{qs}^{r*}$, transformación de Park inversa e inversor trifásico idealizado.}
+Así, el modelo LTI equivalente trabaja conceptualmente en coordenadas $qd0$, pero la implementación sobre la máquina real o sobre el modelo global no lineal se realiza mediante tensiones trifásicas $abc$.
 
+\paragraph{IV) Implementación de la ley de desacoplamiento en el modelo global no lineal.}
+
+La ley \eqref{eq:ley_minima_vd} se implementa sobre el modelo global no lineal mediante un controlador parcial. Este controlador recibe las variables medidas o estimadas necesarias, calcula la tensión virtual $v_{ds}^{r*}(t)$, forma el vector $\mathbf{v}_{qd0s}^{r*}(t)$ y, mediante la transformación inversa de Park, genera las tensiones trifásicas de referencia para el inversor.
+
+De esta manera, la planta física continúa siendo el modelo no lineal completo en coordenadas $abc$, mientras que el desacoplamiento se realiza en coordenadas virtuales $qd0$. El objetivo de esta implementación es verificar que, al aplicar la ley mínima, la corriente de eje directo se anula o decae rápidamente a cero, permitiendo que la dinámica principal quede dominada por el eje $q$.
+
+\textit{Epígrafe sugerido para figura: Implementación de la ley mínima de desacoplamiento sobre el modelo global no lineal. Se observa la medición de corrientes de fase, la transformación directa de Park, el cálculo de $v_{ds}^{r*}(t)$, la formación del vector de tensiones $qd0$, la transformación inversa de Park y la aplicación de tensiones trifásicas mediante el inversor idealizado.}
 \paragraph{V) Dinámica residual equivalente para $i_{ds}^{r}(t)$.}
 Si la condición inicial \eqref{eq:hipotesis_inicial_id} no se cumple, es decir, si:
 
