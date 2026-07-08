@@ -1568,48 +1568,103 @@ Este acoplamiento residual no lineal aparece temporalmente en el torque electrom
 El término residual es $T_{rel,res} = K_{rel} i_{ds}^r i_{qs}^r$. Este término puede despreciarse en el estudio del régimen forzado porque $i_{ds}^r(t) \rightarrow 0$ de manera exponencial sumamente rápida y porque el torque de alineación principal ($K_t i_{qs}^r$) domina casi instantáneamente el comportamiento electromecánico.
 
 \paragraph{VI) Ley complementaria mínima en el eje $q$.}
-La ley del eje $d$ cancela el acoplamiento que afecta a $i_{ds}^r$, pero la ecuación del eje $q$ todavía contiene la fuerza contraelectromotriz y el acoplamiento cruzado asociado a $i_{ds}^r$:
+La ley mínima del eje $d$ cancela el acoplamiento que afecta a $i_{ds}^r$, pero si la condición inicial no cumple $i_{ds}^r(t_0)=0$, dicha corriente no se anula instantáneamente sino que decae según su dinámica natural. Durante ese transitorio, la ecuación del eje $q$ conserva un término cruzado dependiente de $i_{ds}^r(t)$:
 
 \begin{equation}
-    \dot{i}_{qs}^r = \frac{v_{qs}^r - R_s i_{qs}^r - \left(\lambda_m^{\prime r} + L_d i_{ds}^r\right) P_p \omega_m}{L_q}.
-    \label{eq:iq_con_acople}
+	v_{qs}^{r*}(t)
+	=
+	L_q\frac{di_{qs}^{r}(t)}{dt}
+	+R_s i_{qs}^{r}(t)
+	+\lambda_m^{\prime r}P_p\omega_m(t)
+	+L_d i_{ds}^{r}(t)P_p\omega_m(t).
+	\label{eq:iq_con_acople}
 \end{equation}
 
-Para cancelar dicho término perturbador, se define una entrada auxiliar de control $u_q(t)$ y se aplica la siguiente ley complementaria:
+El término que introduce la no linealidad residual es:
+
+\begin{equation*}
+	L_d i_{ds}^{r}(t)P_p\omega_m(t),
+\end{equation*}
+
+porque contiene el producto entre dos variables dinámicas. En cambio, el término $\lambda_m^{\prime r}P_p\omega_m(t)$ corresponde a la fuerza contraelectromotriz de los imanes permanentes y es lineal respecto de $\omega_m(t)$, por lo que no es necesario cancelarlo para obtener un modelo LTI equivalente.
+
+Para no introducir una nueva entrada auxiliar, se conserva $v_{qs}^{r}(t)$ como la tensión de eje $q$ del modelo equivalente, y se distingue la tensión efectivamente aplicada al modelo no lineal mediante el superíndice $*$:
 
 \begin{equation}
-    \boxed{
-        v_{qs}^{r*}(t) = u_q(t) + \left(\lambda_m^{\prime r} + L_d i_{ds}^r(t)\right) P_p \omega_m(t).
-    }
-    \label{eq:ley_complementaria_vq}
+	v_{qs}^{r*}(t)=v_{qs}^{r}(t)+v_{q,\mathrm{comp}}^{r}(t).
 \end{equation}
 
-Sustituyendo la inyección de control \eqref{eq:ley_complementaria_vq} en la dinámica original \eqref{eq:iq_con_acople}, se obtiene la planta linealizada deseada:
+La ley de control complementaria mínima se elige como:
 
 \begin{equation}
-    \boxed{
-        \dot{i}_{qs}^r = -\frac{R_s}{L_q}i_{qs}^r + \frac{1}{L_q}u_q.
-    }
-    \label{eq:iq_desacoplado}
+	\boxed{
+		v_{q,\mathrm{comp}}^{r}(t)
+		=L_d i_{ds}^{r}(t)P_p\omega_m(t)
+	}
+	\label{eq:ley_complementaria_vq}
 \end{equation}
 
-De manera análoga, definiendo una entrada auxiliar $u_d(t)$, puede escribirse la ley general del eje directo como:
+o, equivalentemente:
 
 \begin{equation}
-    v_{ds}^{r*}(t) = u_d(t) - L_q i_{qs}^r(t) P_p \omega_m(t),
-    \label{eq:ley_general_vd}
+	\boxed{
+		v_{qs}^{r*}(t)
+		=
+		v_{qs}^{r}(t)
+		+L_d i_{ds}^{r}(t)P_p\omega_m(t)
+	}.
 \end{equation}
 
-lo que, al reemplazar en la planta, conduce a:
+Sustituyendo esta ley en \eqref{eq:iq_con_acople}, el término cruzado se cancela exactamente:
 
 \begin{equation}
-    \dot{i}_{ds}^r = -\frac{R_s}{L_d}i_{ds}^r + \frac{1}{L_d}u_d.
-    \label{eq:id_desacoplado_general}
+	v_{qs}^{r}(t)
+	=
+	L_q\frac{di_{qs}^{r}(t)}{dt}
+	+R_s i_{qs}^{r}(t)
+	+\lambda_m^{\prime r}P_p\omega_m(t).
 \end{equation}
 
-Para la estrategia de campo orientado ideal se toma $u_d(t) = 0$, de forma que $i_{ds}^r$ decae libremente a cero si hubo un error inicial, o permanece nula si $i_{ds}^r(t_0) = 0$.
+Por lo tanto, la dinámica del eje $q$ queda:
 
-Con las leyes \eqref{eq:ley_complementaria_vq} y \eqref{eq:ley_general_vd}, los canales eléctricos de eje $q$ y eje $d$ quedan estructuralmente desacoplados. El modelo resultante conserva la dinámica residual inofensiva de $i_{ds}^r$, pero permite trabajar con un modelo LTI equivalente aumentado para el diseño posterior y la sintonía clásica del control.
+\begin{equation}
+	\boxed{
+		\frac{di_{qs}^{r}(t)}{dt}
+		=
+		-\frac{R_s}{L_q}i_{qs}^{r}(t)
+		-\frac{\lambda_m^{\prime r}P_p}{L_q}\omega_m(t)
+		+\frac{1}{L_q}v_{qs}^{r}(t)
+	}
+	\label{eq:iq_desacoplado}
+\end{equation}
+
+Esta ecuación es lineal e independiente del valor inicial de $i_{ds}^{r}(t)$. Por lo tanto, la ley complementaria mínima elimina el acoplamiento residual no lineal del eje $q$ aun cuando $i_{ds}^{r}(t_0)\neq 0$.
+
+Combinando esta acción con la ley mínima del eje $d$,
+
+\begin{equation*}
+	v_{ds}^{r*}(t)=-L_q i_{qs}^{r}(t)P_p\omega_m(t),
+\end{equation*}
+
+se obtiene la dinámica natural desacoplada:
+
+\begin{equation}
+	\boxed{
+		\frac{di_{ds}^{r}(t)}{dt}
+		=
+		-\frac{R_s}{L_d}i_{ds}^{r}(t)
+	}.
+\end{equation}
+
+De esta forma, $i_{ds}^{r}(t)$ puede tener una condición inicial distinta de cero, pero su evolución no vuelve a introducir el acoplamiento no lineal en el eje $q$. La fuerza contraelectromotriz $\lambda_m^{\prime r}P_p\omega_m(t)$ permanece en el modelo porque es un acoplamiento lineal propio de la máquina. Si más adelante se desea diseñar un lazo interno de corriente de primer orden puro, puede agregarse una compensación adicional de fuerza contraelectromotriz, pero dicha compensación ya no forma parte de la ley mínima pedida en este inciso.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]{img/ley_complementaria_q.pdf}
+	\caption{Implementación de la ley complementaria mínima en el eje \(q\) para cancelar el acoplamiento no lineal residual producido por \(i_{ds}^{r}(t)\).}
+	\label{fig:ley_complementaria_q}
+\end{figure}
+
 % ---------------------------------------------------------
 \subsubsection{2.d) Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}
 
