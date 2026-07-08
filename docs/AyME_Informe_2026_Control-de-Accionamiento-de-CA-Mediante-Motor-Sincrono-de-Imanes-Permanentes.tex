@@ -1661,10 +1661,106 @@ De esta forma, $i_{ds}^{r}(t)$ puede tener una condición inicial distinta de ce
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.95\linewidth]{img/ley_complementaria_q.pdf}
-	\caption{Implementación de la ley complementaria mínima en el eje \(q\) para cancelar el acoplamiento no lineal residual producido por \(i_{ds}^{r}(t)\).}
+	\caption{Diagrama de bloques del modelo global no lineal del accionamiento con desacoplamiento por realimentación no lineal parcial de estados, implementando la ley de control mínima en el eje $d$ y la ley de control complementaria mínima en el eje $q$ (Modelo global NL con ley de control NL).}
 	\label{fig:ley_complementaria_q}
 \end{figure}
 
+A partir del modelo LTI equivalente obtenido anteriormente en los incisos I) y II), se incorpora ahora la dinámica residual de la corriente en el eje directo $i_{ds}^{r}(t)$ y la dinámica térmica del estator $T_s^{\circ}(t)$. De esta manera, se obtiene un modelo LTI equivalente aumentado, en el cual se conserva como núcleo principal el modelo electromecánico de tercer orden formado por $\theta_m(t)$, $\omega_m(t)$ e $i_{qs}^{r}(t)$. De esta forma se obtiene un modelo LTI equivalente aumentado, donde el vector de estado queda definido como:
+
+\[
+x_a(t)=
+\begin{bmatrix}
+	\theta_m(t)\\
+	\omega_m(t)\\
+	i_{qs}^{r}(t)\\
+	i_{ds}^{r}(t)\\
+	T_s^{\circ}(t)
+\end{bmatrix}.
+\]
+
+El modelo aumentado queda dado por el siguiente sistema de ecuaciones de estado:
+
+\begin{equation}
+	\left\{
+	\begin{aligned}
+		\dot{\theta}_m(t) &= \omega_m(t)
+		\\[2mm]
+		\dot{\omega}_m(t) &=
+		\frac{1}{J_{eq}}
+		\left(
+		\frac{3}{2}P_p\lambda_m^{\prime r}i_{qs}^{r}(t)
+		-
+		b_{eq}\omega_m(t)
+		-
+		T_{deq}(t)
+		\right)
+		\\[2mm]
+		\frac{di_{qs}^{r}(t)}{dt} &=
+		\frac{1}{L_q}
+		\left[
+		v_{qs}^{r}(t)
+		-
+		R_{s,\mathrm{REF}}i_{qs}^{r}(t)
+		-
+		P_p\lambda_m^{\prime r}\omega_m(t)
+		\right]
+		\\[2mm]
+		\frac{di_{ds}^{r}(t)}{dt} &=
+		-\frac{R_{s,\mathrm{REF}}}{L_d}i_{ds}^{r}(t)
+		\\[2mm]
+		\frac{dT_s^{\circ}(t)}{dt} &=
+		\frac{1}{C_{ts}}
+		\left[
+		P_J(t)
+		-
+		\frac{1}{R_{ts-amb}}
+		\left(
+		T_s^{\circ}(t)-T_{amb}^{\circ}(t)
+		\right)
+		\right]
+	\end{aligned}
+	\right.
+	\label{eq:modelo_lti_aumentado}
+\end{equation}
+
+donde la potencia eléctrica disipada por efecto Joule en el estator se calcula como:
+
+\begin{equation}
+	P_J(t)=
+	\frac{3}{2}R_{s,\mathrm{REF}}
+	\left[
+	\left(i_{qs}^{r}(t)\right)^2+
+	\left(i_{ds}^{r}(t)\right)^2
+	\right].
+	\label{eq:perdidas_joule_lti_aumentado}
+\end{equation}
+
+En este modelo se utiliza $R_{s,\mathrm{REF}}$ constante, por lo que se desprecia el acoplamiento no lineal entre la temperatura del estator y la resistencia eléctrica de los bobinados. De esta manera, la temperatura $T_s^{\circ}(t)$ se incorpora como un estado adicional para representar la dinámica térmica del sistema, pero no realimenta a las ecuaciones eléctricas mediante una resistencia variable $R_s(T_s^{\circ})$.
+
+La corriente $i_{ds}^{r}(t)$ también se incorpora como estado adicional porque, aunque la ley de control mínima en el eje $d$ impone su decaimiento, dicha corriente no desaparece instantáneamente. Su dinámica residual queda representada por un sistema de primer orden estable:
+
+\[
+\frac{di_{ds}^{r}(t)}{dt}
+=
+-\frac{R_{s,\mathrm{REF}}}{L_d}i_{ds}^{r}(t),
+\]
+
+cuyo polo es:
+
+\[
+p_d=-\frac{R_{s,\mathrm{REF}}}{L_d}.
+\]
+
+Como $R_{s,\mathrm{REF}}>0$ y $L_d>0$, se cumple que $p_d<0$, por lo que $i_{ds}^{r}(t)$ tiende exponencialmente a cero luego de un transitorio.
+
+Finalmente, la implementación del modelo LTI equivalente aumentado en Simulink se muestra en la Figura~\ref{fig:modelo_lti_aumentado}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]{img/modelo_lti_aumentado.pdf}
+	\caption{Diagrama de bloques del modelo LTI equivalente aumentado.}
+	\label{fig:modelo_lti_aumentado}
+\end{figure}
 % ---------------------------------------------------------
 \subsubsection{2.d) Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}
 
