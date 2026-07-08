@@ -31,167 +31,182 @@
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.6}Modelo en espacio de estados}{4}{subsubsection.3.2.6}\protected@file@percent }
 \newlabel{eq:ss_mecanico}{{7}{4}{Modelo en espacio de estados}{equation.7}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.7}Diagrama de bloques del subsistema mecánico equivalente}{4}{subsubsection.3.2.7}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Diagrama de bloques del subsistema mecánico equivalente referido al eje del motor.}}{5}{figure.1}\protected@file@percent }
-\newlabel{fig:diagrama_mecanico_equivalente}{{1}{5}{Diagrama de bloques del subsistema mecánico equivalente referido al eje del motor}{figure.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Diagrama de bloques del subsistema mecánico equivalente referido al eje del motor.}}{5}{figure.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:diagrama_mecanico_equivalente}{{1}{5}{Diagrama de bloques del subsistema mecánico equivalente referido al eje del motor}{figure.caption.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.8}Parámetros mecánicos base y ecuaciones de equivalencia}{5}{subsubsection.3.2.8}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Parámetros nominales del subsistema mecánico.}}{5}{table.1}\protected@file@percent }
-\newlabel{tab:parametros_mecanicos}{{1}{5}{Parámetros nominales del subsistema mecánico}{table.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Parámetros nominales del subsistema mecánico.}}{5}{table.caption.2}\protected@file@percent }
+\newlabel{tab:parametros_mecanicos}{{1}{5}{Parámetros nominales del subsistema mecánico}{table.caption.2}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.9}Cálculo de parámetros equivalentes y análisis de incertidumbre}{6}{subsubsection.3.2.9}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Parámetros equivalentes referidos al eje motriz: Valores nominales y rangos de variación.}}{6}{table.2}\protected@file@percent }
-\newlabel{tab:parametros_equivalentes_rangos}{{2}{6}{Parámetros equivalentes referidos al eje motriz: Valores nominales y rangos de variación}{table.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Parámetros equivalentes referidos al eje motriz: Valores nominales y rangos de variación.}}{6}{table.caption.3}\protected@file@percent }
+\newlabel{tab:parametros_equivalentes_rangos}{{2}{6}{Parámetros equivalentes referidos al eje motriz: Valores nominales y rangos de variación}{table.caption.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Modelo dinámico del sistema físico completo}{6}{subsection.3.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1}Modelo global NO LINEAL del sistema físico completo}{7}{subsubsection.3.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Transformaciones de Park y variables reales.}{7}{section*.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Torque electromagnético.}{7}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Transformaciones de Park y variables reales.}{7}{section*.5}\protected@file@percent }
+\newlabel{fig:bloque_park_directa}{{2a}{7}{Bloque Simulink}{figure.caption.6}{}}
+\newlabel{sub@fig:bloque_park_directa}{{a}{7}{Bloque Simulink}{figure.caption.6}{}}
+\newlabel{fig:codigo_park_directa}{{2b}{7}{Código interno del bloque}{figure.caption.6}{}}
+\newlabel{sub@fig:codigo_park_directa}{{b}{7}{Código interno del bloque}{figure.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Implementación de la transformación de Park directa \(abc \rightarrow qd0\) mediante un bloque \textit  {MATLAB Function}.}}{7}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:park_directa_impl}{{2}{7}{Implementación de la transformación de Park directa \(abc \rightarrow qd0\) mediante un bloque \textit {MATLAB Function}}{figure.caption.6}{}}
+\newlabel{fig:bloque_park_inversa}{{3a}{8}{Bloque Simulink}{figure.caption.7}{}}
+\newlabel{sub@fig:bloque_park_inversa}{{a}{8}{Bloque Simulink}{figure.caption.7}{}}
+\newlabel{fig:codigo_park_inversa}{{3b}{8}{Código interno del bloque}{figure.caption.7}{}}
+\newlabel{sub@fig:codigo_park_inversa}{{b}{8}{Código interno del bloque}{figure.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Implementación de la transformación de Park inversa \(qd0 \rightarrow abc\) mediante un bloque \textit  {MATLAB Function}.}}{8}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:park_inversa_impl}{{3}{8}{Implementación de la transformación de Park inversa \(qd0 \rightarrow abc\) mediante un bloque \textit {MATLAB Function}}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Torque electromagnético.}{8}{section*.8}\protected@file@percent }
 \newlabel{eq:torque_kt_krel}{{8}{8}{Torque electromagnético}{equation.8}{}}
-\@writefile{toc}{\contentsline {paragraph}{Ecuaciones eléctricas en coordenadas $qd0$.}{8}{section*.4}\protected@file@percent }
-\newlabel{eq:dinamica_corrientes_qd0}{{9}{8}{Ecuaciones eléctricas en coordenadas $qd0$}{equation.9}{}}
-\@writefile{toc}{\contentsline {paragraph}{Acoplamiento con el subsistema mecánico equivalente.}{8}{section*.5}\protected@file@percent }
-\newlabel{eq:omega_global_acoplada}{{10}{8}{Acoplamiento con el subsistema mecánico equivalente}{equation.10}{}}
-\@writefile{toc}{\contentsline {paragraph}{Diagrama de bloques del subsistema electromagnético.}{9}{section*.6}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Diagrama de bloques del subsistema electromagnético de la máquina PMSM.}}{9}{figure.2}\protected@file@percent }
-\newlabel{fig:diagrama_electromecanico_equivalente}{{2}{9}{Diagrama de bloques del subsistema electromagnético de la máquina PMSM}{figure.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Resistencia de estator dependiente de la temperatura.}{9}{section*.7}\protected@file@percent }
-\newlabel{eq:resistencia_termica}{{11}{9}{Resistencia de estator dependiente de la temperatura}{equation.11}{}}
-\@writefile{toc}{\contentsline {paragraph}{Modelo térmico del estator.}{9}{section*.8}\protected@file@percent }
-\newlabel{eq:dinamica_termica_estator}{{12}{10}{Modelo térmico del estator}{equation.12}{}}
-\@writefile{toc}{\contentsline {paragraph}{Diagrama de bloques del subsistema térmico.}{10}{section*.9}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Diagrama de bloques del subsistema térmico acoplado.}}{10}{figure.3}\protected@file@percent }
-\newlabel{fig:diagrama_termico_equivalente}{{3}{10}{Diagrama de bloques del subsistema térmico acoplado}{figure.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Variables de estado, entradas y salida.}{10}{section*.10}\protected@file@percent }
-\newlabel{eq:estado_global_p2}{{13}{10}{Variables de estado, entradas y salida}{equation.13}{}}
-\newlabel{eq:entradas_global_p2}{{14}{10}{Variables de estado, entradas y salida}{equation.14}{}}
-\@writefile{toc}{\contentsline {paragraph}{Modelo global no lineal en espacio de estados.}{11}{section*.11}\protected@file@percent }
-\newlabel{eq:modelo_global_nl}{{15}{11}{Modelo global no lineal en espacio de estados}{equation.15}{}}
-\@writefile{toc}{\contentsline {paragraph}{Modelo Global NL de la planta.}{11}{section*.12}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Modelo global no lineal del accionamiento PMSM implementado en Simulink, compuesto por los subsistemas eléctrico, mecánico y térmico, junto con las transformaciones de Park directa e inversa.}}{12}{figure.4}\protected@file@percent }
-\newlabel{fig:modelo_global_nl}{{4}{12}{Modelo global no lineal del accionamiento PMSM implementado en Simulink, compuesto por los subsistemas eléctrico, mecánico y térmico, junto con las transformaciones de Park directa e inversa}{figure.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2}Linealización Jacobiana: Modelo global LPV}{12}{subsubsection.3.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Objetivo de la linealización.}{12}{section*.13}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Pequeñas variaciones alrededor de un punto de operación.}{12}{section*.14}\protected@file@percent }
-\newlabel{eq:lpv_sistema}{{16}{12}{Pequeñas variaciones alrededor de un punto de operación}{equation.16}{}}
-\@writefile{toc}{\contentsline {paragraph}{Espacio de operación global no lineal cuasi-estacionario.}{13}{section*.15}\protected@file@percent }
-\newlabel{eq:condiciones_equilibrio}{{17}{13}{Espacio de operación global no lineal cuasi-estacionario}{equation.17}{}}
-\@writefile{toc}{\contentsline {paragraph}{Matriz de Estado $A(x^o,u^o)$ del modelo LPV.}{13}{section*.16}\protected@file@percent }
-\newlabel{eq:matriz_a_lpv}{{19}{13}{Matriz de Estado $A(x^o,u^o)$ del modelo LPV}{equation.19}{}}
-\@writefile{toc}{\contentsline {paragraph}{Matriz de Entrada $B(x^o,u^o)$ y Salida $C$.}{14}{section*.17}\protected@file@percent }
-\newlabel{eq:matriz_b_lpv}{{20}{14}{Matriz de Entrada $B(x^o,u^o)$ y Salida $C$}{equation.20}{}}
-\newlabel{eq:matrices_cd_lpv}{{21}{14}{Matriz de Entrada $B(x^o,u^o)$ y Salida $C$}{equation.21}{}}
-\@writefile{toc}{\contentsline {paragraph}{Conclusión del modelo LPV.}{14}{section*.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.3}Linealización por retroalimentación NO LINEAL y modelo LTI equivalente}{14}{subsubsection.3.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{I) Ecuaciones vectoriales/matriciales LTI de estado.}{15}{section*.19}\protected@file@percent }
-\newlabel{eq:lti_3estados_ecuaciones}{{22}{16}{I) Ecuaciones vectoriales/matriciales LTI de estado}{equation.22}{}}
-\newlabel{eq:modelo_lti_3x3_general}{{23}{16}{I) Ecuaciones vectoriales/matriciales LTI de estado}{equation.23}{}}
-\newlabel{eq:matrices_lti_3x3}{{24}{17}{I) Ecuaciones vectoriales/matriciales LTI de estado}{equation.24}{}}
-\newlabel{eq:termica_lineal_psperd}{{25}{17}{I) Ecuaciones vectoriales/matriciales LTI de estado}{equation.25}{}}
-\newlabel{eq:termica_lineal_estado}{{26}{18}{I) Ecuaciones vectoriales/matriciales LTI de estado}{equation.26}{}}
-\@writefile{toc}{\contentsline {paragraph}{II) Diagrama de bloques de estado.}{18}{section*.20}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Diagrama de bloques del modelo LTI electromecánico equivalente por realimentación no lineal. Se muestra la dinámica principal de tres estados $v_{qs}^r(t)\rightarrow i_{qs}^r(t)\rightarrow T_m(t)\rightarrow \omega _m(t)\rightarrow \theta _m(t)$, junto con la perturbación mecánica externa, la gravedad linealizada y la rama térmica auxiliar excitada por $P_{s,\mathrm  {perd}}(t)$.}}{19}{figure.5}\protected@file@percent }
-\newlabel{fig:sistema_lti_realimentacion_nl}{{5}{19}{Diagrama de bloques del modelo LTI electromecánico equivalente por realimentación no lineal. Se muestra la dinámica principal de tres estados $v_{qs}^r(t)\rightarrow i_{qs}^r(t)\rightarrow T_m(t)\rightarrow \omega _m(t)\rightarrow \theta _m(t)$, junto con la perturbación mecánica externa, la gravedad linealizada y la rama térmica auxiliar excitada por $P_{s,\mathrm {perd}}(t)$}{figure.5}{}}
-\@writefile{toc}{\contentsline {paragraph}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$.}{19}{section*.21}\protected@file@percent }
-\newlabel{eq:id_para_ley_minima}{{27}{19}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$}{equation.27}{}}
-\newlabel{eq:ley_minima_vd}{{28}{19}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$}{equation.28}{}}
-\newlabel{eq:hipotesis_inicial_id}{{29}{20}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$}{equation.29}{}}
-\newlabel{eq:park_inversa_tensiones}{{30}{20}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$}{equation.30}{}}
-\newlabel{eq:vabc_ley_minima}{{31}{21}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$}{equation.31}{}}
-\@writefile{toc}{\contentsline {paragraph}{IV) Implementación de la ley de desacoplamiento en el modelo global no lineal.}{21}{section*.22}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{V) Dinámica residual equivalente para $i_{ds}^{r}(t)$.}{21}{section*.23}\protected@file@percent }
-\newlabel{eq:dinamica_residual_id}{{32}{22}{V) Dinámica residual equivalente para $i_{ds}^{r}(t)$}{equation.32}{}}
-\newlabel{eq:solucion_id_residual}{{33}{22}{V) Dinámica residual equivalente para $i_{ds}^{r}(t)$}{equation.33}{}}
-\@writefile{toc}{\contentsline {paragraph}{VI) Ley complementaria mínima en el eje $q$.}{22}{section*.24}\protected@file@percent }
-\newlabel{eq:iq_con_acople}{{34}{22}{VI) Ley complementaria mínima en el eje $q$}{equation.34}{}}
-\newlabel{eq:ley_complementaria_vq}{{35}{22}{VI) Ley complementaria mínima en el eje $q$}{equation.35}{}}
-\newlabel{eq:iq_desacoplado}{{36}{22}{VI) Ley complementaria mínima en el eje $q$}{equation.36}{}}
-\newlabel{eq:ley_general_vd}{{37}{23}{VI) Ley complementaria mínima en el eje $q$}{equation.37}{}}
-\newlabel{eq:id_desacoplado_general}{{38}{23}{VI) Ley complementaria mínima en el eje $q$}{equation.38}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.4}2.d) Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}{23}{subsubsection.3.3.4}\protected@file@percent }
-\newlabel{eq:kt_variable_p2}{{39}{23}{2.d) Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}{equation.39}{}}
-\newlabel{eq:ke_variable_p2}{{40}{23}{2.d) Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}{equation.40}{}}
-\@writefile{toc}{\contentsline {paragraph}{Caso \(I_d^o=0\).}{23}{section*.25}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Caso \(I_d^o<0\): debilitamiento de campo.}{23}{section*.26}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Caso \(I_d^o>0\): reforzamiento de campo.}{24}{section*.27}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Migración de propiedades dinámicas.}{24}{section*.28}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.5}2.e) Funciones de transferencia del modelo LTI equivalente aumentado}{24}{subsubsection.3.3.5}\protected@file@percent }
-\newlabel{eq:ft_iq_uq_p2}{{53}{24}{2.e) Funciones de transferencia del modelo LTI equivalente aumentado}{equation.53}{}}
-\newlabel{eq:mecanica_laplace_base_p2}{{54}{25}{2.e) Funciones de transferencia del modelo LTI equivalente aumentado}{equation.54}{}}
-\@writefile{toc}{\contentsline {paragraph}{Función de transferencia desde \(u_q(t)\) hacia \(\theta _m(t)\).}{25}{section*.29}\protected@file@percent }
-\newlabel{eq:ft_theta_uq_p2}{{55}{25}{Función de transferencia desde \(u_q(t)\) hacia \(\theta _m(t)\)}{equation.55}{}}
-\@writefile{toc}{\contentsline {paragraph}{Función de transferencia desde \(T_{ld}(t)\) hacia \(\theta _m(t)\).}{25}{section*.30}\protected@file@percent }
-\newlabel{eq:ft_theta_tld_p2}{{57}{25}{Función de transferencia desde \(T_{ld}(t)\) hacia \(\theta _m(t)\)}{equation.57}{}}
-\newlabel{eq:ft_theta_l_p2}{{60}{25}{Función de transferencia desde \(T_{ld}(t)\) hacia \(\theta _m(t)\)}{equation.60}{}}
-\@writefile{toc}{\contentsline {paragraph}{Aclaración sobre \(u_q(t)\) y \(v_{qs}^{r}(t)\).}{25}{section*.31}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Estados internos que no aparecen directamente en las funciones de transferencia.}{26}{section*.32}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Síntesis del punto 2.}{26}{section*.33}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Punto 3: Análisis de estabilidad a lazo abierto del modelo LTI equivalente aumentado}{26}{subsection.3.4}\protected@file@percent }
-\newlabel{eq:punto_operacion_p3}{{62}{26}{Punto 3: Análisis de estabilidad a lazo abierto del modelo LTI equivalente aumentado}{equation.62}{}}
-\newlabel{eq:kg_nominal_p3}{{64}{26}{Punto 3: Análisis de estabilidad a lazo abierto del modelo LTI equivalente aumentado}{equation.64}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}3.a) Autovalores, polos, ceros y modos físicos}{26}{subsubsection.3.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Modo mecánico.}{26}{section*.34}\protected@file@percent }
-\newlabel{eq:mecanica_p3}{{65}{26}{Modo mecánico}{equation.65}{}}
-\newlabel{eq:polinomio_mecanico_p3}{{66}{26}{Modo mecánico}{equation.66}{}}
-\newlabel{eq:polinomio_mecanico_normalizado_p3}{{67}{26}{Modo mecánico}{equation.67}{}}
-\newlabel{eq:segundo_orden_p3}{{68}{27}{Modo mecánico}{equation.68}{}}
-\newlabel{eq:wn_m_p3}{{69}{27}{Modo mecánico}{equation.69}{}}
-\newlabel{eq:zeta_m_p3}{{70}{27}{Modo mecánico}{equation.70}{}}
-\newlabel{eq:sigma_m_p3}{{71}{27}{Modo mecánico}{equation.71}{}}
-\newlabel{eq:wd_m_p3}{{72}{27}{Modo mecánico}{equation.72}{}}
-\newlabel{eq:polos_mecanicos_p3}{{73}{27}{Modo mecánico}{equation.73}{}}
-\@writefile{toc}{\contentsline {paragraph}{Modo eléctrico del eje \(q\).}{27}{section*.35}\protected@file@percent }
-\newlabel{eq:iq_p3}{{74}{27}{Modo eléctrico del eje \(q\)}{equation.74}{}}
-\newlabel{eq:pq_p3}{{75}{27}{Modo eléctrico del eje \(q\)}{equation.75}{}}
-\newlabel{eq:tauq_p3}{{76}{27}{Modo eléctrico del eje \(q\)}{equation.76}{}}
-\@writefile{toc}{\contentsline {paragraph}{Modo eléctrico residual del eje \(d\).}{27}{section*.36}\protected@file@percent }
-\newlabel{eq:id_p3}{{77}{27}{Modo eléctrico residual del eje \(d\)}{equation.77}{}}
-\newlabel{eq:pd_p3}{{78}{27}{Modo eléctrico residual del eje \(d\)}{equation.78}{}}
-\newlabel{eq:taud_p3}{{79}{28}{Modo eléctrico residual del eje \(d\)}{equation.79}{}}
-\@writefile{toc}{\contentsline {paragraph}{Modo térmico.}{28}{section*.37}\protected@file@percent }
-\newlabel{eq:termico_p3}{{80}{28}{Modo térmico}{equation.80}{}}
-\newlabel{eq:pt_p3}{{81}{28}{Modo térmico}{equation.81}{}}
-\newlabel{eq:taut_p3}{{82}{28}{Modo térmico}{equation.82}{}}
-\@writefile{toc}{\contentsline {paragraph}{Valores numéricos nominales.}{28}{section*.38}\protected@file@percent }
-\newlabel{eq:polos_mecanicos_nominales_p3}{{88}{28}{Valores numéricos nominales}{equation.88}{}}
-\newlabel{eq:autovalores_nominales_p3}{{92}{29}{Valores numéricos nominales}{equation.92}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Autovalores nominales del modelo LTI equivalente aumentado.}}{29}{table.3}\protected@file@percent }
-\newlabel{tab:autovalores_nominales_p3}{{3}{29}{Autovalores nominales del modelo LTI equivalente aumentado}{table.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Ceros de las funciones de transferencia.}{29}{section*.39}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Ceros finitos de las funciones de transferencia mínimas hacia \(\theta _m(t)\).}}{29}{table.4}\protected@file@percent }
-\newlabel{tab:ceros_p3}{{4}{29}{Ceros finitos de las funciones de transferencia mínimas hacia \(\theta _m(t)\)}{table.4}{}}
-\@writefile{toc}{\contentsline {paragraph}{Mapa de polos y ceros en el plano \(s\).}{30}{section*.40}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Mapa de polos y ceros nominal del modelo LTI equivalente aumentado en el plano \(s\).}}{30}{figure.6}\protected@file@percent }
-\newlabel{fig:pzmap_nominal_p3}{{6}{30}{Mapa de polos y ceros nominal del modelo LTI equivalente aumentado en el plano \(s\)}{figure.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Detalle del mapa de polos y ceros nominal cerca del origen.}}{30}{figure.7}\protected@file@percent }
-\newlabel{fig:pzmap_zoom_p3}{{7}{30}{Detalle del mapa de polos y ceros nominal cerca del origen}{figure.7}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}3.b) Estabilidad parcial, estabilidad completa y efecto de los ceros}{30}{subsubsection.3.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Estabilidad completa.}{30}{section*.41}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Estabilidad parcial.}{31}{section*.42}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Efecto de los ceros.}{31}{section*.43}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.3}Migración de propiedades ante variación de parámetros de carga}{31}{subsubsection.3.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Variación de masa útil con fricción nominal.}{31}{section*.44}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Migración de polos mecánicos al variar \(m_l\), manteniendo \(b_l=0.1\,\mathrm  {N\,m/(rad/s)}\).}}{32}{table.5}\protected@file@percent }
-\newlabel{tab:migracion_ml_p3}{{5}{32}{Migración de polos mecánicos al variar \(m_l\), manteniendo \(b_l=0.1\,\mathrm {N\,m/(rad/s)}\)}{table.5}{}}
-\@writefile{toc}{\contentsline {paragraph}{Variación de fricción viscosa con masa nominal.}{32}{section*.45}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Migración de polos mecánicos al variar \(b_l\), manteniendo \(m_l=0\).}}{32}{table.6}\protected@file@percent }
-\newlabel{tab:migracion_bl_p3}{{6}{32}{Migración de polos mecánicos al variar \(b_l\), manteniendo \(m_l=0\)}{table.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Migración de polos mecánicos en el plano \(s\) ante variación de los parámetros de carga.}}{32}{figure.8}\protected@file@percent }
-\newlabel{fig:migracion_polos_p3}{{8}{32}{Migración de polos mecánicos en el plano \(s\) ante variación de los parámetros de carga}{figure.8}{}}
-\@writefile{toc}{\contentsline {paragraph}{Síntesis del punto 3.}{33}{section*.46}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Punto 4: Análisis de observabilidad completa de estado del modelo LTI equivalente aumentado}{33}{subsection.3.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.1}4.a) Observabilidad desde la medición de posición $\theta _m(t)$}{33}{subsubsection.3.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.2}4.b) Alternativa: observabilidad desde la medición de velocidad $\omega _m(t)$}{35}{subsubsection.3.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.3}Síntesis del punto 4}{36}{subsubsection.3.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Punto 5: Análisis de controlabilidad completa de estado del modelo LTI equivalente aumentado}{36}{subsection.3.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.1}5.a) Controlabilidad desde la entrada $u_q(t)$}{36}{subsubsection.3.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.2}5.b) Interpretación física del resultado}{38}{subsubsection.3.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.3}5.c) Entradas adicionales razonables para controlar los estados no controlables}{38}{subsubsection.3.6.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.4}Síntesis del punto 5}{39}{subsubsection.3.6.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}Diseño del sistema de control}{39}{subsection.3.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}Simulación, resultados y verificación de restricciones}{39}{subsection.3.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Ecuaciones eléctricas en coordenadas $qd0$.}{9}{section*.9}\protected@file@percent }
+\newlabel{eq:dinamica_corrientes_qd0}{{9}{9}{Ecuaciones eléctricas en coordenadas $qd0$}{equation.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{Acoplamiento con el subsistema mecánico equivalente.}{9}{section*.10}\protected@file@percent }
+\newlabel{eq:omega_global_acoplada}{{10}{9}{Acoplamiento con el subsistema mecánico equivalente}{equation.10}{}}
+\@writefile{toc}{\contentsline {paragraph}{Diagrama de bloques del subsistema electromagnético.}{9}{section*.11}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Diagrama de bloques del subsistema electromagnético de la PMSM en coordenadas $qd0$, con acceso físico mediante tensiones y corrientes trifásicas $abc$.}}{10}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:diagrama_electromecanico_equivalente}{{4}{10}{Diagrama de bloques del subsistema electromagnético de la PMSM en coordenadas $qd0$, con acceso físico mediante tensiones y corrientes trifásicas $abc$}{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {paragraph}{Resistencia de estator dependiente de la temperatura.}{10}{section*.13}\protected@file@percent }
+\newlabel{eq:resistencia_termica}{{11}{10}{Resistencia de estator dependiente de la temperatura}{equation.11}{}}
+\@writefile{toc}{\contentsline {paragraph}{Modelo térmico del estator.}{10}{section*.14}\protected@file@percent }
+\newlabel{eq:potencia_joule_abc}{{12}{10}{Modelo térmico del estator}{equation.12}{}}
+\newlabel{eq:potencia_joule_qd0}{{13}{11}{Modelo térmico del estator}{equation.13}{}}
+\newlabel{eq:dinamica_termica_estator}{{14}{11}{Modelo térmico del estator}{equation.14}{}}
+\@writefile{toc}{\contentsline {paragraph}{Diagrama de bloques del subsistema térmico.}{11}{section*.15}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Diagrama de bloques del subsistema térmico en coordenadas $qd0$, con cálculo de pérdidas Joule, dinámica de temperatura y retroalimentación de $R_s(T_s^{\circ })$.}}{11}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:diagrama_termico_equivalente}{{5}{11}{Diagrama de bloques del subsistema térmico en coordenadas $qd0$, con cálculo de pérdidas Joule, dinámica de temperatura y retroalimentación de $R_s(T_s^{\circ })$}{figure.caption.16}{}}
+\@writefile{toc}{\contentsline {paragraph}{Variables de estado, entradas y salidas.}{11}{section*.17}\protected@file@percent }
+\newlabel{eq:estado_global_p2}{{15}{11}{Variables de estado, entradas y salidas}{equation.15}{}}
+\newlabel{eq:entradas_global_p2}{{16}{12}{Variables de estado, entradas y salidas}{equation.16}{}}
+\@writefile{toc}{\contentsline {paragraph}{Modelo global no lineal en espacio de estados.}{12}{section*.18}\protected@file@percent }
+\newlabel{eq:modelo_global_nl}{{17}{12}{Modelo global no lineal en espacio de estados}{equation.17}{}}
+\@writefile{toc}{\contentsline {paragraph}{Modelo Global NL de la planta.}{13}{section*.19}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Modelo global no lineal del accionamiento PMSM implementado en Simulink. El diagrama integra las transformaciones de Park directa e inversa, el subsistema eléctrico en coordenadas $qd0$, el subsistema mecánico equivalente, el cálculo térmico de pérdidas Joule y la retroalimentación de la resistencia estatórica variable $R_s(T_s^{\circ })$.}}{13}{figure.caption.20}\protected@file@percent }
+\newlabel{fig:modelo_global_nl}{{6}{13}{Modelo global no lineal del accionamiento PMSM implementado en Simulink. El diagrama integra las transformaciones de Park directa e inversa, el subsistema eléctrico en coordenadas $qd0$, el subsistema mecánico equivalente, el cálculo térmico de pérdidas Joule y la retroalimentación de la resistencia estatórica variable $R_s(T_s^{\circ })$}{figure.caption.20}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2}Linealización Jacobiana: Modelo global LPV}{13}{subsubsection.3.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Objetivo de la linealización.}{13}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Pequeñas variaciones alrededor de un punto de operación.}{13}{section*.22}\protected@file@percent }
+\newlabel{eq:lpv_sistema}{{18}{14}{Pequeñas variaciones alrededor de un punto de operación}{equation.18}{}}
+\@writefile{toc}{\contentsline {paragraph}{Espacio de operación global no lineal cuasi-estacionario.}{14}{section*.23}\protected@file@percent }
+\newlabel{eq:condiciones_equilibrio}{{19}{14}{Espacio de operación global no lineal cuasi-estacionario}{equation.19}{}}
+\@writefile{toc}{\contentsline {paragraph}{Matriz de Estado $A(x^o,u^o)$ del modelo LPV.}{14}{section*.24}\protected@file@percent }
+\newlabel{eq:matriz_a_lpv}{{21}{15}{Matriz de Estado $A(x^o,u^o)$ del modelo LPV}{equation.21}{}}
+\@writefile{toc}{\contentsline {paragraph}{Matriz de Entrada $B(x^o,u^o)$ y Salida $C$.}{15}{section*.25}\protected@file@percent }
+\newlabel{eq:matriz_b_lpv}{{22}{15}{Matriz de Entrada $B(x^o,u^o)$ y Salida $C$}{equation.22}{}}
+\newlabel{eq:matrices_cd_lpv}{{23}{15}{Matriz de Entrada $B(x^o,u^o)$ y Salida $C$}{equation.23}{}}
+\@writefile{toc}{\contentsline {paragraph}{Conclusión del modelo LPV.}{15}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.3}Linealización por retroalimentación NO LINEAL y modelo LTI equivalente}{16}{subsubsection.3.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{I) Ecuaciones vectoriales/matriciales LTI de estado.}{16}{section*.27}\protected@file@percent }
+\newlabel{eq:lti_3estados_ecuaciones}{{24}{17}{I) Ecuaciones vectoriales/matriciales LTI de estado}{equation.24}{}}
+\newlabel{eq:modelo_lti_3x3_general}{{25}{17}{I) Ecuaciones vectoriales/matriciales LTI de estado}{equation.25}{}}
+\newlabel{eq:matrices_lti_3x3}{{26}{18}{I) Ecuaciones vectoriales/matriciales LTI de estado}{equation.26}{}}
+\newlabel{eq:termica_lineal_psperd}{{27}{18}{I) Ecuaciones vectoriales/matriciales LTI de estado}{equation.27}{}}
+\newlabel{eq:termica_lineal_estado}{{28}{19}{I) Ecuaciones vectoriales/matriciales LTI de estado}{equation.28}{}}
+\@writefile{toc}{\contentsline {paragraph}{II) Diagrama de bloques de estado.}{19}{section*.28}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Diagrama de bloques del modelo LTI electromecánico equivalente por realimentación no lineal. Se muestra la dinámica principal de tres estados $v_{qs}^r(t)\rightarrow i_{qs}^r(t)\rightarrow T_m(t)\rightarrow \omega _m(t)\rightarrow \theta _m(t)$, junto con la perturbación mecánica externa, la gravedad linealizada y la rama térmica auxiliar excitada por $P_{s,\mathrm  {perd}}(t)$.}}{20}{figure.caption.29}\protected@file@percent }
+\newlabel{fig:sistema_lti_realimentacion_nl}{{7}{20}{Diagrama de bloques del modelo LTI electromecánico equivalente por realimentación no lineal. Se muestra la dinámica principal de tres estados $v_{qs}^r(t)\rightarrow i_{qs}^r(t)\rightarrow T_m(t)\rightarrow \omega _m(t)\rightarrow \theta _m(t)$, junto con la perturbación mecánica externa, la gravedad linealizada y la rama térmica auxiliar excitada por $P_{s,\mathrm {perd}}(t)$}{figure.caption.29}{}}
+\@writefile{toc}{\contentsline {paragraph}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$.}{20}{section*.30}\protected@file@percent }
+\newlabel{eq:id_para_ley_minima}{{29}{20}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$}{equation.29}{}}
+\newlabel{eq:ley_minima_vd}{{30}{20}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$}{equation.30}{}}
+\newlabel{eq:hipotesis_inicial_id}{{31}{21}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$}{equation.31}{}}
+\newlabel{eq:park_inversa_tensiones}{{32}{21}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$}{equation.32}{}}
+\newlabel{eq:vabc_ley_minima}{{33}{22}{III) Ley de control mínima para imponer $i_{ds}^{r}(t)\equiv 0$}{equation.33}{}}
+\@writefile{toc}{\contentsline {paragraph}{IV) Implementación de la ley de desacoplamiento en el modelo global no lineal.}{22}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{V) Dinámica residual equivalente para $i_{ds}^{r}(t)$.}{22}{section*.32}\protected@file@percent }
+\newlabel{eq:dinamica_residual_id}{{34}{23}{V) Dinámica residual equivalente para $i_{ds}^{r}(t)$}{equation.34}{}}
+\newlabel{eq:solucion_id_residual}{{35}{23}{V) Dinámica residual equivalente para $i_{ds}^{r}(t)$}{equation.35}{}}
+\@writefile{toc}{\contentsline {paragraph}{VI) Ley complementaria mínima en el eje $q$.}{23}{section*.33}\protected@file@percent }
+\newlabel{eq:iq_con_acople}{{36}{23}{VI) Ley complementaria mínima en el eje $q$}{equation.36}{}}
+\newlabel{eq:ley_complementaria_vq}{{37}{23}{VI) Ley complementaria mínima en el eje $q$}{equation.37}{}}
+\newlabel{eq:iq_desacoplado}{{38}{23}{VI) Ley complementaria mínima en el eje $q$}{equation.38}{}}
+\newlabel{eq:ley_general_vd}{{39}{24}{VI) Ley complementaria mínima en el eje $q$}{equation.39}{}}
+\newlabel{eq:id_desacoplado_general}{{40}{24}{VI) Ley complementaria mínima en el eje $q$}{equation.40}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.4}2.d) Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}{24}{subsubsection.3.3.4}\protected@file@percent }
+\newlabel{eq:kt_variable_p2}{{41}{24}{2.d) Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}{equation.41}{}}
+\newlabel{eq:ke_variable_p2}{{42}{24}{2.d) Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}{equation.42}{}}
+\@writefile{toc}{\contentsline {paragraph}{Caso \(I_d^o=0\).}{24}{section*.34}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Caso \(I_d^o<0\): debilitamiento de campo.}{24}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Caso \(I_d^o>0\): reforzamiento de campo.}{25}{section*.36}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Migración de propiedades dinámicas.}{25}{section*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.5}2.e) Funciones de transferencia del modelo LTI equivalente aumentado}{25}{subsubsection.3.3.5}\protected@file@percent }
+\newlabel{eq:ft_iq_uq_p2}{{55}{25}{2.e) Funciones de transferencia del modelo LTI equivalente aumentado}{equation.55}{}}
+\newlabel{eq:mecanica_laplace_base_p2}{{56}{26}{2.e) Funciones de transferencia del modelo LTI equivalente aumentado}{equation.56}{}}
+\@writefile{toc}{\contentsline {paragraph}{Función de transferencia desde \(u_q(t)\) hacia \(\theta _m(t)\).}{26}{section*.38}\protected@file@percent }
+\newlabel{eq:ft_theta_uq_p2}{{57}{26}{Función de transferencia desde \(u_q(t)\) hacia \(\theta _m(t)\)}{equation.57}{}}
+\@writefile{toc}{\contentsline {paragraph}{Función de transferencia desde \(T_{ld}(t)\) hacia \(\theta _m(t)\).}{26}{section*.39}\protected@file@percent }
+\newlabel{eq:ft_theta_tld_p2}{{59}{26}{Función de transferencia desde \(T_{ld}(t)\) hacia \(\theta _m(t)\)}{equation.59}{}}
+\newlabel{eq:ft_theta_l_p2}{{62}{26}{Función de transferencia desde \(T_{ld}(t)\) hacia \(\theta _m(t)\)}{equation.62}{}}
+\@writefile{toc}{\contentsline {paragraph}{Aclaración sobre \(u_q(t)\) y \(v_{qs}^{r}(t)\).}{26}{section*.40}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Estados internos que no aparecen directamente en las funciones de transferencia.}{27}{section*.41}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Síntesis del punto 2.}{27}{section*.42}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Punto 3: Análisis de estabilidad a lazo abierto del modelo LTI equivalente aumentado}{27}{subsection.3.4}\protected@file@percent }
+\newlabel{eq:punto_operacion_p3}{{64}{27}{Punto 3: Análisis de estabilidad a lazo abierto del modelo LTI equivalente aumentado}{equation.64}{}}
+\newlabel{eq:kg_nominal_p3}{{66}{27}{Punto 3: Análisis de estabilidad a lazo abierto del modelo LTI equivalente aumentado}{equation.66}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}3.a) Autovalores, polos, ceros y modos físicos}{27}{subsubsection.3.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Modo mecánico.}{27}{section*.43}\protected@file@percent }
+\newlabel{eq:mecanica_p3}{{67}{27}{Modo mecánico}{equation.67}{}}
+\newlabel{eq:polinomio_mecanico_p3}{{68}{27}{Modo mecánico}{equation.68}{}}
+\newlabel{eq:polinomio_mecanico_normalizado_p3}{{69}{27}{Modo mecánico}{equation.69}{}}
+\newlabel{eq:segundo_orden_p3}{{70}{28}{Modo mecánico}{equation.70}{}}
+\newlabel{eq:wn_m_p3}{{71}{28}{Modo mecánico}{equation.71}{}}
+\newlabel{eq:zeta_m_p3}{{72}{28}{Modo mecánico}{equation.72}{}}
+\newlabel{eq:sigma_m_p3}{{73}{28}{Modo mecánico}{equation.73}{}}
+\newlabel{eq:wd_m_p3}{{74}{28}{Modo mecánico}{equation.74}{}}
+\newlabel{eq:polos_mecanicos_p3}{{75}{28}{Modo mecánico}{equation.75}{}}
+\@writefile{toc}{\contentsline {paragraph}{Modo eléctrico del eje \(q\).}{28}{section*.44}\protected@file@percent }
+\newlabel{eq:iq_p3}{{76}{28}{Modo eléctrico del eje \(q\)}{equation.76}{}}
+\newlabel{eq:pq_p3}{{77}{28}{Modo eléctrico del eje \(q\)}{equation.77}{}}
+\newlabel{eq:tauq_p3}{{78}{28}{Modo eléctrico del eje \(q\)}{equation.78}{}}
+\@writefile{toc}{\contentsline {paragraph}{Modo eléctrico residual del eje \(d\).}{28}{section*.45}\protected@file@percent }
+\newlabel{eq:id_p3}{{79}{28}{Modo eléctrico residual del eje \(d\)}{equation.79}{}}
+\newlabel{eq:pd_p3}{{80}{28}{Modo eléctrico residual del eje \(d\)}{equation.80}{}}
+\newlabel{eq:taud_p3}{{81}{29}{Modo eléctrico residual del eje \(d\)}{equation.81}{}}
+\@writefile{toc}{\contentsline {paragraph}{Modo térmico.}{29}{section*.46}\protected@file@percent }
+\newlabel{eq:termico_p3}{{82}{29}{Modo térmico}{equation.82}{}}
+\newlabel{eq:pt_p3}{{83}{29}{Modo térmico}{equation.83}{}}
+\newlabel{eq:taut_p3}{{84}{29}{Modo térmico}{equation.84}{}}
+\@writefile{toc}{\contentsline {paragraph}{Valores numéricos nominales.}{29}{section*.47}\protected@file@percent }
+\newlabel{eq:polos_mecanicos_nominales_p3}{{90}{29}{Valores numéricos nominales}{equation.90}{}}
+\newlabel{eq:autovalores_nominales_p3}{{94}{30}{Valores numéricos nominales}{equation.94}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Autovalores nominales del modelo LTI equivalente aumentado.}}{30}{table.caption.48}\protected@file@percent }
+\newlabel{tab:autovalores_nominales_p3}{{3}{30}{Autovalores nominales del modelo LTI equivalente aumentado}{table.caption.48}{}}
+\@writefile{toc}{\contentsline {paragraph}{Ceros de las funciones de transferencia.}{30}{section*.49}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Ceros finitos de las funciones de transferencia mínimas hacia \(\theta _m(t)\).}}{30}{table.caption.50}\protected@file@percent }
+\newlabel{tab:ceros_p3}{{4}{30}{Ceros finitos de las funciones de transferencia mínimas hacia \(\theta _m(t)\)}{table.caption.50}{}}
+\@writefile{toc}{\contentsline {paragraph}{Mapa de polos y ceros en el plano \(s\).}{31}{section*.51}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Mapa de polos y ceros nominal del modelo LTI equivalente aumentado en el plano \(s\).}}{31}{figure.caption.52}\protected@file@percent }
+\newlabel{fig:pzmap_nominal_p3}{{8}{31}{Mapa de polos y ceros nominal del modelo LTI equivalente aumentado en el plano \(s\)}{figure.caption.52}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Detalle del mapa de polos y ceros nominal cerca del origen.}}{31}{figure.caption.53}\protected@file@percent }
+\newlabel{fig:pzmap_zoom_p3}{{9}{31}{Detalle del mapa de polos y ceros nominal cerca del origen}{figure.caption.53}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}3.b) Estabilidad parcial, estabilidad completa y efecto de los ceros}{31}{subsubsection.3.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Estabilidad completa.}{31}{section*.54}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Estabilidad parcial.}{32}{section*.55}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Efecto de los ceros.}{32}{section*.56}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.3}Migración de propiedades ante variación de parámetros de carga}{32}{subsubsection.3.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Variación de masa útil con fricción nominal.}{32}{section*.57}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Migración de polos mecánicos al variar \(m_l\), manteniendo \(b_l=0.1\,\mathrm  {N\,m/(rad/s)}\).}}{33}{table.caption.58}\protected@file@percent }
+\newlabel{tab:migracion_ml_p3}{{5}{33}{Migración de polos mecánicos al variar \(m_l\), manteniendo \(b_l=0.1\,\mathrm {N\,m/(rad/s)}\)}{table.caption.58}{}}
+\@writefile{toc}{\contentsline {paragraph}{Variación de fricción viscosa con masa nominal.}{33}{section*.59}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Migración de polos mecánicos al variar \(b_l\), manteniendo \(m_l=0\).}}{33}{table.caption.60}\protected@file@percent }
+\newlabel{tab:migracion_bl_p3}{{6}{33}{Migración de polos mecánicos al variar \(b_l\), manteniendo \(m_l=0\)}{table.caption.60}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Migración de polos mecánicos en el plano \(s\) ante variación de los parámetros de carga.}}{33}{figure.caption.61}\protected@file@percent }
+\newlabel{fig:migracion_polos_p3}{{10}{33}{Migración de polos mecánicos en el plano \(s\) ante variación de los parámetros de carga}{figure.caption.61}{}}
+\@writefile{toc}{\contentsline {paragraph}{Síntesis del punto 3.}{34}{section*.62}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Punto 4: Análisis de observabilidad completa de estado del modelo LTI equivalente aumentado}{34}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.1}4.a) Observabilidad desde la medición de posición $\theta _m(t)$}{34}{subsubsection.3.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.2}4.b) Alternativa: observabilidad desde la medición de velocidad $\omega _m(t)$}{36}{subsubsection.3.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.3}Síntesis del punto 4}{37}{subsubsection.3.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Punto 5: Análisis de controlabilidad completa de estado del modelo LTI equivalente aumentado}{37}{subsection.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.1}5.a) Controlabilidad desde la entrada $u_q(t)$}{37}{subsubsection.3.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.2}5.b) Interpretación física del resultado}{39}{subsubsection.3.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.3}5.c) Entradas adicionales razonables para controlar los estados no controlables}{39}{subsubsection.3.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.4}Síntesis del punto 5}{40}{subsubsection.3.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}Diseño del sistema de control}{40}{subsection.3.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}Simulación, resultados y verificación de restricciones}{40}{subsection.3.8}\protected@file@percent }
 \bibcite{guia_trabajo}{1}
 \bibcite{guia_informe}{2}
 \bibcite{krause}{3}
 \bibcite{astrom}{4}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Conclusiones}{40}{section.4}\protected@file@percent }
-\newlabel{LastPage}{{4}{40}{Conclusiones}{page.40}{}}
-\gdef\lastpage@lastpage{40}
-\gdef\lastpage@lastpageHy{40}
-\gdef \@abspage@last{41}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Conclusiones}{41}{section.4}\protected@file@percent }
+\newlabel{LastPage}{{4}{41}{Conclusiones}{page.41}{}}
+\gdef\lastpage@lastpage{41}
+\gdef\lastpage@lastpageHy{41}
+\gdef \@abspage@last{42}

@@ -16,6 +16,7 @@
 \usepackage{array}
 \usepackage{float}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage{xcolor}
 \usepackage{tikz}
 \usepackage{fancyhdr}
@@ -517,23 +518,17 @@ Para el desarrollo primero se obtiene el modelo global no lineal en coordenadas 
 % ---------------------------------------------------------
 \subsubsection{Modelo global NO LINEAL del sistema físico completo}
 
-Se busca obtener un modelo dinámico global no lineal del accionamiento completo, incorporando la dinámica mecánica equivalente, la dinámica electromagnética de la máquina PMSM y la dinámica térmica del estator. 
-En esta primera formulación no se impone la condición de campo orientado, por lo que se considera el caso general donde la corriente del eje directo no es nula ($i_{ds}^{r}(t)\neq 0$). 
-Esto implica que el torque electromagnético conservará tanto el término de alineación de imanes como el de reluctancia, resultando en un modelo fuertemente acoplado y no lineal.
+Se busca obtener un modelo dinámico global no lineal del accionamiento completo, incorporando la dinámica mecánica equivalente, la dinámica electromagnética de la máquina PMSM y la dinámica térmica del estator. En esta primera formulación no se impone la condición de campo orientado, por lo que se considera el caso general donde la corriente del eje directo no es nula ($i_{ds}^{r}(t)\neq 0$). Además, para escribir el modelo en coordenadas $qd0$ de forma completa, se conserva inicialmente la componente homopolar $i_{0s}(t)$ como variable de estado. Luego, si se asume conexión estatórica en estrella con neutro flotante y alimentación trifásica equilibrada, puede imponerse la restricción particular $i_{0s}(t)\equiv 0$ y $v_{0s}(t)\equiv 0$, reduciendo el orden del modelo.
 
 \begin{equation*}
-	i_{ds}^{r}(t)\neq 0.
+	i_{ds}^{r}(t)\neq 0, \qquad i_{0s}(t) \; \text{genérico}.
 \end{equation*}
 
-\paragraph{Transformaciones de Park y variables reales.}
-El modelo electromagnético se desarrolla en coordenadas virtuales de rotor $qd0$. 
-En este marco de referencia sincrónico, las variables eléctricas de corriente alterna se transforman en variables continuas (CC) en régimen permanente, 
-lo cual simplifica el análisis dinámico y permite el diseño de reguladores de error nulo. 
-Sin embargo, dado que el inversor trifásico y los sensores de medición operan físicamente sobre las variables reales de fase del estator $abc$, 
-es necesario incorporar explícitamente las transformaciones matemáticas de Park.
 
-Definiendo un vector genérico de variables trifásicas $\mathbf{f}_{abcs}(t) = \begin{bmatrix} f_{as}(t) & f_{bs}(t) & f_{cs}(t) \end{bmatrix}^{T}$, 
-el cual puede representar tensiones, corrientes o flujos concatenados, se adopta la transformación de Park directa invariante en amplitud:
+\paragraph{Transformaciones de Park y variables reales.}
+El modelo electromagnético se desarrolla en coordenadas virtuales de rotor $qd0$. En este marco de referencia rotórico, las variables eléctricas trifásicas se expresan mediante componentes de eje en cuadratura, eje directo y componente homopolar. Esto simplifica el análisis dinámico y permite representar el acoplamiento entre el inversor, la máquina eléctrica y la mecánica del rotor. Sin embargo, las tensiones y corrientes físicamente accesibles en el inversor y en los sensores son las señales reales de fase del estator $abc$, por lo que deben incorporarse explícitamente las transformaciones de Park directa e inversa.
+
+Definiendo un vector genérico de variables trifásicas $\mathbf{f}_{abcs}(t) = \begin{bmatrix} f_{as}(t) & f_{bs}(t) & f_{cs}(t) \end{bmatrix}^{T}$, el cual puede representar tensiones, corrientes o flujos concatenados, se adopta la transformación de Park directa invariante en amplitud:
 
 \begin{equation*}
 	\begin{bmatrix}
@@ -555,8 +550,39 @@ el cual puede representar tensiones, corrientes o flujos concatenados, se adopta
 	\end{bmatrix}.
 \end{equation*}
 
-Para reconstruir las señales físicas de fase a partir de las acciones de control calculadas en el marco virtual, 
-se utiliza la transformación de Park inversa:
+En el presente trabajo, este bloque recibe como entradas las tres variables de fase \(f_a\), \(f_b\), \(f_c\), junto con el ángulo eléctrico del rotor \(\theta_r\), y entrega como salidas las componentes \(f_q^r\), \(f_d^r\) y \(f_0\).
+
+La Fig.~\ref{fig:park_directa_impl} muestra la implementación de la transformación de Park directa mediante un bloque \textit{MATLAB Function}. A la izquierda se observa la interfaz del bloque utilizado en Simulink, mientras que a la derecha se presenta el código interno programado para realizar la conversión \(abc \rightarrow qd0\).
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{minipage}{0.55\textwidth}
+		\centering
+		
+		\begin{subfigure}[t]{0.34\linewidth}
+			\centering
+			\includegraphics[width=\linewidth]{img/bloque_park_directa.png}
+			\caption{Bloque Simulink.}
+			\label{fig:bloque_park_directa}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[t]{0.62\linewidth}
+			\centering
+			\includegraphics[width=\linewidth]{img/codigo_park_directa.png}
+			\caption{Código interno del bloque.}
+			\label{fig:codigo_park_directa}
+		\end{subfigure}
+		
+	\end{minipage}
+	
+	\caption{Implementación de la transformación de Park directa \(abc \rightarrow qd0\) mediante un bloque \textit{MATLAB Function}.}
+	\label{fig:park_directa_impl}
+\end{figure}
+
+A partir de esta implementación, las variables trifásicas medidas en el sistema real o generadas en la simulación pueden transformarse al marco de referencia rotórico, donde las componentes en régimen permanente se comportan como señales continuas o de variación lenta. Esto simplifica notablemente el análisis dinámico de la máquina y el diseño de estrategias de control orientado a campo.
+
+Para reconstruir las señales físicas de fase a partir de las acciones de control calculadas en el marco virtual, se utiliza la transformación de Park inversa:
 
 \begin{equation*}
 	\begin{bmatrix}
@@ -577,171 +603,188 @@ se utiliza la transformación de Park inversa:
 	\end{bmatrix}.
 \end{equation*}
 
-La transformación requiere conocer instantáneamente la posición eléctrica del rotor $\theta_r(t)$, 
-la cual se relaciona con la cinemática mecánica mediante el número de pares de polos $P_p$ de la máquina:
+
+ En este trabajo, dicha transformación resulta necesaria para reconstruir las señales físicas de fase que posteriormente se aplican al inversor o se utilizan para la representación de variables en el marco real del estator.
+
+El bloque implementado recibe como entradas las componentes \(f_q^r\), \(f_d^r\), \(f_0\) y el ángulo eléctrico del rotor \(\theta_r\), y entrega como salidas las variables de fase \(f_a\), \(f_b\) y \(f_c\).
+
+La Fig.~\ref{fig:park_inversa_impl} muestra la implementación de la transformación de Park inversa.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{minipage}{0.55\textwidth}
+		\centering
+		
+		\begin{subfigure}[t]{0.34\linewidth}
+			\centering
+			\includegraphics[width=\linewidth]{img/bloque_park_inversa.png}
+			\caption{Bloque Simulink.}
+			\label{fig:bloque_park_inversa}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}[t]{0.62\linewidth}
+			\centering
+			\includegraphics[width=\linewidth]{img/codigo_park_inversa.png}
+			\caption{Código interno del bloque.}
+			\label{fig:codigo_park_inversa}
+		\end{subfigure}
+		
+	\end{minipage}
+	
+	\caption{Implementación de la transformación de Park inversa \(qd0 \rightarrow abc\) mediante un bloque \textit{MATLAB Function}.}
+	\label{fig:park_inversa_impl}
+\end{figure}
+
+La implementación explícita de la transformación inversa permite cerrar de forma coherente el esquema de control vectorial, ya que las acciones de control calculadas en el sistema \(qd0\) pueden ser reinterpretadas en términos de magnitudes físicas trifásicas.
+
+La transformación requiere conocer instantáneamente la posición eléctrica del rotor $\theta_r(t)$, la cual se relaciona con la cinemática mecánica mediante el número de pares de polos $P_p$ de la máquina:
 
 \begin{equation*}
-    \theta_r(t) = P_p \theta_m(t), \qquad \omega_r(t) = P_p \omega_m(t).
+	\theta_r(t) = P_p \theta_m(t), \qquad \omega_r(t) = P_p \omega_m(t).
 \end{equation*}
 
-Respecto a la componente homopolar ($0s$), dado que la PMSM posee una conexión estatórica en estrella con neutro flotante o no accesible, 
-la Ley de Corrientes de Kirchhoff impone que la suma instantánea de las tres corrientes de fase sea nula. 
-Al no existir un camino físico de retorno, se asume:
 
-\begin{equation*}
-	i_{0s}(t)\equiv 0.
-\end{equation*}
-
-Si adicionalmente se asume que el inversor provee una alimentación trifásica de tensión equilibrada, 
-la componente homopolar de tensión también se anula ($v_{0s}(t) \equiv 0$).
 
 \paragraph{Torque electromagnético.}
-
 El torque electromagnético generado por la máquina PMSM está dado por la interacción entre los flujos magnéticos y las corrientes del estator:
 
 \begin{equation*}
-    T_m(t) = \frac{3}{2}P_p \lambda_m^{\prime r} i_{qs}^{r}(t) + \frac{3}{2}P_p \left(L_d - L_q\right) i_{ds}^{r}(t)i_{qs}^{r}(t).
+	T_m(t) = \frac{3}{2}P_p \lambda_m^{\prime r} i_{qs}^{r}(t) + \frac{3}{2}P_p \left(L_d - L_q\right) i_{ds}^{r}(t)i_{qs}^{r}(t).
 \end{equation*}
 
-El primer término corresponde al torque de alineación producido por el flujo de los imanes permanentes del rotor ($\lambda_m^{\prime r}$, referido al estator). 
-El segundo término es el torque de reluctancia, originado por la asimetría o saliencia magnética del rotor, donde $L_d$ y $L_q$ son las inductancias propias de los ejes directo y en cuadratura respectivamente.
+El primer término corresponde al torque producido por el flujo de los imanes permanentes del rotor ($\lambda_m^{\prime r}$, referido al estator). El segundo término corresponde al torque de reluctancia, originado por la saliencia magnética del rotor, donde $L_d$ y $L_q$ son las inductancias propias de los ejes directo y en cuadratura respectivamente.
 
-Agrupando los parámetros físicos constantes, se definen la constante de torque de los imanes $K_t$ y la constante de reluctancia $K_{rel}$:
+Agrupando constantes, se definen la constante de torque de los imanes $K_t$ y la constante de reluctancia $K_{rel}$:
 
 \begin{equation*}
-    K_t = \frac{3}{2}P_p \lambda_m^{\prime r}, \qquad K_{rel} = \frac{3}{2}P_p \left(L_d - L_q\right).
+	K_t = \frac{3}{2}P_p \lambda_m^{\prime r}, \qquad K_{rel} = \frac{3}{2}P_p \left(L_d - L_q\right).
 \end{equation*}
 
-Por lo que la expresión del torque se reescribe de forma compacta como:
+Por lo tanto:
 
 \begin{equation}
-    T_m(t) = K_t i_{qs}^{r}(t) + K_{rel} i_{ds}^{r}(t) i_{qs}^{r}(t).
-    \label{eq:torque_kt_krel}
+	T_m(t) = K_t i_{qs}^{r}(t) + K_{rel} i_{ds}^{r}(t)i_{qs}^{r}(t).
+	\label{eq:torque_kt_krel}
 \end{equation}
 
-El producto cruzado de los estados $i_{ds}^{r}(t)$ e $i_{qs}^{r}(t)$ en \eqref{eq:torque_kt_krel} constituye una de las principales no linealidades estructurales del modelo dinámico.
+El producto cruzado $i_{ds}^{r}(t)i_{qs}^{r}(t)$ constituye una de las no linealidades estructurales del modelo global.
 
 \paragraph{Ecuaciones eléctricas en coordenadas $qd0$.}
-Aplicando la Segunda Ley de Kirchhoff a los devanados del estator en el marco de referencia rotórico, 
-el balance dinámico de tensiones queda definido por:
+Aplicando la Segunda Ley de Kirchhoff a los devanados del estator en el marco de referencia rotórico, el balance dinámico de tensiones queda definido por:
 
 \begin{equation*}
-    \begin{aligned}
-        v_{qs}^{r}(t) &= R_s\left(T_s^{\circ}\right) i_{qs}^{r}(t) + L_q \frac{di_{qs}^{r}(t)}{dt} + \left[ \lambda_m^{\prime r} + L_d i_{ds}^{r}(t) \right] \omega_r(t), \\
-        v_{ds}^{r}(t) &= R_s\left(T_s^{\circ}\right) i_{ds}^{r}(t) + L_d \frac{di_{ds}^{r}(t)}{dt} - L_q i_{qs}^{r}(t) \omega_r(t),
-    \end{aligned}
+	\begin{aligned}
+		v_{qs}^{r}(t) &= R_s\left(T_s^{\circ}\right)i_{qs}^{r}(t) + L_q \frac{di_{qs}^{r}(t)}{dt} + \left[\lambda_m^{\prime r} + L_d i_{ds}^{r}(t)\right]\omega_r(t), \\
+		v_{ds}^{r}(t) &= R_s\left(T_s^{\circ}\right)i_{ds}^{r}(t) + L_d \frac{di_{ds}^{r}(t)}{dt} - L_q i_{qs}^{r}(t)\omega_r(t), \\
+		v_{0s}(t) &= R_s\left(T_s^{\circ}\right)i_{0s}(t) + L_{ls}\frac{di_{0s}(t)}{dt}.
+	\end{aligned}
 \end{equation*}
 
-donde $v_{qs}^{r}$ y $v_{ds}^{r}$ son las tensiones de control aplicadas por el inversor, 
-y $R_s\left(T_s^{\circ}\right)$ es la resistencia de fase del estator dependiente de la temperatura. 
-Los últimos términos de cada ecuación representan las fuerzas contraelectromotrices (f.c.e.m.) dinámicamente acopladas debido a la rotación del campo magnético.
-
-Para completar el modelo matemático de acuerdo a la implementación computacional, se incluye la ecuación de la componente homopolar, regida por la inductancia de dispersión $L_{ls}$:
-
-\begin{equation*}
-    v_{0s}(t) = R_s\left(T_s^{\circ}\right) i_{0s}(t) + L_{ls} \frac{di_{0s}(t)}{dt}.
-\end{equation*}
-
-Despejando las derivadas de corriente y sustituyendo la velocidad eléctrica por $\omega_r(t) = P_p \omega_m(t)$, 
-se obtienen las ecuaciones de estado del subsistema eléctrico:
+Despejando las derivadas de corriente y sustituyendo $\omega_r(t)=P_p\omega_m(t)$, se obtiene:
 
 \begin{equation}
-    \begin{aligned}
-        \frac{di_{qs}^{r}}{dt} &= \frac{1}{L_q} \left[ v_{qs}^{r} - R_s\left(T_s^{\circ}\right)i_{qs}^{r} - \left(\lambda_m^{\prime r} + L_d i_{ds}^{r}\right) P_p \omega_m \right], \\
-        \frac{di_{ds}^{r}}{dt} &= \frac{1}{L_d} \left[ v_{ds}^{r} - R_s\left(T_s^{\circ}\right)i_{ds}^{r} + L_q i_{qs}^{r} P_p \omega_m \right], \\
-        \frac{di_{0s}}{dt}     &= \frac{1}{L_{ls}} \left[ v_{0s} - R_s\left(T_s^{\circ}\right)i_{0s} \right].
-    \end{aligned}
-    \label{eq:dinamica_corrientes_qd0}
+	\begin{aligned}
+		\frac{di_{qs}^{r}}{dt} &= \frac{1}{L_q}\left[v_{qs}^{r} - R_s\left(T_s^{\circ}\right)i_{qs}^{r} - \left(\lambda_m^{\prime r}+L_d i_{ds}^{r}\right)P_p\omega_m\right],\\
+		\frac{di_{ds}^{r}}{dt} &= \frac{1}{L_d}\left[v_{ds}^{r} - R_s\left(T_s^{\circ}\right)i_{ds}^{r} + L_q i_{qs}^{r}P_p\omega_m\right],\\
+		\frac{di_{0s}}{dt} &= \frac{1}{L_{ls}}\left[v_{0s} - R_s\left(T_s^{\circ}\right)i_{0s}\right].
+	\end{aligned}
+	\label{eq:dinamica_corrientes_qd0}
 \end{equation}
 
 \paragraph{Acoplamiento con el subsistema mecánico equivalente.}
-
-La ecuación dinámica de la planta mecánica equivalente referida al eje del motor, desarrollada previamente, es:
+La ecuación dinámica de la planta mecánica equivalente referida al eje del motor es:
 
 \begin{equation*}
-    J_{eq} \dot{\omega}_m(t) = T_m(t) - b_{eq} \omega_m(t) - \frac{g k_l}{r} \sin\left(\frac{\theta_m(t)}{r}\right) - \frac{T_{ld}(t)}{r}.
+	J_{eq}\dot{\omega}_m(t) = T_m(t) - b_{eq}\omega_m(t) - \frac{gk_l}{r}\sin\left(\frac{\theta_m(t)}{r}\right) - \frac{T_{ld}(t)}{r}.
 \end{equation*}
 
 Sustituyendo el torque electromagnético de la PMSM dado por \eqref{eq:torque_kt_krel}, resulta:
 
 \begin{equation}
-    \dot{\omega}_m(t) = \frac{1}{J_{eq}} \left[ K_t i_{qs}^{r} + K_{rel} i_{ds}^{r} i_{qs}^{r} - b_{eq} \omega_m - \frac{g k_l}{r} \sin\left(\frac{\theta_m}{r}\right) - \frac{T_{ld}}{r} \right].
-    \label{eq:omega_global_acoplada}
+	\dot{\omega}_m(t)=\frac{1}{J_{eq}}\left[K_t i_{qs}^{r} + K_{rel}i_{ds}^{r}i_{qs}^{r} - b_{eq}\omega_m - \frac{gk_l}{r}\sin\left(\frac{\theta_m}{r}\right) - \frac{T_{ld}}{r}\right].
+	\label{eq:omega_global_acoplada}
 \end{equation}
 
-Esta expresión evidencia el acoplamiento electromecánico bidireccional: 
-las corrientes eléctricas generan el torque que modifica la cinemática del rotor, y a su vez, 
-la velocidad y posición del rotor retroalimentan las ecuaciones eléctricas \eqref{eq:dinamica_corrientes_qd0} 
-a través de la f.c.e.m. y las transformaciones de Park.
+Esta expresión evidencia el acoplamiento electromecánico bidireccional: las corrientes eléctricas generan el torque que modifica la velocidad del rotor, y la velocidad del rotor retroalimenta las ecuaciones eléctricas mediante las fuerzas contraelectromotrices.
+
 
 \paragraph{Diagrama de bloques del subsistema electromagnético.}
+La arquitectura implementada en Simulink para este subsistema se ilustra en la Fig.~\ref{fig:diagrama_electromecanico_equivalente}. Para facilitar su interconexión física, el bloque expone como entradas las tensiones trifásicas reales $v_{as}$, $v_{bs}$, $v_{cs}$, la cinemática del rotor $\theta_m$, $\omega_m$ y la resistencia actual $R_s(T_s^{\circ})$.
 
-La arquitectura implementada en Simulink para este subsistema se ilustra en la Fig. \ref{fig:diagrama_electromecanico_equivalente}. 
-Para facilitar su interconexión física, el bloque expone como entradas las tensiones trifásicas reales $v_{as}, v_{bs}, v_{cs}$, 
-la cinemática del rotor $\theta_m, \omega_m$ y la resistencia actual $R_s$.
-
-Internamente, se aplica la transformación de Park directa para resolver las ecuaciones diferenciales \eqref{eq:dinamica_corrientes_qd0} 
-y calcular el torque \eqref{eq:torque_kt_krel} en el marco virtual $qd0$. Finalmente, mediante la transformación de Park inversa, 
-el bloque retorna a las coordenadas de fase para entregar como salidas las corrientes reales $i_{as}, i_{bs}, i_{cs}$, 
-el torque electromagnético $T_m$ y los parámetros dinámicos $K_t, K_{rel}$.
+Internamente, se aplica la transformación de Park directa para resolver las ecuaciones diferenciales \eqref{eq:dinamica_corrientes_qd0} y calcular el torque \eqref{eq:torque_kt_krel} en el marco virtual $qd0$. Finalmente, mediante la transformación de Park inversa, el bloque retorna a las coordenadas de fase para entregar como salidas las corrientes reales $i_{as}$, $i_{bs}$, $i_{cs}$ y el torque electromagnético $T_m$.
 
 \begin{figure}[H]
-    \centering
-    % Inserta la ruta y nombre exacto de tu archivo PNG aquí
-    \includegraphics[width=0.95\textwidth]{img/screenshot_subsistema_electromagnetico.png}
-    \caption{Diagrama de bloques del subsistema electromagnético de la máquina PMSM.}
-    \label{fig:diagrama_electromecanico_equivalente}
+	\centering
+	\includegraphics[width=0.95\textwidth]{img/subsistema_electromagnetico.pdf}
+	\caption{Diagrama de bloques del subsistema electromagnético de la PMSM en coordenadas $qd0$, con acceso físico mediante tensiones y corrientes trifásicas $abc$.}
+	\label{fig:diagrama_electromecanico_equivalente}
 \end{figure}
 
-\paragraph{Resistencia de estator dependiente de la temperatura.}
 
-Las pérdidas por efecto Joule elevan la temperatura del bobinado ($T_s^{\circ}$), lo cual a su vez incrementa la resistencia de fase del estator ($R_s$). 
-Este comportamiento termodinámico se modela matemáticamente como:
+\paragraph{Resistencia de estator dependiente de la temperatura.}
+Las pérdidas por efecto Joule elevan la temperatura del bobinado $T_s^{\circ}(t)$, lo cual incrementa la resistencia de fase del estator. Este comportamiento se modela como:
 
 \begin{equation}
-    R_s\left(T_s^{\circ}\right) = R_{sREF} \left[ 1 + \alpha_{Cu} \left(T_s^{\circ} - T_{sREF}^{\circ}\right) \right],
-    \label{eq:resistencia_termica}
+	R_s\left(T_s^{\circ}(t)\right)=R_{sREF}\left[1+\alpha_{Cu}\left(T_s^{\circ}(t)-T_{sREF}^{\circ}\right)\right],
+	\label{eq:resistencia_termica}
 \end{equation}
 
-donde $R_{sREF}$ es la resistencia nominal medida a la temperatura de referencia $T_{sREF}^{\circ}$, 
-y $\alpha_{Cu}$ es el coeficiente de temperatura del cobre. Esta dependencia introduce un fuerte acoplamiento térmico-eléctrico en el sistema.
+donde $R_{sREF}$ es la resistencia medida a la temperatura de referencia $T_{sREF}^{\circ}$ y $\alpha_{Cu}$ es el coeficiente de temperatura del cobre. En el diagrama en coordenadas $qd0$, esta resistencia variable se calcula a partir de la temperatura obtenida por el balance térmico escrito en las mismas coordenadas, de modo que la retroalimentación térmica se expresa como:
+
+\begin{equation*}
+	\left(i_{qs}^{r},i_{ds}^{r},i_{0s}\right) \longrightarrow P_{s,perd}^{qd0}(t) \longrightarrow T_s^{\circ}(t) \longrightarrow R_s\left(T_s^{\circ}(t)\right).
+\end{equation*}
 
 \paragraph{Modelo térmico del estator.}
-
-Las pérdidas eléctricas consideradas corresponden a la disipación resistiva. En coordenadas reales de fase, la potencia total disipada se expresa como:
-
-\begin{equation*}
-    P_{s,perd}^{abc}(t) = R_s\left(T_s^{\circ}\right) \left[ i_{as}^2(t) + i_{bs}^2(t) + i_{cs}^2(t) \right].
-\end{equation*}
-
-Aplicando las propiedades de la transformación de Park invariante en amplitud, esta misma potencia puede escribirse equivalentemente en coordenadas $qd0$ incorporando el factor $3/2$. 
-Dado que $i_{0s}(t) \equiv 0$, resulta:
-
-\begin{equation*}
-    P_{s,perd}^{qd0}(t) = \frac{3}{2} R_s\left(T_s^{\circ}\right) \left[ \left(i_{qs}^{r}(t)\right)^2 + \left(i_{ds}^{r}(t)\right)^2 \right].
-\end{equation*}
-
-Considerando el balance de energía entre el calor generado y el calor disipado hacia el ambiente a través de la resistencia térmica $R_{ts-amb}$, la dinámica de la temperatura del estator (con capacidad calorífica $C_{ts}$) queda gobernada por la ecuación diferencial:
+Las pérdidas eléctricas consideradas corresponden únicamente a la disipación resistiva por efecto Joule. En coordenadas reales de fase, la potencia total disipada es:
 
 \begin{equation}
-    \frac{dT_s^{\circ}}{dt} = \frac{1}{C_{ts}} \left[ \frac{3}{2} R_s\left(T_s^{\circ}\right) \left( \left(i_{qs}^{r}\right)^2 + \left(i_{ds}^{r}\right)^2 \right) - \frac{T_s^{\circ} - T_{amb}^{\circ}}{R_{ts-amb}} \right].
-    \label{eq:dinamica_termica_estator}
+	P_{s,perd}^{abc}(t)=R_s\left(T_s^{\circ}(t)\right)\left[i_{as}^{2}(t)+i_{bs}^{2}(t)+i_{cs}^{2}(t)\right].
+	\label{eq:potencia_joule_abc}
+\end{equation}
+
+Debido a la forma invariante en amplitud de la transformación de Park utilizada, se cumple la relación:
+
+\begin{equation*}
+	i_{as}^{2}(t)+i_{bs}^{2}(t)+i_{cs}^{2}(t)
+	=\frac{3}{2}\left[\left(i_{qs}^{r}(t)\right)^2+\left(i_{ds}^{r}(t)\right)^2+2\left(i_{0s}(t)\right)^2\right].
+\end{equation*}
+
+Por lo tanto, la misma potencia de pérdidas puede expresarse de manera equivalente en coordenadas virtuales $qd0$ como:
+
+\begin{equation}
+	P_{s,perd}^{qd0}(t)=\frac{3}{2}R_s\left(T_s^{\circ}(t)\right)
+	\left[\left(i_{qs}^{r}(t)\right)^2+\left(i_{ds}^{r}(t)\right)^2+2\left(i_{0s}(t)\right)^2\right].
+	\label{eq:potencia_joule_qd0}
+\end{equation}
+
+Esta última forma es la más conveniente para el diagrama implementado en coordenadas $qd0$, ya que utiliza directamente las corrientes internas del subsistema eléctrico. Si luego se impone la condición particular de sistema equilibrado con neutro flotante, $i_{0s}(t)\equiv 0$, la expresión se reduce a:
+
+\begin{equation*}
+	P_{s,perd}^{qd0}(t)=\frac{3}{2}R_s\left(T_s^{\circ}(t)\right)
+	\left[\left(i_{qs}^{r}(t)\right)^2+\left(i_{ds}^{r}(t)\right)^2\right].
+\end{equation*}
+
+Considerando el balance de energía entre el calor generado y el calor disipado hacia el ambiente a través de la resistencia térmica $R_{ts-amb}$, la dinámica de la temperatura del estator queda:
+
+\begin{equation}
+	\frac{dT_s^{\circ}}{dt}=\frac{1}{C_{ts}}\left[\frac{3}{2}R_s\left(T_s^{\circ}\right)\left(\left(i_{qs}^{r}\right)^2+\left(i_{ds}^{r}\right)^2+2i_{0s}^{2}\right)-\frac{T_s^{\circ}-T_{amb}^{\circ}}{R_{ts-amb}}\right].
+	\label{eq:dinamica_termica_estator}
 \end{equation}
 
 \paragraph{Diagrama de bloques del subsistema térmico.}
-La Fig. \ref{fig:diagrama_termico_equivalente} muestra la implementación del modelo térmico. En concordancia con las señales disponibles físicamente a la salida del bloque electromagnético, este subsistema toma directamente como entradas las corrientes reales de fase $i_{as}, i_{bs}, i_{cs}$. Internamente, calcula la potencia disipada $P_{s,perd}^{abc}$ e integra la ecuación diferencial térmica para retroalimentar el valor actualizado de $R_s$ al resto del sistema.
+La Fig.~\ref{fig:diagrama_termico_equivalente} muestra la implementación del modelo térmico. En esta versión, el cálculo de potencia se representa directamente en coordenadas $qd0$, tomando como entradas $i_{qs}^{r}$, $i_{ds}^{r}$ e $i_{0s}$. A partir de dichas corrientes se obtiene $P_{s,perd}^{qd0}(t)$, luego se integra la ecuación diferencial térmica y finalmente se retroalimenta $R_s(T_s^{\circ})$ al subsistema eléctrico.
 
 \begin{figure}[H]
-    \centering
-    % Inserta la ruta y nombre exacto de tu archivo PNG aquí
-    \includegraphics[width=0.95\textwidth]{img/screenshot_subsistema_termico.png}
-    \caption{Diagrama de bloques del subsistema térmico acoplado.}
-    \label{fig:diagrama_termico_equivalente}
+	\centering
+	\includegraphics[width=0.95\textwidth]{img/subsistema_termico.pdf}
+	\caption{Diagrama de bloques del subsistema térmico en coordenadas $qd0$, con cálculo de pérdidas Joule, dinámica de temperatura y retroalimentación de $R_s(T_s^{\circ})$.}
+	\label{fig:diagrama_termico_equivalente}
 \end{figure}
 
-\paragraph{Variables de estado, entradas y salida.}
-
-Para sistematizar el modelo general, se adopta el siguiente vector de estado global de quinto orden:
+\paragraph{Variables de estado, entradas y salidas.}
+Para sistematizar el modelo general, se adopta el siguiente vector de estado global de sexto orden:
 
 \begin{equation}
 	x(t)=
@@ -750,7 +793,8 @@ Para sistematizar el modelo general, se adopta el siguiente vector de estado glo
 		x_2(t)\\
 		x_3(t)\\
 		x_4(t)\\
-		x_5(t)
+		x_5(t)\\
+		x_6(t)
 	\end{bmatrix}
 	=
 	\begin{bmatrix}
@@ -758,30 +802,30 @@ Para sistematizar el modelo general, se adopta el siguiente vector de estado glo
 		\omega_m(t)\\
 		i_{qs}^{r}(t)\\
 		i_{ds}^{r}(t)\\
+		i_{0s}(t)\\
 		T_s^{\circ}(t)
-	\end{bmatrix}.
+	\end{bmatrix},
+	\qquad
+	x(t_0)=x_0.
 	\label{eq:estado_global_p2}
 \end{equation}
 
-Las entradas externas del modelo se separan conceptualmente en entradas de control (manipulables por el inversor) y entradas de perturbación exógenas:
+Las entradas externas del modelo se separan en entradas de control, manipulables por el inversor, y entradas de perturbación exógenas:
 
 \begin{equation*}
-    u_c(t) = \begin{bmatrix} v_{qs}^{r}(t) \\ v_{ds}^{r}(t) \end{bmatrix}, \qquad
-    u_d(t) = \begin{bmatrix} T_{ld}(t) \\ T_{amb}^{\circ}(t) \end{bmatrix}.
+	u_c(t)=\begin{bmatrix}v_{qs}^{r}(t)\\v_{ds}^{r}(t)\\v_{0s}(t)\end{bmatrix},
+	\qquad
+	u_d(t)=\begin{bmatrix}T_{ld}(t)\\T_{amb}^{\circ}(t)\end{bmatrix}.
 \end{equation*}
 
-Para expresar el modelo matricial en forma compacta, resulta conveniente definir el vector de entrada aumentado $u(t) \in \mathbb{R}^4$:
+Para expresar el modelo en forma compacta, se define el vector de entrada aumentado:
 
 \begin{equation}
 	u(t)=
 	\begin{bmatrix}
-		u_c(t)\\
-		u_d(t)
-	\end{bmatrix}
-	=
-	\begin{bmatrix}
 		v_{qs}^{r}(t)\\
 		v_{ds}^{r}(t)\\
+		v_{0s}(t)\\
 		T_{ld}(t)\\
 		T_{amb}^{\circ}(t)
 	\end{bmatrix}
@@ -790,64 +834,78 @@ Para expresar el modelo matricial en forma compacta, resulta conveniente definir
 		u_1(t)\\
 		u_2(t)\\
 		u_3(t)\\
-		u_4(t)
+		u_4(t)\\
+		u_5(t)
 	\end{bmatrix}.
 	\label{eq:entradas_global_p2}
 \end{equation}
 
-Es de vital importancia distinguir estructuralmente las salidas del sistema. La salida principal de interés para el control de movimiento es la posición angular de la carga o articulación ($q$). 
-Como el modelo equivalente fue referido al eje del motor, la variable física a controlar de proceso resulta:
+La salida principal de interés para el control de movimiento es la posición angular de la carga:
 
 \begin{equation*}
-    y_p(t) = q(t) = \frac{\theta_m(t)}{r} = \frac{x_1(t)}{r}.
+	y_p(t)=q(t)=\frac{\theta_m(t)}{r}=\frac{x_1(t)}{r}.
 \end{equation*}
 
-Por lo tanto, la matriz de salida asociada a la variable controlada es $C_p = \begin{bmatrix} 1/r & 0 & 0 & 0 & 0 \end{bmatrix}$.
-
-A su vez, el sensor de posición (encoder) se encuentra montado físicamente sobre el eje del motor, 
-por lo que la salida medida disponible para la retroalimentación de estado es distinta:
+Por lo tanto, la matriz de salida asociada a la variable controlada es:
 
 \begin{equation*}
-    y_s(t) = \theta_m(t) = x_1(t), \qquad C_s = \begin{bmatrix} 1 & 0 & 0 & 0 & 0 \end{bmatrix}.
+	C_p=\begin{bmatrix}\frac{1}{r} & 0 & 0 & 0 & 0 & 0\end{bmatrix}.
 \end{equation*}
 
-Esta distinción conceptual implica que, para evaluar el error de seguimiento de una trayectoria de referencia en la articulación, se utilizará $y_p(t)$, 
-pero toda lectura real proveniente de la planta se modela como $y_s(t)$ y requiere ser escalada por $1/r$ en el controlador de retroalimentación.
+A su vez, el sensor de posición se encuentra montado sobre el eje del motor, por lo que la salida medida disponible para la retroalimentación es:
+
+\begin{equation*}
+	y_s(t)=\theta_m(t)=x_1(t),
+	\qquad
+	C_s=\begin{bmatrix}1 & 0 & 0 & 0 & 0 & 0\end{bmatrix}.
+\end{equation*}
+
+Las corrientes físicas de fase se obtienen como salida adicional mediante la transformación inversa de Park:
+
+\begin{equation*}
+	\begin{bmatrix}
+		i_{as}(t)\\
+		i_{bs}(t)\\
+		i_{cs}(t)
+	\end{bmatrix}
+	=
+	\mathbf{T}_{P}^{-1}\left(\theta_r(t)\right)
+	\begin{bmatrix}
+		x_3(t)\\
+		x_4(t)\\
+		x_5(t)
+	\end{bmatrix}.
+\end{equation*}
 
 \paragraph{Modelo global no lineal en espacio de estados.}
-
-Agrupando las ecuaciones diferenciales mecánicas \eqref{eq:omega_global_acoplada}, eléctricas \eqref{eq:dinamica_corrientes_qd0} y térmicas \eqref{eq:dinamica_termica_estator}, 
-y sustituyendo los vectores definidos, el modelo global no lineal acoplado se resume en el siguiente sistema de ecuaciones de estado:
+Agrupando las ecuaciones diferenciales mecánicas \eqref{eq:omega_global_acoplada}, eléctricas \eqref{eq:dinamica_corrientes_qd0} y térmicas \eqref{eq:dinamica_termica_estator}, el modelo global no lineal acoplado queda:
 
 \begin{equation}
-    \boxed{
-        \begin{aligned}
-            \dot{x}_1 &= x_2,\\[1mm]
-            \dot{x}_2 &= \frac{1}{J_{eq}} \left[ K_t x_3 + K_{rel}x_4 x_3 - b_{eq}x_2 - \frac{g k_l}{r}\sin\left(\frac{x_1}{r}\right) - \frac{u_3}{r} \right],\\[1mm]
-            \dot{x}_3 &= \frac{1}{L_q} \left[ u_1 - R_s(x_5)x_3 - \left(\lambda_m^{\prime r}+L_d x_4\right) P_p x_2 \right],\\[1mm]
-            \dot{x}_4 &= \frac{1}{L_d} \left[ u_2 - R_s(x_5)x_4 + L_q x_3 P_p x_2 \right],\\[1mm]
-            \dot{x}_5 &= \frac{1}{C_{ts}} \left[ \frac{3}{2}R_s(x_5)\left(x_3^2+x_4^2\right) - \frac{x_5-u_4}{R_{ts-amb}} \right],\\[2mm]
-            y_p &= \frac{x_1}{r}.
-        \end{aligned}
-    }
-    \label{eq:modelo_global_nl}
+	\boxed{
+		\begin{aligned}
+			\dot{x}_1 &= x_2,\\[1mm]
+			\dot{x}_2 &= \frac{1}{J_{eq}}\left[K_t x_3+K_{rel}x_4x_3-b_{eq}x_2-\frac{gk_l}{r}\sin\left(\frac{x_1}{r}\right)-\frac{u_4}{r}\right],\\[1mm]
+			\dot{x}_3 &= \frac{1}{L_q}\left[u_1-R_s(x_6)x_3-\left(\lambda_m^{\prime r}+L_d x_4\right)P_p x_2\right],\\[1mm]
+			\dot{x}_4 &= \frac{1}{L_d}\left[u_2-R_s(x_6)x_4+L_q x_3 P_p x_2\right],\\[1mm]
+			\dot{x}_5 &= \frac{1}{L_{ls}}\left[u_3-R_s(x_6)x_5\right],\\[1mm]
+			\dot{x}_6 &= \frac{1}{C_{ts}}\left[\frac{3}{2}R_s(x_6)\left(x_3^2+x_4^2+2x_5^2\right)-\frac{x_6-u_5}{R_{ts-amb}}\right],\\[2mm]
+			y_p &= \frac{x_1}{r}.
+		\end{aligned}
+	}
+	\label{eq:modelo_global_nl}
 \end{equation}
 
-El modelo \eqref{eq:modelo_global_nl} es fuertemente no lineal debido a múltiples factores estructurales: 
-el acoplamiento cruzado de corrientes que genera el torque de reluctancia ($x_4 x_3$), 
-las fuerzas contraelectromotrices inducidas que mezclan velocidades y corrientes ($x_4 x_2$ y $x_3 x_2$), 
-la dependencia paramétrica de la resistencia con el estado térmico ($R_s(x_5)$), 
-los términos de inyección de potencia calorífica cuadráticos ($x_3^2, x_4^2$), 
-y el torque de carga gravitacional no lineal ($\sin(x_1/r)$).
+El modelo \eqref{eq:modelo_global_nl} es fuertemente no lineal debido a múltiples factores estructurales: el acoplamiento cruzado de corrientes que genera el torque de reluctancia ($x_4x_3$), las fuerzas contraelectromotrices inducidas que mezclan velocidad y corrientes ($x_4x_2$ y $x_3x_2$), la dependencia paramétrica de la resistencia con el estado térmico ($R_s(x_6)$), los términos cuadráticos de inyección de potencia calorífica ($x_3^2$, $x_4^2$, $x_5^2$) y el torque gravitacional no lineal ($\sin(x_1/r)$).
 
+Si se impone la condición física particular de sistema trifásico equilibrado con neutro flotante, entonces $x_5(t)=i_{0s}(t)\equiv 0$ y $u_3(t)=v_{0s}(t)\equiv 0$. En ese caso, la quinta ecuación se desacopla y el modelo se reduce al caso de quinto orden utilizado habitualmente para el análisis de la PMSM balanceada.
 
 \paragraph{Modelo Global NL de la planta.}
-La Figura~\ref{fig:modelo_global_nl} muestra la implementación en Simulink del modelo global no lineal del sistema completo. En el esquema se observan los principales subsistemas que componen el accionamiento: el generador trifásico, la transformación de Park, el subsistema eléctrico de la PMSM, el subsistema mecánico equivalente, la transformación inversa de Park y el subsistema térmico del estator.
+La Figura~\ref{fig:modelo_global_nl} muestra la implementación en Simulink del modelo global no lineal del sistema completo. En el esquema deben observarse los principales subsistemas del accionamiento: generador o referencia trifásica, inversor idealizado, transformación de Park directa $abc\rightarrow qd0$, subsistema eléctrico de la PMSM, subsistema mecánico equivalente, transformación inversa de Park $qd0\rightarrow abc$ y subsistema térmico del estator con retroalimentación de $R_s(T_s^{\circ})$.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{img/modelo_global_nl.png}
-	\caption{Modelo global no lineal del accionamiento PMSM implementado en Simulink, compuesto por los subsistemas eléctrico, mecánico y térmico, junto con las transformaciones de Park directa e inversa.}
+	\includegraphics[width=\textwidth]{img/modelo_global_nl.pdf}
+	\caption{Modelo global no lineal del accionamiento PMSM implementado en Simulink. El diagrama integra las transformaciones de Park directa e inversa, el subsistema eléctrico en coordenadas $qd0$, el subsistema mecánico equivalente, el cálculo térmico de pérdidas Joule y la retroalimentación de la resistencia estatórica variable $R_s(T_s^{\circ})$.}
 	\label{fig:modelo_global_nl}
 \end{figure}
 
