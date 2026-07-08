@@ -1762,75 +1762,166 @@ Finalmente, la implementación del modelo LTI equivalente aumentado en Simulink 
 	\label{fig:modelo_lti_aumentado}
 \end{figure}
 % ---------------------------------------------------------
-\subsubsection{2.d) Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}
+\subsubsection{Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}
 
 El modelo LPV y el modelo LTI equivalente aumentado cumplen funciones distintas. El modelo LPV se obtiene por linealización Jacobiana del modelo global no lineal y conserva la dependencia de las matrices con el punto de operación. En cambio, el modelo LTI equivalente aumentado se obtiene luego de aplicar leyes de desacoplamiento y fijar un punto de operación nominal, generalmente con campo orientado \(I_d^o=0\).
 
-Para comparar ambos modelos resulta útil definir las ganancias equivalentes variables
+Para comparar ambos modelos se parte de las ecuaciones electromagnéticas donde aparece explícitamente la corriente de eje directo. El torque de la PMSM puede escribirse como:
 
 \begin{equation}
-	K_T(I_d^o)=K_t+K_{rel}I_d^o
-	=
+	T_m(t)=
 	\frac{3}{2}P_p
 	\left[
-	\lambda_m^{\prime r}+\left(L_d-L_q\right)I_d^o
-	\right],
+	\lambda_m^{\prime r}+\left(L_d-L_q\right)i_{ds}^{r}(t)
+	\right]
+	i_{qs}^{r}(t).
+	\label{eq:torque_kt_id}
+\end{equation}
+
+Si se evalúa alrededor de un punto de operación con \(i_{ds}^{r}(t)=I_d^o\), se define:
+
+\begin{equation}
+	\boxed{
+		K_T(I_d^o)=
+		\frac{3}{2}P_p
+		\left[
+		\lambda_m^{\prime r}+\left(L_d-L_q\right)I_d^o
+		\right]
+	}
 	\label{eq:kt_variable_p2}
 \end{equation}
 
+y entonces:
+
 \begin{equation}
-	K_E(I_d^o)=P_p\left(\lambda_m^{\prime r}+L_dI_d^o\right).
+	T_m(t)=K_T(I_d^o)i_{qs}^{r}(t).
+\end{equation}
+
+Por otro lado, la ecuación de tensión del eje \(q\) es:
+
+\begin{equation}
+	v_{qs}^{r}(t)=
+	R_s i_{qs}^{r}(t)
+	+
+	L_q\frac{di_{qs}^{r}(t)}{dt}
+	+
+	P_p
+	\left[
+	\lambda_m^{\prime r}+L_d i_{ds}^{r}(t)
+	\right]\omega_m(t).
+	\label{eq:vq_ke_id}
+\end{equation}
+
+Evaluando nuevamente en \(i_{ds}^{r}(t)=I_d^o\), se define:
+
+\begin{equation}
+	\boxed{
+		K_E(I_d^o)=
+		P_p
+		\left(
+		\lambda_m^{\prime r}+L_dI_d^o
+		\right)
+	}
 	\label{eq:ke_variable_p2}
 \end{equation}
 
-La ganancia \(K_T(I_d^o)\) determina el torque incremental producido por la corriente \(i_q\), mientras que \(K_E(I_d^o)\) determina el acoplamiento de velocidad en la ecuación de tensión del eje \(q\), asociado a la fuerza contraelectromotriz.
+y la ecuación del eje \(q\) queda:
+
+\begin{equation}
+	v_{qs}^{r}(t)=
+	R_s i_{qs}^{r}(t)
+	+
+	L_q\frac{di_{qs}^{r}(t)}{dt}
+	+
+	K_E(I_d^o)\omega_m(t).
+\end{equation}
+
+De esta forma, \(K_T(I_d^o)\) modifica la producción de torque, mientras que \(K_E(I_d^o)\) modifica la fuerza contraelectromotriz asociada a la velocidad.
 
 \paragraph{Caso \(I_d^o=0\).}
-Si el punto de operación cumple
+
+Para campo orientado ideal:
 
 \begin{equation}
 	I_d^o=0,
 \end{equation}
 
-entonces
+se obtiene:
 
 \begin{equation}
-	K_T(0)=K_t,
+	K_T(0)=
+	\frac{3}{2}P_p\lambda_m^{\prime r}=K_t,
 	\qquad
 	K_E(0)=P_p\lambda_m^{\prime r}.
 \end{equation}
 
-En este caso el modelo LPV linealizado alrededor del punto de campo orientado coincide, en sus términos electromecánicos principales, con el modelo LTI equivalente aumentado. Por esta razón el modelo LTI es adecuado como modelo de diseño alrededor de la condición nominal \(i_d=0\).
+Por lo tanto:
+
+\begin{equation}
+	T_m(t)=K_t i_{qs}^{r}(t),
+\end{equation}
+
+\begin{equation}
+	v_{qs}^{r}(t)=
+	R_s i_{qs}^{r}(t)
+	+
+	L_q\frac{di_{qs}^{r}(t)}{dt}
+	+
+	P_p\lambda_m^{\prime r}\omega_m(t).
+\end{equation}
+
+La ecuación mecánica equivalente queda:
+
+\begin{equation}
+	J_{eq}\dot{\omega}_m(t)=
+	K_t i_{qs}^{r}(t)
+	-
+	b_{eq}\omega_m(t)
+	-
+	T_{deq}(t).
+\end{equation}
+
+Este es el caso que coincide con el modelo LTI equivalente aumentado utilizado como modelo nominal de diseño.
 
 \paragraph{Caso \(I_d^o<0\): debilitamiento de campo.}
-Si
+
+Si se impone una corriente de eje directo negativa:
 
 \begin{equation}
 	I_d^o<0,
 \end{equation}
 
-la ganancia de fuerza contraelectromotriz disminuye:
+entonces disminuye la constante de fuerza contraelectromotriz:
 
 \begin{equation}
 	K_E(I_d^o)<K_E(0).
 \end{equation}
 
-Esto permite operar a mayores velocidades antes de alcanzar el límite de tensión del inversor, porque se reduce la tensión necesaria para compensar la fuerza contraelectromotriz. Sin embargo, como en la máquina considerada \(L_d>L_q\), se tiene \(K_{rel}>0\), y por lo tanto
+Como en la máquina considerada \(L_d>L_q\), también disminuye la constante de torque:
 
 \begin{equation}
 	K_T(I_d^o)<K_T(0).
 \end{equation}
 
-Es decir, el debilitamiento de campo aumenta el margen de velocidad, pero reduce el torque disponible por ampere de corriente \(i_q\). Además, al circular corriente de eje \(d\), aumentan las pérdidas Joule totales.
+Luego:
+
+\begin{equation}
+	T_m(t)=K_T(I_d^o)i_{qs}^{r}(t),
+	\qquad
+	K_T(I_d^o)<K_t.
+\end{equation}
+
+El debilitamiento de campo reduce la tensión inducida en el eje \(q\), permitiendo mayor velocidad antes de alcanzar el límite de tensión del inversor, pero reduce el torque disponible por ampere de corriente \(i_q\).
 
 \paragraph{Caso \(I_d^o>0\): reforzamiento de campo.}
-Si
+
+Si se impone una corriente de eje directo positiva:
 
 \begin{equation}
 	I_d^o>0,
 \end{equation}
 
-se obtiene
+entonces:
 
 \begin{equation}
 	K_E(I_d^o)>K_E(0),
@@ -1838,10 +1929,25 @@ se obtiene
 	K_T(I_d^o)>K_T(0).
 \end{equation}
 
-Esto implica mayor torque por ampere de eje \(q\), pero también mayor fuerza contraelectromotriz y, por lo tanto, mayor tensión requerida en el eje \(q\). Además, las pérdidas por efecto Joule aumentan porque la potencia disipada depende de
+Por lo tanto:
 
 \begin{equation}
-	P_{s,perd}\propto i_q^2+i_d^2.
+	T_m(t)=K_T(I_d^o)i_{qs}^{r}(t),
+	\qquad
+	K_T(I_d^o)>K_t.
+\end{equation}
+
+El reforzamiento de campo aumenta el torque por ampere de eje \(q\), pero también aumenta la fuerza contraelectromotriz y la tensión requerida en el eje \(q\).
+
+En ambos casos con \(I_d^o\neq0\), aumentan las pérdidas Joule respecto del caso \(I_d^o=0\), ya que:
+
+\begin{equation}
+	P_J(t)=
+	\frac{3}{2}R_s
+	\left[
+	\left(i_{qs}^{r}(t)\right)^2+
+	\left(i_{ds}^{r}(t)\right)^2
+	\right].
 \end{equation}
 
 \paragraph{Migración de propiedades dinámicas.}
