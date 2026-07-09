@@ -2028,124 +2028,109 @@ se produce una migración de los polos del sistema, modificando las ganancias, e
 Por esta razón, el modelo LPV resulta más adecuado para evaluar el rango de validez del modelo LTI y para estudiar la operación en regímenes alejados del punto nominal.
 
 % ---------------------------------------------------------
+
 \subsubsection{Funciones de transferencia del modelo LTI equivalente aumentado}
 
-Las funciones de transferencia se obtienen a partir del modelo LTI equivalente aumentado, considerando condiciones iniciales nulas:
+Las funciones de transferencia se obtienen a partir del subsistema electromecánico extraido del modelo LTI equivalente aumentado, 
+definido previamente en el sistema de ecuaciones~\eqref{eq:modelo_lti_aumentado}.
+Para ello, es necesario asumir condiciones iniciales nulas en todos los estados.
+Físicamente, esto implica que el sistema parte del reposo, sin corrientes almacenadas, 
+y en equilibrio térmico con el ambiente ($T_s^\circ(0) = T_{amb}^\circ$):
+
+\begin{equation*}
+    \mathbf{x}_a(0) = \mathbf{0}.
+\end{equation*}
+
+Esta hipótesis es fundamental, dado que la función de transferencia caracteriza exclusivamente la respuesta forzada del sistema (relacion entrada-salida), 
+suprimiento la respuesta libre o transitoria asociada a la energía almacenada inicialmente. 
+
+Para simplificar el álgebra en el dominio de Laplace, 
+se utilizarán las constantes electromagnéticas nominales de torque y fuerza contraelectromotriz. 
+Como se demostró en las Ecuaciones~\eqref{eq:kt_variable_p2} y~\eqref{eq:ke_variable_p2}, 
+al evaluar en el punto de operación de campo orientado ($I_{ds}^{ro} = 0$), estas constantes se reducen a:
+
+\begin{equation*}
+    K_t = K_T(0) = \frac{3}{2}P_p\lambda_m^{\prime r}, \qquad K_v = K_E(0) = P_p\lambda_m^{\prime r}.
+\end{equation*}
+
+Aplicando la transformada de Laplace a las ecuaciones diferenciaes correspondientes al subsistema electromecánico extraído de~\eqref{eq:modelo_lti_aumentado}, se obtiene:
+
+\begin{align*}
+    s \Theta_m(s) &= \Omega_m(s) \\
+    (J_{eq}s + b_{eq}) \Omega_m(s) &= K_t I_{qs}^r(s) - T_{deq}(s) \\
+    (L_q s + R_{s,\mathrm{REF}}) I_{qs}^r(s) &= V_{qs}^r(s) - K_v \Omega_m(s)
+\end{align*}
+
+Remplazando la expresión de la dinámica eléctrica en la ecuación mecánica para aislar la variable $I_{qs}^r(s)$, 
+se hace matemáticamente evidente el acoplamiento cruzado generado por la fuerza contraelectromotriz:
+
+\begin{equation*}
+    (J_{eq}s + b_{eq}) \Omega_m(s) = \frac{K_t}{L_q s + R_{s,\mathrm{REF}}} \Big[ V_{qs}^r(s) - K_v \Omega_m(s) \Big] - T_{deq}(s).
+\end{equation*}
+
+Sustituyendo la relación cinemática $\Omega_m(s) = s \Theta_m(s)$, 
+se agrupan los términos para relacionar la posición angular con las entradas del sistema:
 
 \begin{equation}
-	x_{LTI}(0)=0.
+    s \Big[ (L_q s + R_{s,\mathrm{REF}})(J_{eq}s + b_{eq}) + K_t K_v \Big] \Theta_m(s) = K_t V_{qs}^r(s) - (L_q s + R_{s,\mathrm{REF}}) T_{deq}(s).
 \end{equation}
 
-Esta hipótesis es necesaria porque la función de transferencia clásica relaciona salida y entrada bajo condiciones iniciales nulas. Si el estado inicial no fuese nulo, aparecerían términos adicionales en la transformada de Laplace que no forman parte de la función de transferencia.
+\paragraph{Función de transferencia desde la tensión $v_{qs}^r(t)$ hacia la posición $\theta_m(t)$.}
 
-A partir de (), la dinámica del eje \(q\) desacoplado es
+Considerando que la perturbación es nula ($T_{deq}(t) = 0$), se obtiene la relación directa de la planta principal:
 
 \begin{equation}
-	L_q\dot{i}_q+R_si_q=u_q.
+    \boxed{
+        G_v(s) = \frac{\Theta_m(s)}{V_{qs}^r(s)} = \frac{K_t}{s \Big[ (L_q s + R_{s,\mathrm{REF}})(J_{eq}s + b_{eq}) + K_t K_v \Big]}
+    }
+    \label{eq:ft_theta_vqs}
 \end{equation}
 
-Aplicando transformada de Laplace,
+\paragraph{Función de transferencia desde el torque de carga $T_l(t)$ hacia la posición $\theta_m(t)$.}
+
+Asumiendo ahora que la entrada de tensión de control es nula ($V_{qs}^r(s) = 0$), 
+y recordando que el torque de carga equivalente reflejado en el eje del motor está mediado por la relación de transmisión del engranaje planetario ($T_{deq}(s) = \frac{1}{r} T_l(s)$), 
+se obtiene la función de transferencia ante perturbaciones:
 
 \begin{equation}
-	\frac{I_q(s)}{U_q(s)}=\frac{1}{L_qs+R_s}.
-	\label{eq:ft_iq_uq_p2}
+    \boxed{
+        G_d(s) = \frac{\Theta_m(s)}{T_l(s)} = \frac{-\frac{1}{r} (L_q s + R_{s,\mathrm{REF}})}{s \Big[ (L_q s + R_{s,\mathrm{REF}})(J_{eq}s + b_{eq}) + K_t K_v \Big]}
+    }
+    \label{eq:ft_theta_tl}
 \end{equation}
 
-La dinámica mecánica linealizada es
+\paragraph{Polinomio característico del sistema.}
+Se observa que ambas funciones de transferencia comparten un mismo denominador complejo. 
+A este denominador se lo denomina \textit{polinomio característico} del sistema, 
+convencionalmente denotado mediante la letra $\Delta(s)$:
 
 \begin{equation}
-	J_{eq}\ddot{\theta}_m
-	+b_{eq}\dot{\theta}_m
-	+K_g^o\theta_m
-	=
-	K_ti_q
-	-\frac{1}{r}T_{ld}.
-	\label{eq:mecanica_laplace_base_p2}
+    \Delta(s) = s \Big[ (L_q s + R_{s,\mathrm{REF}})(J_{eq}s + b_{eq}) + K_t K_v \Big].
+    \label{eq:polinomio_caracteristico_motor}
 \end{equation}
 
-\paragraph{Función de transferencia desde \(u_q(t)\) hacia \(\theta_m(t)\).}
-Si se considera \(T_{ld}(t)=0\), se obtiene
+Las raíces de $\Delta(s) = 0$ definen unívocamente los polos del sistema electromecánico y, por ende, su estabilidad y dinámica transitoria. 
+El término $K_t K_v$ evidencia el fenómeno de amortiguamiento magnético natural, 
+producto del acoplamiento cruzado de la fuerza contraelectromotriz.
 
-\begin{equation}
-	\boxed{
-		\frac{\Theta_m(s)}{U_q(s)}
-		=
-		\frac{K_t}
-		{\left(L_qs+R_s\right)
-			\left(J_{eq}s^2+b_{eq}s+K_g^o\right)}.
-	}
-	\label{eq:ft_theta_uq_p2}
-\end{equation}
+\paragraph{Estados internos nulos u ocultos en las funciones de transferencia.}
+De los cinco estados que componen el modelo LTI equivalente aumentado ($x_a$), existen dos estados específicos que no se ven reflejados ni aportan a las funciones de transferencia obtenidas en~\eqref{eq:ft_theta_vqs} y~\eqref{eq:ft_theta_tl}: la corriente de magnetización $i_{ds}^r(t)$ y la temperatura del estator $T_s^\circ(t)$.
 
-En forma normalizada,
+Esta inobservabilidad desde el canal mecánico se explica mediante las siguientes razones analíticas:
+\begin{itemize}
+    \item \textbf{Inobservabilidad y Desacoplamiento de $i_{ds}^r(t)$:} Como consecuencia directa de la aplicación de la ley de control no lineal en el eje $d$, la dinámica de esta corriente se colapsó a un modo residual de primer orden ($\dot{i}_{ds}^r = -\frac{R_{s,\mathrm{REF}}}{L_d} i_{ds}^r$). Al linealizar el modelo en torno a $I_{ds}^{ro} = 0$, el término cruzado de torque por reluctancia se vuelve nulo. Así, este modo resulta ser autónomo, localmente estable y matemáticamente desacoplado: no es excitado por las entradas de interés ($v_{qs}^r(t)$ o $T_l(t)$) ni altera la trayectoria de la salida mecánica $\theta_m(t)$.
+    \item \textbf{Naturaleza No Lineal e Inobservabilidad de $T_s^\circ(t)$:} La dinámica térmica se excita mediante las pérdidas de potencia por efecto Joule $P_J(t)$, las cuales dependen de forma cuadrática (no lineal) de las corrientes de fase. Al aplicar la transformada de Laplace para derivar relaciones estrictamente LTI, esta dependencia no lineal no puede ser representada analíticamente. Adicionalmente, dado que el modelo equivalente asume una resistencia nominal constante $R_{s,\mathrm{REF}}$, las variaciones de temperatura no realimentan el subsistema eléctrico, volviendo al estado térmico un modo estructuralmente inobservable desde la salida $\theta_m(t)$.
+\end{itemize}
 
-\begin{equation}
-	\frac{\Theta_m(s)}{U_q(s)}
-	=
-	\frac{\dfrac{K_t}{J_{eq}L_q}}
-	{\left(s+\dfrac{R_s}{L_q}\right)
-		\left(s^2+\dfrac{b_{eq}}{J_{eq}}s+\dfrac{K_g^o}{J_{eq}}\right)}.
-\end{equation}
+\paragraph{Síntesis de la Sección 3 (Punto 2).}
+A lo largo de este desarrollo se han deducido tres representaciones matemáticas complementarias para el accionamiento mecatrónico, cada una con un propósito analítico y de diseño específico:
 
-\paragraph{Función de transferencia desde \(T_{ld}(t)\) hacia \(\theta_m(t)\).}
-Si se considera \(u_q(t)=0\), se obtiene
+\begin{itemize}
+    \item \textbf{Modelo global no lineal (NL):} Representa fielmente la planta física completa en coordenadas virtuales $qd0$. Permite simular el comportamiento transitorio fuertemente acoplado de la dinámica electromecánica de la máquina, los efectos no lineales de la carga y el calentamiento del estator.
+    \item \textbf{Modelo lineal con parámetros variables (LPV):} Obtenido mediante linealización Jacobiana, preserva la dependencia de las matrices de estado con el punto de operación (particularmente $I_{ds}^{ro}$). Es la herramienta analítica fundamental para estudiar pequeñas variaciones locales y evaluar la migración de las propiedades dinámicas ante cambios de régimen de operación.
+    \item \textbf{Modelo LTI equivalente aumentado:} Resulta de aplicar una estrategia de control vectorial con campo orientado ($I_{ds}^{ro} = 0$) y una linealización por retroalimentación de estados parcial (desacoplamiento no lineal de los ejes $d$ y $q$). Proporciona una planta completamente lineal e independiente del estado de magnetización inicial, la cual constituye el modelo nominal de diseño para la futura síntesis de los lazos de control.
+\end{itemize}
 
-\begin{equation}
-	\boxed{
-		\frac{\Theta_m(s)}{T_{ld}(s)}
-		=
-		\frac{-\dfrac{1}{r}}
-		{J_{eq}s^2+b_{eq}s+K_g^o}.
-	}
-	\label{eq:ft_theta_tld_p2}
-\end{equation}
-
-En forma normalizada,
-
-\begin{equation}
-	\frac{\Theta_m(s)}{T_{ld}(s)}
-	=
-	\frac{-\dfrac{1}{J_{eq}r}}
-	{s^2+\dfrac{b_{eq}}{J_{eq}}s+\dfrac{K_g^o}{J_{eq}}}.
-\end{equation}
-
-La salida física de interés es la posición de la carga
-
-\begin{equation}
-	\theta_l(t)=q(t)=\frac{\theta_m(t)}{r}.
-\end{equation}
-
-Por lo tanto, las funciones de transferencia hacia \(\theta_l(t)\) se obtienen multiplicando por \(1/r\):
-
-\begin{equation}
-	\frac{\Theta_l(s)}{U_q(s)}
-	=
-	\frac{1}{r}\frac{\Theta_m(s)}{U_q(s)},
-	\qquad
-	\frac{\Theta_l(s)}{T_{ld}(s)}
-	=
-	\frac{1}{r}\frac{\Theta_m(s)}{T_{ld}(s)}.
-	\label{eq:ft_theta_l_p2}
-\end{equation}
-
-\paragraph{Aclaración sobre \(u_q(t)\) y \(v_{qs}^{r}(t)\).}
-La consigna menciona la entrada \(v_{qs}^{r}(t)\), que corresponde a la tensión virtual total aplicada en el eje \(q\). En el modelo desacoplado se utiliza la entrada auxiliar \(u_q(t)\), relacionada con la tensión real de eje \(q\) por
-
-\begin{equation}
-	v_q^*(t)
-	=
-	u_q(t)
-	+
-	\left(\lambda_m^{\prime r}+L_di_d(t)\right)P_p\omega_m(t).
-\end{equation}
-
-Por lo tanto, las funciones \eqref{eq:ft_theta_uq_p2} y \eqref{eq:ft_theta_tld_p2} corresponden a la planta equivalente luego del desacoplamiento. Si se desea trabajar directamente desde \(v_q^r(t)\) sin compensación de fuerza contraelectromotriz, reaparece el acoplamiento eléctrico con \(\omega_m(t)\), y el modelo resultante ya no coincide con la planta LTI desacoplada usada para diseño.
-
-\paragraph{Estados internos que no aparecen directamente en las funciones de transferencia.}
-Los estados \(i_d(t)\) y \(T_s^{\circ}(t)\) no aparecen directamente en las funciones de transferencia hacia \(\theta_m(t)\) dadas por \eqref{eq:ft_theta_uq_p2} y \eqref{eq:ft_theta_tld_p2}. Esto ocurre porque, bajo las leyes de desacoplamiento adoptadas, \(i_d(t)\) queda como un modo residual estable y la temperatura se conserva como una dinámica térmica lineal desacoplada de la dinámica electromecánica principal. En el modelo no lineal completo, en cambio, ambos estados sí influyen indirectamente a través del torque de reluctancia, las pérdidas Joule y la variación térmica de \(R_s\).
-
-\paragraph{Síntesis del punto 2.}
-El modelo no lineal global representa la planta física completa y permite simular el comportamiento acoplado de la máquina, la carga y el calentamiento del estator. El modelo LPV permite estudiar pequeñas variaciones locales y la migración de propiedades con el punto de operación. Finalmente, el modelo LTI equivalente aumentado permite disponer de una planta lineal de diseño, obtenida mediante control vectorial y desacoplamiento no lineal de los ejes \(q\) y \(d\).
 
 \subsection{Punto 3: Análisis de estabilidad a lazo abierto del modelo LTI equivalente aumentado}
 
