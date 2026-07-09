@@ -649,9 +649,10 @@ La transformación requiere conocer instantáneamente la posición eléctrica de
 \paragraph{Torque electromagnético.}
 El torque electromagnético generado por la máquina PMSM está dado por la interacción entre los flujos magnéticos y las corrientes del estator:
 
-\begin{equation*}
+\begin{equation}
 	T_m(t) = \frac{3}{2}P_p \lambda_m^{\prime r} i_{qs}^{r}(t) + \frac{3}{2}P_p \left(L_d - L_q\right) i_{ds}^{r}(t)i_{qs}^{r}(t).
-\end{equation*}
+	\label{eq:torque_electromagnetico_PMSM}
+\end{equation}
 
 El primer término corresponde al torque producido por el flujo de los imanes permanentes del rotor ($\lambda_m^{\prime r}$, referido al estator). El segundo término corresponde al torque de reluctancia, originado por la saliencia magnética del rotor, donde $L_d$ y $L_q$ son las inductancias propias de los ejes directo y en cuadratura respectivamente.
 
@@ -673,13 +674,14 @@ El producto cruzado $i_{ds}^{r}(t)i_{qs}^{r}(t)$ constituye una de las no lineal
 \paragraph{Ecuaciones eléctricas en coordenadas $qd0$.}
 Aplicando la Segunda Ley de Kirchhoff a los devanados del estator en el marco de referencia rotórico, el balance dinámico de tensiones queda definido por:
 
-\begin{equation*}
+\begin{equation}
 	\begin{aligned}
 		v_{qs}^{r}(t) &= R_s\left(T_s^{\circ}\right)i_{qs}^{r}(t) + L_q \frac{di_{qs}^{r}(t)}{dt} + \left[\lambda_m^{\prime r} + L_d i_{ds}^{r}(t)\right]\omega_r(t), \\
 		v_{ds}^{r}(t) &= R_s\left(T_s^{\circ}\right)i_{ds}^{r}(t) + L_d \frac{di_{ds}^{r}(t)}{dt} - L_q i_{qs}^{r}(t)\omega_r(t), \\
 		v_{0s}(t) &= R_s\left(T_s^{\circ}\right)i_{0s}(t) + L_{ls}\frac{di_{0s}(t)}{dt}.
 	\end{aligned}
-\end{equation*}
+	\label{eq:dinamica_tensiones_qd0}
+\end{equation}
 
 Despejando las derivadas de corriente y sustituyendo $\omega_r(t)=P_p\omega_m(t)$, se obtiene:
 
@@ -1426,10 +1428,10 @@ En el mismo diagrama se incluye la perturbación mecánica externa $T_{ld}(t)$, 
 
 Para obtener el modelo LTI equivalente se impone la condición de campo orientado $i_{ds}^{r}(t)\equiv0$. Esta condición permite anular la corriente de eje directo, desacoplando el canal de flujo magnético del canal de torque.
 
-Partiendo de la ecuación del eje $d$:
+Partiendo de la Ecuacion \eqref{eq:dinamica_corrientes_qd0} para la dinámica de la corriente del eje $d$:
 
 \begin{equation}
-	\dot{i}_{ds}^r(t)
+	\frac{di_{ds}^{r}}{dt}
 	=
 	\frac{1}{L_d}
 	\left[
@@ -1447,7 +1449,7 @@ se exige que:
 \begin{equation*}
 	i_{ds}^r(t)\equiv0,
 	\qquad
-	\dot{i}_{ds}^r(t)\equiv0.
+	\frac{di_{ds}^{r}}{dt}\equiv0.
 \end{equation*}
 
 Al reemplazar estas condiciones en \eqref{eq:id_para_ley_minima}, queda:
@@ -1498,9 +1500,11 @@ Para llevar esta ley virtual al sistema físico, se forma el vector de tensiones
 
 y luego se aplica la transformación inversa de Park para obtener las referencias trifásicas $v_{as}^{*}(t)$, $v_{bs}^{*}(t)$ y $v_{cs}^{*}(t)$ que ingresan al modulador de tensión equivalente.
 
+% -----------------------------------------------------------------
 \paragraph{IV) Implementación de la ley de desacoplamiento en el modelo global no lineal.}
 
-A partir de la ley mínima obtenida en el inciso anterior, se implementó un controlador parcial que realimenta las variables medidas necesarias y genera la tensión virtual $v_{ds}^{r*}(t)$. Esta acción se combina con la entrada principal $v_{qs}^{r*}(t)$ y con $v_{0s}^{r*}(t)=0$, formando el vector de tensiones en coordenadas $qd0$. Luego, mediante la transformación inversa de Park, se obtienen las tensiones trifásicas de referencia que alimentan al modulador de tensión trifásico equivalente.
+A partir de la ley mínima obtenida en el inciso anterior, se implementó un controlador parcial que realimenta las variables medidas necesarias y genera la tensión virtual $v_{ds}^{r*}(t)$. 
+Esta acción se combina con la entrada principal $v_{qs}^{r*}(t)$ y con $v_{0s}^{r*}(t)=0$, formando el vector de tensiones en coordenadas $qd0$. Luego, mediante la transformación inversa de Park, se obtienen las tensiones trifásicas de referencia que alimentan al modulador de tensión trifásico equivalente.
 
 El modulador se modela en esta etapa como un inversor ideal de ganancia unitaria, por lo que las referencias $v_{as}^{*}(t)$, $v_{bs}^{*}(t)$ y $v_{cs}^{*}(t)$ se aplican directamente al modelo global no lineal de la PMSM. Con esta implementación se busca comprobar que la ley mínima fuerza $i_{ds}^{r}(t)\to0$, logrando el desacoplamiento entre el canal de flujo magnético y el canal de torque. La Figura~\ref{fig:ley_control_minima} muestra el esquema implementado en Simulink.
 
@@ -1510,6 +1514,8 @@ El modulador se modela en esta etapa como un inversor ideal de ganancia unitaria
 	\caption{Diagrama de bloques del sistema linealizado por realimentación parcial de estados mediante un controlador externo.}
 	\label{fig:ley_control_minima}
 \end{figure}
+
+% -----------------------------------------------------------------
 \paragraph{V) Dinámica residual equivalente para $i_{ds}^{r}(t)$.}
 Si la condición inicial \eqref{eq:hipotesis_inicial_id} no se cumple, es decir, si:
 
@@ -1517,25 +1523,24 @@ Si la condición inicial \eqref{eq:hipotesis_inicial_id} no se cumple, es decir,
     i_{ds}^r(t_0) \neq 0,
 \end{equation*}
 
-la inyección de la ley mínima \eqref{eq:ley_minima_vd} conduce a una dinámica residual. Sustituyendo $v_{ds}^{r*} = -L_q i_{qs}^r P_p \omega_m$ en la ecuación diferencial de la planta \eqref{eq:id_para_ley_minima}, se obtiene:
+la inyección de la ley mínima \eqref{eq:ley_minima_vd} conduce a una dinámica residual. Sustituyendo $v_{ds}^{r*} = -L_q i_{qs}^r P_p \omega_m$ en la ecuación diferencial de la planta para el eje $d$ \eqref{eq:id_para_ley_minima}, se obtiene:
 
 \begin{equation*}
-    \dot{i}_{ds}^r = \frac{-L_q i_{qs}^r P_p \omega_m - R_s i_{ds}^r + L_q i_{qs}^r P_p \omega_m}{L_d}.
+	\frac{di_{ds}^{r}}{dt} = \frac{-L_q i_{qs}^r P_p \omega_m - R_s i_{ds}^r + L_q i_{qs}^r P_p \omega_m}{L_d}.
 \end{equation*}
 
-Los términos de acoplamiento se cancelan exactamente y queda expuesta la dinámica libre:
+Los términos de acoplamiento se cancelan exactamente y queda expuesta la dinámica libre natural del eje directo:
 
 \begin{equation}
-    \boxed{ \dot{i}_{ds}^r = -\frac{R_s}{L_d}i_{ds}^r. }
+    \boxed{ \frac{di_{ds}^{r}}{dt} = -\frac{R_s}{L_d}i_{ds}^r. }
     \label{eq:dinamica_residual_id}
 \end{equation}
 
-La solución analítica de \eqref{eq:dinamica_residual_id} es un decaimiento exponencial:
+La solución analítica de la Ecuación \eqref{eq:dinamica_residual_id} es un decaimiento exponencial:
 
-\begin{equation}
+\begin{equation*}
     i_{ds}^r(t) = i_{ds}^r(t_0) e^{-\frac{R_s}{L_d}(t-t_0)}.
-    \label{eq:solucion_id_residual}
-\end{equation}
+\end{equation*}
 
 Como $R_s > 0$ y $L_d > 0$, el polo residual:
 
@@ -1543,7 +1548,8 @@ Como $R_s > 0$ y $L_d > 0$, el polo residual:
     p_d = -\frac{R_s}{L_d}
 \end{equation*}
 
-está siempre ubicado en el semiplano izquierdo del plano $s$. Por lo tanto, la corriente $i_{ds}^r$ decae exponencialmente a cero garantizando estabilidad asintótica local.
+está siempre ubicado en el semiplano izquierdo del plano $s$. 
+Por lo tanto, la corriente $i_{ds}^r$ decae exponencialmente a cero garantizando estabilidad asintótica local.
 
 La constante de tiempo asociada a este decaimiento es:
 
@@ -1557,7 +1563,8 @@ Utilizando los valores nominales de la máquina ($L_d = \SI{6.6e-3}{\henry}$ y $
     \tau_d \approx \SI{6.47e-3}{\second}.
 \end{equation*}
 
-Por lo tanto, luego de algunos múltiplos de $\tau_d$ (escasos milisegundos), el valor de $i_{ds}^r$ resulta prácticamente nulo y despreciable frente a la constante de tiempo mecánica (que es órdenes de magnitud más lenta).
+Por lo tanto, luego de algunos múltiplos de $\tau_d$ (escasos milisegundos), 
+el valor de $i_{ds}^r$ resulta prácticamente nulo y despreciable frente a la constante de tiempo mecánica (que es órdenes de magnitud más lenta).
 
 Este acoplamiento residual no lineal aparece temporalmente en el torque electromagnético:
 
@@ -1565,10 +1572,13 @@ Este acoplamiento residual no lineal aparece temporalmente en el torque electrom
     T_m = K_t i_{qs}^r + K_{rel} i_{ds}^r i_{qs}^r.
 \end{equation*}
 
-El término residual es $T_{rel,res} = K_{rel} i_{ds}^r i_{qs}^r$. Este término puede despreciarse en el estudio del régimen forzado porque $i_{ds}^r(t) \rightarrow 0$ de manera exponencial sumamente rápida y porque el torque de alineación principal ($K_t i_{qs}^r$) domina casi instantáneamente el comportamiento electromecánico.
+El término residual es $T_{rel,res} = K_{rel} i_{ds}^r i_{qs}^r$. 
+Este término puede despreciarse en el estudio del régimen forzado porque $i_{ds}^r(t) \rightarrow 0$ de manera exponencial sumamente rápida y porque el torque de alineación principal ($K_t i_{qs}^r$) domina casi instantáneamente el comportamiento electromecánico.
 
 \paragraph{VI) Ley complementaria mínima en el eje $q$.}
-La ley mínima del eje $d$ cancela el acoplamiento que afecta a $i_{ds}^r$, pero si la condición inicial no cumple $i_{ds}^r(t_0)=0$, dicha corriente no se anula instantáneamente sino que decae según su dinámica natural. Durante ese transitorio, la ecuación del eje $q$ conserva un término cruzado dependiente de $i_{ds}^r(t)$:
+Si bien la ley de control minima aplicada al eje $d$ logra cancelar el acoplamiento que afecta a $i_{ds}^r$, 
+esta corriente no se anula de forma instantánea si su condición inicial no es nula $i_{ds}^r(t_0)=0$, sino que decae según su dinámica natural. 
+Durante este transitorio, la dinámica del eje $q$ sigue afectada por un término de acoplamiento cruzado que depende de $i_{ds}^r(t)$:
 
 \begin{equation}
 	v_{qs}^{r*}(t)
@@ -1580,52 +1590,53 @@ La ley mínima del eje $d$ cancela el acoplamiento que afecta a $i_{ds}^r$, pero
 	\label{eq:iq_con_acople}
 \end{equation}
 
-El término que introduce la no linealidad residual es:
+El término responsable de introducir esta no linealidad residual es:
 
 \begin{equation*}
 	L_d i_{ds}^{r}(t)P_p\omega_m(t),
 \end{equation*}
 
-porque contiene el producto entre dos variables dinámicas. En cambio, el término $\lambda_m^{\prime r}P_p\omega_m(t)$ corresponde a la fuerza contraelectromotriz de los imanes permanentes y es lineal respecto de $\omega_m(t)$, por lo que no es necesario cancelarlo para obtener un modelo LTI equivalente.
+debido a que contiene el producto entre dos variables dinámicas. 
+En cambio, el término $\lambda_m^{\prime r}P_p\omega_m(t)$ corresponde a la fuerza contraelectromotriz de los imanes permanentes 
+y es lineal respecto de $\omega_m(t)$, por lo que no requiere ser cancelarlo para obtener un modelo LTI equivalente.
 
-Para no introducir una nueva entrada auxiliar, se conserva $v_{qs}^{r}(t)$ como la tensión de eje $q$ del modelo equivalente, y se distingue la tensión efectivamente aplicada al modelo no lineal mediante el superíndice $*$:
+Con el propósito de no introducir una nueva entrada auxiliar, se conserva $v_{qs}^{r}(t)$ como la tensión de eje $q$ del modelo equivalente, 
+y se distingue la tensión efectivamente aplicada al modelo no lineal mediante el superíndice $*$:
 
 \begin{equation}
-	v_{qs}^{r*}(t)=v_{qs}^{r}(t)+v_{q,\mathrm{comp}}^{r}(t).
+    v_{qs}^{r*}(t)=v_{qs}^{r}(t)+v_{q,\mathrm{comp}}^{r}(t).
+    \label{eq:vqs_asterisco}
 \end{equation}
 
-La ley de control complementaria mínima se elige como:
+La ley de control complementaria mínima se elige entonces como:
 
 \begin{equation}
-	\boxed{
-		v_{q,\mathrm{comp}}^{r}(t)
-		=L_d i_{ds}^{r}(t)P_p\omega_m(t)
-	}
-	\label{eq:ley_complementaria_vq}
+    v_{q,\mathrm{comp}}^{r}(t)
+    =L_d i_{ds}^{r}(t)P_p\omega_m(t)
+    \label{eq:ley_complementaria_vq}
 \end{equation}
 
-o, equivalentemente:
+Reemplazando la Ecuación~\eqref{eq:ley_complementaria_vq} en la Ecuación~\eqref{eq:vqs_asterisco}, se obtiene:
 
 \begin{equation}
-	\boxed{
-		v_{qs}^{r*}(t)
-		=
-		v_{qs}^{r}(t)
-		+L_d i_{ds}^{r}(t)P_p\omega_m(t)
-	}.
+    v_{qs}^{r*}(t)
+    =
+    v_{qs}^{r}(t)
+    +L_d i_{ds}^{r}(t)P_p\omega_m(t).
+    \label{eq:vqs_sustituida}
 \end{equation}
 
-Sustituyendo esta ley en \eqref{eq:iq_con_acople}, el término cruzado se cancela exactamente:
+Sustituyendo esta ley en la Ecuacion \eqref{eq:iq_con_acople}, el término cruzado se cancela exactamente:
 
-\begin{equation}
+\begin{equation*}
 	v_{qs}^{r}(t)
 	=
 	L_q\frac{di_{qs}^{r}(t)}{dt}
 	+R_s i_{qs}^{r}(t)
 	+\lambda_m^{\prime r}P_p\omega_m(t).
-\end{equation}
+\end{equation*}
 
-Por lo tanto, la dinámica del eje $q$ queda:
+Por lo tanto, la dinámica resultante para el eje de cuadratura ($q$) queda expresada como:
 
 \begin{equation}
 	\boxed{
@@ -1638,25 +1649,32 @@ Por lo tanto, la dinámica del eje $q$ queda:
 	\label{eq:iq_desacoplado}
 \end{equation}
 
-Esta ecuación es lineal e independiente del valor inicial de $i_{ds}^{r}(t)$. Por lo tanto, la ley complementaria mínima elimina el acoplamiento residual no lineal del eje $q$ aun cuando $i_{ds}^{r}(t_0)\neq 0$.
+Esta ecuación es lineal e independiente del valor inicial de $i_{ds}^{r}(t)$. 
+De esta forma, la ley complementaria mínima elimina el acoplamiento residual no lineal del eje $q$ aun cuando $i_{ds}^{r}(t_0)\neq 0$.
 
-Combinando esta acción con la ley mínima del eje $d$,
+Tal como se demostró en la Ecuacion \eqref{eq:dinamica_residual_id} de la sección anterior, la inyeccion de la ley mínima del eje $d$:
 
 \begin{equation*}
 	v_{ds}^{r*}(t)=-L_q i_{qs}^{r}(t)P_p\omega_m(t),
 \end{equation*}
 
-se obtiene la dinámica natural desacoplada:
+conduce inexorablemente a la dinámica natural desacoplada para el eje directo:
 
 \begin{equation}
-	\boxed{
-		\frac{di_{ds}^{r}(t)}{dt}
-		=
-		-\frac{R_s}{L_d}i_{ds}^{r}(t)
-	}.
+    \boxed{
+        \frac{di_{ds}^{r}(t)}{dt}
+        =
+        -\frac{R_s}{L_d}i_{ds}^{r}(t)
+    }
+    \label{eq:ids_desacoplado}
 \end{equation}
 
-De esta forma, $i_{ds}^{r}(t)$ puede tener una condición inicial distinta de cero, pero su evolución no vuelve a introducir el acoplamiento no lineal en el eje $q$. La fuerza contraelectromotriz $\lambda_m^{\prime r}P_p\omega_m(t)$ permanece en el modelo porque es un acoplamiento lineal propio de la máquina. Si más adelante se desea diseñar un lazo interno de corriente de primer orden puro, puede agregarse una compensación adicional de fuerza contraelectromotriz, pero dicha compensación ya no forma parte de la ley mínima pedida en este inciso.
+En consecuencia, $i_{ds}^{r}(t)$ puede partir de una condición inicial distinta de cero, 
+pero su evolución no vuelve a introducir el acoplamiento no lineal en el eje $q$. 
+La fuerza contraelectromotriz $\lambda_m^{\prime r}P_p\omega_m(t)$ permanece en el modelo porque es un acoplamiento lineal propio de la máquina. 
+Si en una etapa posterior se desea diseñar un lazo interno de corriente de primer orden puro, 
+podría agregarse una compensación adicional de fuerza contraelectromotriz, 
+pero dicha compensación ya no forma parte de la ley mínima requerida en este inciso.
 
 \begin{figure}[H]
 	\centering
@@ -1665,20 +1683,24 @@ De esta forma, $i_{ds}^{r}(t)$ puede tener una condición inicial distinta de ce
 	\label{fig:ley_complementaria_q}
 \end{figure}
 
-A partir del modelo LTI equivalente obtenido anteriormente en los incisos I) y II), se incorpora ahora la dinámica residual de la corriente en el eje directo $i_{ds}^{r}(t)$ y la dinámica térmica del estator $T_s^{\circ}(t)$. De esta manera, se obtiene un modelo LTI equivalente aumentado, en el cual se conserva como núcleo principal el modelo electromecánico de tercer orden formado por $\theta_m(t)$, $\omega_m(t)$ e $i_{qs}^{r}(t)$. De esta forma se obtiene un modelo LTI equivalente aumentado, donde el vector de estado queda definido como:
+A partir del modelo LTI equivalente obtenido anteriormente en los incisos I) y II), 
+se incorpora ahora la dinámica residual de la corriente de magnetización $i_{ds}^{r}(t)$ y la dinámica térmica del estator $T_s^{\circ}(t)$. 
+De esta manera, se construye un modelo LTI equivalente aumentado, cuyo núcleo dinámico sigue siendo el subsistema electromecánico de tercer orden formado por $\theta_m(t)$, $\omega_m(t)$ e $i_{qs}^{r}(t)$. 
+El nuevo vector de estado extendido se define entonces de la siguiente manera:
 
-\[
-x_a(t)=
-\begin{bmatrix}
-	\theta_m(t)\\
-	\omega_m(t)\\
-	i_{qs}^{r}(t)\\
-	i_{ds}^{r}(t)\\
-	T_s^{\circ}(t)
-\end{bmatrix}.
-\]
+\begin{equation*}
+    x_a(t)=
+    \begin{bmatrix}
+        \theta_m(t)\\
+        \omega_m(t)\\
+        i_{qs}^{r}(t)\\
+        i_{ds}^{r}(t)\\
+        T_s^{\circ}(t)
+    \end{bmatrix}.
+\end{equation*}
 
-El modelo aumentado queda dado por el siguiente sistema de ecuaciones de estado:
+
+Así, la representación en el espacio de estados del modelo global aumentado está regida por el siguiente sistema de ecuaciones diferenciales:
 
 \begin{equation}
 	\left\{
@@ -1723,7 +1745,7 @@ El modelo aumentado queda dado por el siguiente sistema de ecuaciones de estado:
 	\label{eq:modelo_lti_aumentado}
 \end{equation}
 
-donde la potencia eléctrica disipada por efecto Joule en el estator se calcula como:
+En donde la potencia eléctrica disipada por efecto Joule en los devanados del estator se evalua mediante:
 
 \begin{equation}
 	P_J(t)=
@@ -1735,25 +1757,29 @@ donde la potencia eléctrica disipada por efecto Joule en el estator se calcula 
 	\label{eq:perdidas_joule_lti_aumentado}
 \end{equation}
 
-En este modelo se utiliza $R_{s,\mathrm{REF}}$ constante, por lo que se desprecia el acoplamiento no lineal entre la temperatura del estator y la resistencia eléctrica de los bobinados. De esta manera, la temperatura $T_s^{\circ}(t)$ se incorpora como un estado adicional para representar la dinámica térmica del sistema, pero no realimenta a las ecuaciones eléctricas mediante una resistencia variable $R_s(T_s^{\circ})$.
+Es importante destacar que en este modelo se utiliza un valor constante $R_{s,\mathrm{REF}}$, despreciando asi el acoplamiento no lineal entre la temperatura del estator y la resistencia eléctrica de los bobinados. 
+En consecuencia, la temperatura $T_s^{\circ}(t)$ actúa como un estado adicional que representa la dinámica térmica del sistema, 
+pero no realimenta a las ecuaciones eléctricas mediante una resistencia variable $R_s(T_s^{\circ})$.
 
-La corriente $i_{ds}^{r}(t)$ también se incorpora como estado adicional porque, aunque la ley de control mínima en el eje $d$ impone su decaimiento, dicha corriente no desaparece instantáneamente. Su dinámica residual queda representada por un sistema de primer orden estable:
+La corriente $i_{ds}^{r}(t)$ también se incorpora como un estado adicional debido a que, si bien la ley de control mínima en el eje $d$ impone su decaimiento, 
+esta no desaparece instantáneamente. Su dinámica residual queda caracterizada por un sistema de primer orden estable:
 
-\[
+\begin{equation*}
 \frac{di_{ds}^{r}(t)}{dt}
 =
 -\frac{R_{s,\mathrm{REF}}}{L_d}i_{ds}^{r}(t),
-\]
+\end{equation*}
 
-cuyo polo es:
+cuyo polo está dado por:
 
-\[
+\begin{equation*}
 p_d=-\frac{R_{s,\mathrm{REF}}}{L_d}.
-\]
+\end{equation*}
 
-Como $R_{s,\mathrm{REF}}>0$ y $L_d>0$, se cumple que $p_d<0$, por lo que $i_{ds}^{r}(t)$ tiende exponencialmente a cero luego de un transitorio.
+Dado que los parámetros físicos cumplen que $R_{s,\mathrm{REF}}>0$ y $L_d>0$, se garantiza que $p_d<0$. 
+Por lo tanto, $i_{ds}^{r}(t)$ decaerá exponencialmente hacia cero tras cualquier transitorio.
 
-Finalmente, la implementación del modelo LTI equivalente aumentado en Simulink se muestra en la Figura~\ref{fig:modelo_lti_aumentado}.
+Finalmente, la implementación global de este modelo LTI equivalente aumentado en Simulink se ilustra en la Figura~\ref{fig:modelo_lti_aumentado}.
 
 \begin{figure}[H]
 	\centering
@@ -1761,45 +1787,56 @@ Finalmente, la implementación del modelo LTI equivalente aumentado en Simulink 
 	\caption{Diagrama de bloques del modelo LTI equivalente aumentado.}
 	\label{fig:modelo_lti_aumentado}
 \end{figure}
+
 % ---------------------------------------------------------
 \subsubsection{Comparación entre el modelo LTI equivalente aumentado y el modelo LPV}
 
-El modelo LPV y el modelo LTI equivalente aumentado cumplen funciones distintas. El modelo LPV se obtiene por linealización Jacobiana del modelo global no lineal y conserva la dependencia de las matrices con el punto de operación. En cambio, el modelo LTI equivalente aumentado se obtiene luego de aplicar leyes de desacoplamiento y fijar un punto de operación nominal, generalmente con campo orientado \(I_d^o=0\).
+El modelo LPV y el modelo LTI equivalente aumentado desempeñan roles analíticos fundamentales, aunque distintos, en el estudio del accionamiento. 
 
-Para comparar ambos modelos se parte de las ecuaciones electromagnéticas donde aparece explícitamente la corriente de eje directo. El torque de la PMSM puede escribirse como:
+Mientras que el modelo LPV, obtenido por linealización Jacobiana del sistema global no lineal conserva la dependencia paramétrica de las matrices de estado respecto al punto de operación, 
+el modelo LTI equivalente aumentado se consolida tras aplicar leyes de desacoplamiento y fijar un punto de operación nominal (típicamente bajo la premisa de campo orientado, $I_d^o=0$).
 
-\begin{equation}
+Aunque la variable de operación que se modifica o perturba es la corriente estática del eje directo ($I_{ds}^{ro}$), 
+el impacto macroscópico de esta variación (la migración de propiedades) se manifiesta de forma primordial sobre la dinámica del eje de cuadratura ($q$) y la ecuación de movimiento mecánico. 
+Esto ocurre debido al fuerte acoplamiento cruzado inherente de la máquina sincrónica. 
+Por lo tanto, para establecer una comparativa rigurosa entre ambas representaciones, 
+resulta conveniente analizar las ecuaciones electromagnéticas en las que la corriente del eje directo interviene de manera explícita alterando la dinámica de producción de fuerza. 
+
+Recordando, la expresión del torque electromagnético generado por la PMSM está dada por la Ecuacion \eqref{eq:torque_electromagnetico_PMSM}:
+
+\begin{equation*}
 	T_m(t)=
 	\frac{3}{2}P_p
 	\left[
 	\lambda_m^{\prime r}+\left(L_d-L_q\right)i_{ds}^{r}(t)
 	\right]
 	i_{qs}^{r}(t).
-	\label{eq:torque_kt_id}
-\end{equation}
+\end{equation*}
 
-Si se evalúa alrededor de un punto de operación con \(i_{ds}^{r}(t)=I_d^o\), se define:
-
-\begin{equation}
-	\boxed{
-		K_T(I_d^o)=
-		\frac{3}{2}P_p
-		\left[
-		\lambda_m^{\prime r}+\left(L_d-L_q\right)I_d^o
-		\right]
-	}
-	\label{eq:kt_variable_p2}
-\end{equation}
-
-y entonces:
+Al evaluar esta expresión en un entorno de operación donde la corriente de magnetización se asume constante ($i_{ds}^{r}(t)=I_{ds}^{ro}$), 
+es posible definir una constante de torque equivalente dependiente del punto de operación:
 
 \begin{equation}
-	T_m(t)=K_T(I_d^o)i_{qs}^{r}(t).
+    \boxed{
+        K_T(I_{ds}^{ro})=
+        \frac{3}{2}P_p
+        \left[
+        \lambda_m^{\prime r}+\left(L_d-L_q\right)I_{ds}^{ro}
+        \right]
+    }
+    \label{eq:kt_variable_p2}
 \end{equation}
 
-Por otro lado, la ecuación de tensión del eje \(q\) es:
+lo cual permite reescribir la producción de torque de forma análoga a la de un motor de corriente continua:
 
 \begin{equation}
+    T_m(t)=K_T(I_{ds}^{ro})i_{qs}^{r}(t).
+	\label{eq:torque_equivalente_f_K_T}
+\end{equation}
+
+Por otro lado, la dinámica eléctrica de la tensión del eje de cuadratura ($q$) responde a la Ecuación \eqref{eq:dinamica_tensiones_qd0}:
+
+\begin{equation*}
 	v_{qs}^{r}(t)=
 	R_s i_{qs}^{r}(t)
 	+
@@ -1810,136 +1847,155 @@ Por otro lado, la ecuación de tensión del eje \(q\) es:
 	\lambda_m^{\prime r}+L_d i_{ds}^{r}(t)
 	\right]\omega_m(t).
 	\label{eq:vq_ke_id}
-\end{equation}
+\end{equation*}
 
-Evaluando nuevamente en \(i_{ds}^{r}(t)=I_d^o\), se define:
-
-\begin{equation}
-	\boxed{
-		K_E(I_d^o)=
-		P_p
-		\left(
-		\lambda_m^{\prime r}+L_dI_d^o
-		\right)
-	}
-	\label{eq:ke_variable_p2}
-\end{equation}
-
-y la ecuación del eje \(q\) queda:
+Evaluando nuevamente bajo la condición de régimen permanente en el eje directo ($i_{ds}^{r}(t)=I_{ds}^{ro}$), 
+se define la constante de fuerza contraelectromotriz equivalente:
 
 \begin{equation}
-	v_{qs}^{r}(t)=
-	R_s i_{qs}^{r}(t)
-	+
-	L_q\frac{di_{qs}^{r}(t)}{dt}
-	+
-	K_E(I_d^o)\omega_m(t).
+    \boxed{
+        K_E(I_{ds}^{ro})=
+        P_p
+        \left(
+        \lambda_m^{\prime r}+L_d I_{ds}^{ro}
+        \right)
+    }
+    \label{eq:ke_variable_p2}
 \end{equation}
 
-De esta forma, \(K_T(I_d^o)\) modifica la producción de torque, mientras que \(K_E(I_d^o)\) modifica la fuerza contraelectromotriz asociada a la velocidad.
-
-\paragraph{Caso \(I_d^o=0\).}
-
-Para campo orientado ideal:
+reduciendo la ecuación de la tensión del eje de cuadratura  ($q$) a:
 
 \begin{equation}
-	I_d^o=0,
+    v_{qs}^{r}(t)=
+    R_s i_{qs}^{r}(t)
+    +
+    L_q\frac{di_{qs}^{r}(t)}{dt}
+    +
+    K_E(I_{ds}^{ro})\omega_m(t).
+	\label{eq:tension_q_equivalente_f_K_E}
 \end{equation}
 
-se obtiene:
+De esta formulación se desprende que $K_T(I_{ds}^{ro})$ rige la capacidad de producción de torque del accionamiento, 
+mientras que $K_E(I_{ds}^{ro})$ determina la magnitud de la fuerza contraelectromotriz que se opone a la tensión de alimentación en función de la velocidad de giro.
 
-\begin{equation}
+A continuación, se evalúa la migración de propiedades variando $I_{ds}^{ro}$.
+
+% ----------------------------------------------------------------
+\paragraph{Caso 1: Operación con campo orientado ideal ($I_{ds}^{ro}=0$).}
+
+Bajo la estrategia de control vectorial clásico de campo orientado, se impone la restricción de anular la corriente de magnetización:
+
+\begin{equation*}
+    I_{ds}^{ro}=0.
+\end{equation*}
+
+En consecuencia, las constantes dinámicas equivalentes \eqref{eq:kt_variable_p2} y \eqref{eq:ke_variable_p2} colapsan a sus valores nominales estáticos:
+
+\begin{equation*}
 	K_T(0)=
 	\frac{3}{2}P_p\lambda_m^{\prime r}=K_t,
 	\qquad
 	K_E(0)=P_p\lambda_m^{\prime r}.
-\end{equation}
+\end{equation*}
 
-Por lo tanto:
+Sustituyendo estos valores invariantes, las ecuaciones de torque \eqref{eq:torque_equivalente_f_K_T} y de tensión en el eje de cuadratura \eqref{eq:tension_q_equivalente_f_K_E} 
+se simplifican drásticamente:
 
-\begin{equation}
+\begin{equation*}
 	T_m(t)=K_t i_{qs}^{r}(t),
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
 	v_{qs}^{r}(t)=
 	R_s i_{qs}^{r}(t)
 	+
 	L_q\frac{di_{qs}^{r}(t)}{dt}
 	+
 	P_p\lambda_m^{\prime r}\omega_m(t).
-\end{equation}
+\end{equation*}
 
-La ecuación mecánica equivalente queda:
+Y la ecuacion mecmecánica equivalente en \eqref{eq:modelo_lti_aumentado} adopta la forma completamente lineal:
 
-\begin{equation}
+\begin{equation*}
 	J_{eq}\dot{\omega}_m(t)=
 	K_t i_{qs}^{r}(t)
 	-
 	b_{eq}\omega_m(t)
 	-
 	T_{deq}(t).
-\end{equation}
+\end{equation*}
 
-Este es el caso que coincide con el modelo LTI equivalente aumentado utilizado como modelo nominal de diseño.
+Este escenario representa de manera exacta el modelo LTI equivalente aumentado utilizado como modelo nominal de diseño.
 
-\paragraph{Caso \(I_d^o<0\): debilitamiento de campo.}
+\paragraph{Caso 2: Debilitamiento de campo ($I_{ds}^{ro}<0$).}
 
-Si se impone una corriente de eje directo negativa:
+Cuando se requiere operar el accionamiento por encima de la velocidad base del motor, se impone una corriente de eje directo negativa para debilitar el campo magnético.
 
-\begin{equation}
-	I_d^o<0,
-\end{equation}
+\begin{equation*}
+    I_{ds}^{ro}<0.
+\end{equation*}
 
-entonces disminuye la constante de fuerza contraelectromotriz:
+Al observar la Ecuacion~\eqref{eq:ke_variable_p2}, como la inductancia $L_d > 0$ y $I_{ds}^{ro}$ es negativo,
+el término de acoplamiento se vuelve sustractivo. Esto provoca una disminución de la constante de fuerza contraelectromotriz respecto a su valor nominal:
 
-\begin{equation}
-	K_E(I_d^o)<K_E(0).
-\end{equation}
+\begin{equation*}
+    K_E(I_{ds}^{ro})<K_E(0).
+\end{equation*}
 
-Como en la máquina considerada \(L_d>L_q\), también disminuye la constante de torque:
+De manera análoga en la Ecuacion~\eqref{eq:kt_variable_p2}, 
+dado que en la máquina considerada se cumple la relación de inductancias $L_d > L_q$ (es decir, $L_d - L_q > 0$),
+la inyección de corriente negativa genera un término de reluctancia que se opone al torque principal, 
+penalizando la constante de producción de torque:
 
-\begin{equation}
-	K_T(I_d^o)<K_T(0).
-\end{equation}
+\begin{equation*}
+    K_T(I_{ds}^{ro})<K_T(0).
+\end{equation*}
 
-Luego:
+Resultando en la siguiente relación de torque-corriente:
 
-\begin{equation}
-	T_m(t)=K_T(I_d^o)i_{qs}^{r}(t),
-	\qquad
-	K_T(I_d^o)<K_t.
-\end{equation}
+\begin{equation*}
+    T_m(t)=K_T(I_{ds}^{ro})i_{qs}^{r}(t),
+    \qquad \text{para} \quad
+    K_T(I_{ds}^{ro})<K_t.
+\end{equation*}
 
-El debilitamiento de campo reduce la tensión inducida en el eje \(q\), permitiendo mayor velocidad antes de alcanzar el límite de tensión del inversor, pero reduce el torque disponible por ampere de corriente \(i_q\).
+Físicamente el debilitamiento de campo reduce la tensión inducida en el estator, 
+permitiendo alcanzar velocidades mecánicas superiores sin saturar el límite de tensión del inversor. 
+Sin embargo, el costo es una reducción en el torque disponible por cada amperio inyectado en el eje de cuadratura.
 
-\paragraph{Caso \(I_d^o>0\): reforzamiento de campo.}
+\paragraph{Caso 3: Reforzamiento de campo ($I_d^o>0$).}
 
-Si se impone una corriente de eje directo positiva:
+Si, por el contrario, se inyecta una corriente de eje directo positiva:
 
-\begin{equation}
-	I_d^o>0,
-\end{equation}
+\begin{equation*}
+    I_{ds}^{ro}>0.
+\end{equation*}
 
-entonces:
+Bajo la misma lógica analítica de las Ecuaciones \eqref{eq:ke_variable_p2} y \eqref{eq:kt_variable_p2}, 
+los términos algebráicos se vuelven puramente aditivos. Esto amplifica simultáneamente ambas constantes equivalentes:
 
-\begin{equation}
-	K_E(I_d^o)>K_E(0),
-	\qquad
-	K_T(I_d^o)>K_T(0).
-\end{equation}
+\begin{equation*}
+    K_E(I_{ds}^{ro})>K_E(0),
+    \qquad
+    K_T(I_{ds}^{ro})>K_T(0).
+\end{equation*}
 
-Por lo tanto:
+De modo que:
 
-\begin{equation}
-	T_m(t)=K_T(I_d^o)i_{qs}^{r}(t),
-	\qquad
-	K_T(I_d^o)>K_t.
-\end{equation}
+\begin{equation*}
+    T_m(t)=K_T(I_{ds}^{ro})i_{qs}^{r}(t),
+    \qquad \text{para} \quad
+    K_T(I_{ds}^{ro})>K_t.
+\end{equation*}
 
-El reforzamiento de campo aumenta el torque por ampere de eje \(q\), pero también aumenta la fuerza contraelectromotriz y la tensión requerida en el eje \(q\).
+El reforzamiento de campo incrementa la capacidad de producción de torque por amperio.
+Sin embargo, esto ocurre a expensas de aumentar la fuerza contraelectromotriz, 
+lo que conlleva a que el inversor deba suministrar una tensión mayor para mantener el giro,
+limitando la velocidad máxima alcanzable.
 
-En ambos casos con \(I_d^o\neq0\), aumentan las pérdidas Joule respecto del caso \(I_d^o=0\), ya que:
+Finalmente, es importante destacar que tanto en el debilitamiento como en el reforzamiento de campo, 
+se exije apartarse del campo orientado ($I_{ds}^{ro} \neq 0$), lo que incrementará las pérdidas por efecto Joule frente al caso nominal,
+puesto que la potencia térmica disipada es proporcional a la suma de los cuadrados de las corrientes de ambos ejes:
 
 \begin{equation}
 	P_J(t)=
@@ -1951,22 +2007,28 @@ En ambos casos con \(I_d^o\neq0\), aumentan las pérdidas Joule respecto del cas
 \end{equation}
 
 \paragraph{Migración de propiedades dinámicas.}
-En el modelo LPV, modificar \(I_d^o\) cambia directamente varios términos de la matriz \(A\). Por ejemplo,
+En el marco del modelo LPV, modificar el punto de operación $I_{ds}^{ro}$ impacta directamente en múltiples coeficientes de la matriz de estado dinámica $A$.
+A modo de ejemplo, el coeficiente:
 
 \begin{equation}
-	A_{23}=\frac{K_t+K_{rel}I_d^o}{J_{eq}},
+    A_{23}=\frac{K_t+K_{rel}I_{ds}^{ro}}{J_{eq}},
+    \label{eq:A23_lpv}
 \end{equation}
 
-que representa la influencia de \(i_q\) sobre la aceleración mecánica, y
+que caracteriza la influencia de la corriente de cuadratura $i_{qs}^{r}(t)$ sobre la aceleración mecánica, y el coeficiente:
 
 \begin{equation}
-	A_{32}=-\frac{P_p\left(\lambda_m^{\prime r}+L_dI_d^o\right)}{L_q},
+    A_{32}=-\frac{P_p\left(\lambda_m^{\prime r}+L_d I_{ds}^{ro}\right)}{L_q},
+    \label{eq:A32_lpv}
 \end{equation}
 
-que representa el acoplamiento de velocidad sobre la dinámica eléctrica del eje \(q\). Al variar estos términos, migran los polos, las ganancias, el amortiguamiento y la respuesta transitoria local del sistema. Por eso el modelo LPV resulta más adecuado para evaluar el rango de validez del modelo LTI y para estudiar la operación fuera del punto nominal.
+que modela el acoplamiento de la velocidad mecánica sobre la dinámica eléctrica del eje $q$,
+se ven alterados sustancialmente. Como consecuencia de la variación de estos términos, 
+se produce una migración de los polos del sistema, modificando las ganancias, el factor de amortiguamiento y la respuesta transitoria local. 
+Por esta razón, el modelo LPV resulta más adecuado para evaluar el rango de validez del modelo LTI y para estudiar la operación en regímenes alejados del punto nominal.
 
 % ---------------------------------------------------------
-\subsubsection{2.e) Funciones de transferencia del modelo LTI equivalente aumentado}
+\subsubsection{Funciones de transferencia del modelo LTI equivalente aumentado}
 
 Las funciones de transferencia se obtienen a partir del modelo LTI equivalente aumentado, considerando condiciones iniciales nulas:
 
