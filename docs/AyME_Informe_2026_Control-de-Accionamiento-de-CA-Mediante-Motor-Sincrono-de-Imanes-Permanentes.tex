@@ -2123,227 +2123,107 @@ Esta inobservabilidad desde el canal mecánico se explica mediante las siguiente
 \end{itemize}
 
 \paragraph{Síntesis de la Sección 3 (Punto 2).}
-A lo largo de este desarrollo se han deducido tres representaciones matemáticas complementarias para el accionamiento mecatrónico, cada una con un propósito analítico y de diseño específico:
+A lo largo de este desarrollo se han deducido tres representaciones matemáticas complementarias para el accionamiento mecatrónico, 
+cada una con un propósito analítico y de diseño específico.
+
+El \textbf{modelo global no lineal (NL)} representa fielmente la planta física completa en coordenadas virtuales $qd0$, 
+permitiendo simular el comportamiento transitorio fuertemente acoplado de la máquina, 
+los efectos no lineales de la carga y el calentamiento del estator. 
+Es fundamental destacar que es precisamente a este modelo físico original al que se le aplica la linealización por realimentación no lineal. 
+Además, al conservar la dinámica completa, es el único entorno en el cual resulta físicamente posible aplicar estrategias de debilitamiento o reforzamiento de campo, 
+ya que estas exigen la manipulación directa de la corriente $i_{ds}^{r}(t)$.
+
+Por su parte, el \textbf{modelo lineal con parámetros variables (LPV)}, obtenido mediante linealización Jacobiana, 
+preserva la dependencia paramétrica con el punto de operación. 
+Su función principal es actuar como la herramienta analítica idónea para estudiar pequeñas variaciones locales y evaluar formalmente cómo migran las propiedades dinámicas del sistema ante las variaciones de magnetización ($I_{ds}^{ro}$).
+
+Finalmente, el \textbf{modelo LTI equivalente aumentado} constituye la planta nominal sobre la cual se diseñarán los futuros controladores. 
+Es vital comprender que este modelo no incluye lazos de realimentación en su formulación matemática; 
+se trata del modelo lineal equivalente a lazo abierto resultante de asumir que el desacoplamiento de los ejes ya se efectuó exitosamente sobre la planta, 
+al cual simplemente se le ha añadido la dinámica residual de la corriente en el eje directo. 
+Dado que se construye bajo la premisa estricta de campo orientado ($I_{ds}^{ro} = 0$), 
+proporciona un sistema puramente lineal, invariante e independiente del estado de magnetización inicial. 
+Como contrapartida lógica, este modelo equivalente no permite estudiar operaciones de debilitamiento o refuerzo de campo, 
+puesto que en su estructura la corriente $i_d$ se fuerza permanentemente a cero.
+
+
+\subsection{Análisis de estabilidad a lazo abierto del modelo LTI equivalente aumentado}
+
+\subsubsection{Determinación de autovalores, polos y ceros}
+
+Para determinar los polos fundamentales del sistema, 
+se parte del polinomio característico deducido a partir de las funciones de transferencia en la Ecuación~\eqref{eq:polinomio_caracteristico_motor}:
+
+\begin{equation*}
+    \Delta(s) = s \Big[ (L_q s + R_{s,\mathrm{REF}})(J_{eq}s + b_{eq}) + K_t K_v \Big] = 0.
+\end{equation*}
+
+Distribuyendo los términos y normalizando respecto al coeficiente de mayor grado ($J_{eq}L_q$), 
+el polinomio se expresa como el producto de una raíz nula y una ecuación cuadrática:
+
+\begin{equation}
+    s \left[ s^2 + \left( \frac{b_{eq}}{J_{eq}} + \frac{R_{s,\mathrm{REF}}}{L_q} \right) s + \frac{R_{s,\mathrm{REF}} b_{eq} + K_t K_v}{J_{eq} L_q} \right] = 0.
+    \label{eq:polinomio_desarrollado_p3}
+\end{equation}
+
+De esta expresión se extrae directamente un primer polo en el origen ($p_1 = 0$), 
+asociado a la relación cinemática integral entre velocidad y posición. 
+En segundo lugar, el término cuadrático entre corchetes define un par de \textbf{polos electromecánicos conjugados}. 
+Comparando este término con la forma canónica estándar de un sistema de segundo orden:
+
+\begin{equation*}
+    s^2 + 2\zeta_{em}\omega_{n,em}s + \omega_{n,em}^2 = 0,
+\end{equation*}
+
+e igualando término a término con el polinomio deducido en la Ecuación~\eqref{eq:polinomio_desarrollado_p3}, 
+se establecen las siguientes equivalencias algebraicas:
+
+\begin{align*}
+    \omega_{n,em}^2 &= \frac{R_{s,\mathrm{REF}} b_{eq} + K_t K_v}{J_{eq} L_q}, \\[2mm]
+    2\zeta_{em}\omega_{n,em} &= \frac{b_{eq}}{J_{eq}} + \frac{R_{s,\mathrm{REF}}}{L_q} = \frac{L_q b_{eq} + R_{s,\mathrm{REF}} J_{eq}}{J_{eq} L_q}.
+\end{align*}
+
+Despejando este sistema, se obtienen las expresiones analíticas finales para la frecuencia natural no amortiguada ($\omega_{n,em}$) 
+y el factor de amortiguamiento ($\zeta_{em}$):
+
+\begin{equation}
+    \omega_{n,em} = \sqrt{\frac{R_{s,\mathrm{REF}} b_{eq} + K_t K_v}{J_{eq} L_q}},
+    \label{eq:wn_em_p3}
+\end{equation}
+
+\begin{equation}
+    \zeta_{em} = \frac{L_q b_{eq} + R_{s,\mathrm{REF}} J_{eq}}{2 \sqrt{J_{eq} L_q (R_{s,\mathrm{REF}} b_{eq} + K_t K_v)}}.
+    \label{eq:zeta_em_p3}
+\end{equation}
+
+Por consiguiente, las raíces del polinomio electromecánico arrojan un polo en el origen ($p_1 = 0$) y un par de polos complejos conjugados:
+
+\begin{equation}
+    p_{2,3} = -\zeta_{em}\omega_{n,em} \pm j \omega_{n,em}\sqrt{1-\zeta_{em}^2} = -\sigma_{em} \pm j\omega_{d,em}.
+\end{equation}
+
+Para completar el conjunto de autovalores del modelo LTI equivalente aumentado, es indispensable incluir la dinámica de los estados que resultan inobservables desde las funciones de transferencia hacia la posición. Como se justificó en la sección anterior, la corriente del eje $d$ y la temperatura del estator aportan dos polos reales adicionales:
 
 \begin{itemize}
-    \item \textbf{Modelo global no lineal (NL):} Representa fielmente la planta física completa en coordenadas virtuales $qd0$. Permite simular el comportamiento transitorio fuertemente acoplado de la dinámica electromecánica de la máquina, los efectos no lineales de la carga y el calentamiento del estator.
-    \item \textbf{Modelo lineal con parámetros variables (LPV):} Obtenido mediante linealización Jacobiana, preserva la dependencia de las matrices de estado con el punto de operación (particularmente $I_{ds}^{ro}$). Es la herramienta analítica fundamental para estudiar pequeñas variaciones locales y evaluar la migración de las propiedades dinámicas ante cambios de régimen de operación.
-    \item \textbf{Modelo LTI equivalente aumentado:} Resulta de aplicar una estrategia de control vectorial con campo orientado ($I_{ds}^{ro} = 0$) y una linealización por retroalimentación de estados parcial (desacoplamiento no lineal de los ejes $d$ y $q$). Proporciona una planta completamente lineal e independiente del estado de magnetización inicial, la cual constituye el modelo nominal de diseño para la futura síntesis de los lazos de control.
+    \item \textbf{Polo eléctrico residual (eje $d$):} $p_4 = p_d = -R_{s,\mathrm{REF}}/L_d$. Su constante de tiempo asociada es $\tau_d = L_d / R_{s,\mathrm{REF}}$.
+    \item \textbf{Polo térmico:} $p_5 = p_T = -1/(R_{ts-amb}C_{ts})$. Su constante de tiempo característica es $\tau_T = R_{ts-amb}C_{ts}$.
 \end{itemize}
 
+\paragraph{Determinación de ceros.}
+A partir de las funciones de transferencia~\eqref{eq:ft_theta_vqs} y~\eqref{eq:ft_theta_tl}, se determinan los ceros del sistema dependiendo de la entrada de excitación:
 
-\subsection{Punto 3: Análisis de estabilidad a lazo abierto del modelo LTI equivalente aumentado}
+\begin{itemize}
+    \item Para la entrada de tensión de control $V_{qs}^r(s)$, la transferencia de lazo directo $G_v(s)$ posee un numerador constante ($K_t$), por lo que \textbf{no presenta ceros finitos}. Su respuesta transitoria está dictaminada enteramente por la dinámica de los polos.
+    \item Para la entrada de perturbación de carga mecánica $T_l(s)$, la transferencia $G_d(s)$ presenta un \textbf{único cero finito} en el semiplano izquierdo asociado a la dinámica inductiva del estator, ubicado en:
+    \begin{equation}
+        z_d = -\frac{R_{s,\mathrm{REF}}}{L_q}.
+    \end{equation}
+\end{itemize}
 
+\paragraph{Evaluación numérica y correspondencia física.}
 
-\begin{equation}
-	\theta_m^o=0,\qquad
-	\omega_m^o=0,\qquad
-	i_d^o=0,\qquad
-	T_{ld}^o=0,\qquad
-	T_s^{\circ o}=T_{amb}^{\circ o}=20\,^{\circ}\mathrm{C}.
-	\label{eq:punto_operacion_p3}
-\end{equation}
-
-En esta condición, la carga se encuentra en el equilibrio estable definido respecto de la vertical hacia abajo. Por lo tanto,
-
-\begin{equation}
-	\cos\left(\frac{\theta_m^o}{r}\right)=1,
-\end{equation}
-
-y la rigidez gravitacional linealizada queda
-
-\begin{equation}
-	K_g^o=\frac{gk_l}{r^2}.
-	\label{eq:kg_nominal_p3}
-\end{equation}
-
-Esta aclaración es importante porque el modelo LTI aumentado conserva la acción restauradora de la gravedad linealizada. Por ello, la dinámica mecánica analizada en este punto no presenta un polo en el origen, sino un par de polos asociados al segundo orden mecánico.
-
-% ---------------------------------------------------------
-\subsubsection{3.a) Autovalores, polos, ceros y modos físicos}
-
-La matriz \(A_{LTI}\) posee una estructura por bloques. El primer bloque corresponde a la dinámica mecánica linealizada, el segundo a la dinámica de corriente del eje \(q\), el tercero a la dinámica residual de corriente del eje \(d\), y el último a la dinámica térmica del estator. Por lo tanto, los autovalores del modelo aumentado pueden asociarse directamente con modos físicos del sistema.
-
-\paragraph{Modo mecánico.}
-
-A partir de la ecuación mecánica linealizada,
-
-\begin{equation}
-	J_{eq}\ddot{\theta}_m
-	+
-	b_{eq}\dot{\theta}_m
-	+
-	K_g^o\theta_m
-	=
-	K_ti_q
-	-\frac{1}{r}T_{ld},
-	\label{eq:mecanica_p3}
-\end{equation}
-
-el polinomio característico del subsistema mecánico es
-
-\begin{equation}
-	J_{eq}s^2+b_{eq}s+K_g^o=0.
-	\label{eq:polinomio_mecanico_p3}
-\end{equation}
-
-Dividiendo por \(J_{eq}\),
-
-\begin{equation}
-	s^2+\frac{b_{eq}}{J_{eq}}s+\frac{K_g^o}{J_{eq}}=0.
-	\label{eq:polinomio_mecanico_normalizado_p3}
-\end{equation}
-
-Comparando con el polinomio característico de un sistema de segundo orden,
-
-\begin{equation}
-	s^2+2\zeta_m\omega_{n,m}s+\omega_{n,m}^2=0,
-	\label{eq:segundo_orden_p3}
-\end{equation}
-
-se obtiene
-
-\begin{equation}
-	\omega_{n,m}
-	=
-	\sqrt{\frac{K_g^o}{J_{eq}}},
-	\label{eq:wn_m_p3}
-\end{equation}
-
-\begin{equation}
-	\zeta_m
-	=
-	\frac{b_{eq}}
-	{2\sqrt{J_{eq}K_g^o}},
-	\label{eq:zeta_m_p3}
-\end{equation}
-
-\begin{equation}
-	\sigma_m
-	=
-	\zeta_m\omega_{n,m}
-	=
-	\frac{b_{eq}}{2J_{eq}},
-	\label{eq:sigma_m_p3}
-\end{equation}
-
-\begin{equation}
-	\omega_{d,m}
-	=
-	\omega_{n,m}\sqrt{1-\zeta_m^2}.
-	\label{eq:wd_m_p3}
-\end{equation}
-
-Por lo tanto, los polos mecánicos son
-
-\begin{equation}
-	p_{m,1,2}
-	=
-	-\zeta_m\omega_{n,m}
-	\pm j\omega_{d,m}
-	=
-	-\sigma_m\pm j\omega_{d,m}.
-	\label{eq:polos_mecanicos_p3}
-\end{equation}
-
-Estos polos representan la dinámica conjunta de posición y velocidad del eje mecánico equivalente. Cuando \(\zeta_m<1\), el modo es subamortiguado: la posición y la velocidad presentan oscilaciones que se atenúan por efecto de la fricción viscosa equivalente.
-
-\paragraph{Modo eléctrico del eje \(q\).}
-
-La dinámica desacoplada del eje \(q\) es
-
-\begin{equation}
-	\dot{i}_q
-	=
-	-\frac{R_s}{L_q}i_q
-	+
-	\frac{1}{L_q}u_q.
-	\label{eq:iq_p3}
-\end{equation}
-
-Por lo tanto, el polo asociado al eje \(q\) es
-
-\begin{equation}
-	p_q=-\frac{R_s}{L_q},
-	\label{eq:pq_p3}
-\end{equation}
-
-con constante de tiempo
-
-\begin{equation}
-	\tau_q=\frac{L_q}{R_s}.
-	\label{eq:tauq_p3}
-\end{equation}
-
-Este modo representa la velocidad con que la corriente \(i_q\), responsable de la producción principal de torque, responde ante la entrada auxiliar \(u_q\).
-
-\paragraph{Modo eléctrico residual del eje \(d\).}
-
-La dinámica del eje \(d\) queda dada por
-
-\begin{equation}
-	\dot{i}_d
-	=
-	-\frac{R_s}{L_d}i_d
-	+
-	\frac{1}{L_d}u_d.
-	\label{eq:id_p3}
-\end{equation}
-
-Para el caso de campo orientado ideal, se adopta \(u_d=0\). El polo residual asociado es
-
-\begin{equation}
-	p_d=-\frac{R_s}{L_d},
-	\label{eq:pd_p3}
-\end{equation}
-
-y su constante de tiempo es
-
-\begin{equation}
-	\tau_d=\frac{L_d}{R_s}.
-	\label{eq:taud_p3}
-\end{equation}
-
-Este modo indica que, si existe una condición inicial no nula en \(i_d\), dicha corriente decae exponencialmente hacia cero.
-
-\paragraph{Modo térmico.}
-
-La dinámica térmica lineal del estator se expresa como
-
-\begin{equation}
-	\dot{T}_s^{\circ}
-	=
-	-\frac{1}{R_{ts-amb}C_{ts}}T_s^{\circ}
-	+
-	\frac{1}{C_{ts}}P_J
-	+
-	\frac{1}{R_{ts-amb}C_{ts}}T_{amb}^{\circ}.
-	\label{eq:termico_p3}
-\end{equation}
-
-El polo térmico es
-
-\begin{equation}
-	p_T=-\frac{1}{R_{ts-amb}C_{ts}},
-	\label{eq:pt_p3}
-\end{equation}
-
-con constante de tiempo
-
-\begin{equation}
-	\tau_T=R_{ts-amb}C_{ts}.
-	\label{eq:taut_p3}
-\end{equation}
-
-Este modo es mucho más lento que los modos eléctricos y mecánicos, debido a la inercia térmica del bobinado de estator.
-
-\paragraph{Valores numéricos nominales.}
-
-Para la condición nominal sin carga útil,
-
-\begin{equation}
-	m_l=0,\qquad b_l=0.1\,\frac{\mathrm{N\,m}}{\mathrm{rad/s}},
-\end{equation}
+===== INFORME ACTUALIZADO Y COREJIDO HASTA ESTE PUNTO =====
+ESTO DE ABAJO HAY QUE BORRARLO (REEMPLAZAR) LOS CALCULOS BIEN HECHOS
 
 se tienen los valores ya calculados en el punto 1:
 

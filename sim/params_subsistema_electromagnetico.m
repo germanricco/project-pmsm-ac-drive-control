@@ -1,5 +1,5 @@
 % =========================================================
-%  2. PARÁMETROS ELÉCTRICOS PMSM
+%  PARÁMETROS ELÉCTRICOS PMSM
 % =========================================================
 Pp = 3;                            % [-] Pares de polos
 lambda_m = 0.016;                  % [Wb-turn] [V/(rad/s)] Flujo de imanes concatenado
