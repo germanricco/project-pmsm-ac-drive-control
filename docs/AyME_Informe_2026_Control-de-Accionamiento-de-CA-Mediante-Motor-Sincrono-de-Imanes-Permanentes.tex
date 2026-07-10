@@ -2484,503 +2484,302 @@ A partir de la migración paramétrica evaluada en los tres escenarios de incert
 
 Estos hallazgos definen los criterios críticos para la síntesis del control: el futuro controlador a lazo cerrado deberá poseer el ancho de banda suficiente para acelerar el comportamiento aletargado de la planta a plena carga, a la vez que compense las variaciones de ganancia introducidas por las caídas óhmicas en régimen de alta temperatura, garantizando un seguimiento rápido de las trayectorias independientemente de las condiciones operativas del manipulador.
 
-============== HASTA ACA ================
-\subsection{Punto 4: Análisis de observabilidad completa de estado del modelo LTI equivalente aumentado}
 
-En este punto se analiza la observabilidad completa de estado del modelo LTI equivalente aumentado obtenido en el punto 2.c.VI, considerando inicialmente como salida medida la posición angular del rotor del motor $\theta_m(t)$. El objetivo es determinar si, a partir de dicha medición, es posible reconstruir todos los estados internos del modelo aumentado.
+\subsection{4. Análisis de observabilidad completa de estado del modelo LTI equivalente aumentado}
 
-El vector de estado considerado es
+En este apartado se evalúa la observabilidad completa de estado del modelo LTI equivalente aumentado. El objetivo analítico es determinar formalmente si es posible reconstruir la totalidad de los estados internos de la máquina a partir del conocimiento de las entradas del sistema y de una única variable de salida medida.
 
-\begin{equation}
-	x_{LTI}(t)=
-	\begin{bmatrix}
-		\theta_m(t)\\
-		\omega_m(t)\\
-		i_q(t)\\
-		i_d(t)\\
-		T_s^\circ(t)
-	\end{bmatrix}.
-\end{equation}
-
-Para simplificar la escritura del análisis, se definen los siguientes parámetros:
+El vector de estado aumentado, definido previamente en el desarrollo del modelo LTI, es:
 
 \begin{equation}
-	\alpha_m=\frac{K_g^o}{J_{eq}}, \qquad
-	\beta_m=\frac{b_{eq}}{J_{eq}}, \qquad
-	\gamma_m=\frac{K_t}{J_{eq}},
+    \mathbf{x}_a(t)=
+    \begin{bmatrix}
+        \theta_m(t)\\
+        \omega_m(t)\\
+        i_{qs}^r(t)\\
+        i_{ds}^r(t)\\
+        T_s^\circ(t)
+    \end{bmatrix}.
+	\label{eq:vector_estado_aumentado}
 \end{equation}
+
+Para facilitar la manipulación algebraica de las matrices y evitar la propagación de fracciones extensas, 
+se definen los siguientes coeficientes dinámicos a partir de los parámetros físicos de la planta:
+
+\begin{equation*}
+    \beta_m = \frac{b_{eq}}{J_{eq}}, \qquad 
+    \gamma_m = \frac{K_t}{J_{eq}}, \qquad 
+    \nu_e = \frac{K_v}{L_q},
+\end{equation*}
+
+\begin{equation*}
+    \alpha_q = \frac{R_{s,\mathrm{REF}}}{L_q}, \qquad 
+    \alpha_d = \frac{R_{s,\mathrm{REF}}}{L_d}, \qquad 
+    \alpha_T = \frac{1}{R_{ts-amb}C_{ts}}.
+\end{equation*}
+
+Bajo esta nomenclatura, la matriz de estado dinámica $A_{LTI}$ del modelo linealizado evaluado en el origen adquiere la siguiente forma:
 
 \begin{equation}
-	\alpha_q=\frac{R_s}{L_q}, \qquad
-	\alpha_d=\frac{R_s}{L_d}, \qquad
-	\alpha_T=\frac{1}{R_{ts-amb}C_{ts}}.
+    A_{LTI} =
+    \begin{bmatrix}
+        0 & 1 & 0 & 0 & 0\\[2mm]
+        0 & -\beta_m & \gamma_m & 0 & 0\\[2mm]
+        0 & -\nu_e & -\alpha_q & 0 & 0\\[2mm]
+        0 & 0 & 0 & -\alpha_d & 0\\[2mm]
+        0 & 0 & 0 & 0 & -\alpha_T
+    \end{bmatrix}.
+    \label{eq:matriz_A_LTI_alias}
 \end{equation}
 
-Con esta notación, la matriz del modelo LTI equivalente aumentado puede escribirse como
+Esta estructura corrobora visualmente las deducciones de la sección de estabilidad: la dinámica electromecánica principal reside en el bloque superior izquierdo de $3 \times 3$, mientras que la corriente de magnetización ($i_{ds}^r$) y la temperatura ($T_s^\circ$) conforman modos puramente desacoplados, evidenciados por los ceros en el resto de las columnas de sus respectivas filas.
+
+\subsection*{4.a) Observabilidad utilizando Encoder: Medición de posición $\theta_m(t)$}
+
+Considerando inicialmente la utilización de un sensor de posición angular (encoder), la ecuación de salida del sistema LTI se define como:
 
 \begin{equation}
-	A_{LTI}=
-	\begin{bmatrix}
-		0 & 1 & 0 & 0 & 0\\
-		-\alpha_m & -\beta_m & \gamma_m & 0 & 0\\
-		0 & 0 & -\alpha_q & 0 & 0\\
-		0 & 0 & 0 & -\alpha_d & 0\\
-		0 & 0 & 0 & 0 & -\alpha_T
-	\end{bmatrix}.
+    y(t) = \theta_m(t) = C_\theta \mathbf{x}_a(t).
 \end{equation}
 
-La estructura de esta matriz muestra que la dinámica electromecánica principal está compuesta por los estados $\theta_m(t)$, $\omega_m(t)$ e $i_q(t)$, mientras que $i_d(t)$ y $T_s^\circ(t)$ quedan como modos internos desacoplados en el modelo LTI aumentado.
-
-\subsubsection{4.a) Observabilidad desde la medición de posición $\theta_m(t)$}
-
-Si se mide la posición angular del rotor mediante encoder, la salida medida es
+La matriz de salida $C_\theta \in \mathbb{R}^{1 \times 5}$ que extrae este estado es:
 
 \begin{equation}
-	y_s(t)=\theta_m(t).
+    C_\theta =
+    \begin{bmatrix}
+        1 & 0 & 0 & 0 & 0
+    \end{bmatrix}.
 \end{equation}
 
-Por lo tanto, la matriz de salida asociada es
+El sistema es completamente observable si y solo si la matriz de observabilidad $\mathcal{O}_\theta$ posee rango completo (rango igual a $n=5$). Esta matriz se construye apilando la matriz $C_\theta$ multiplicada por las potencias sucesivas de $A_{LTI}$:
+
+\begin{equation*}
+    \mathcal{O}_\theta=
+    \begin{bmatrix}
+        C_\theta\\[1mm]
+        C_\theta A_{LTI}\\[1mm]
+        C_\theta A_{LTI}^2\\[1mm]
+        C_\theta A_{LTI}^3\\[1mm]
+        C_\theta A_{LTI}^4
+    \end{bmatrix}.
+\end{equation*}
+
+Realizando las multiplicaciones algebraicas fila por fila, se obtiene:
+
+\begin{align*}
+    C_\theta &= \begin{bmatrix} 1 & 0 & 0 & 0 & 0 \end{bmatrix}, \\[2mm]
+    C_\theta A_{LTI} &= \begin{bmatrix} 0 & 1 & 0 & 0 & 0 \end{bmatrix}, \\[2mm]
+    C_\theta A_{LTI}^2 &= \begin{bmatrix} 0 & -\beta_m & \gamma_m & 0 & 0 \end{bmatrix}, \\[2mm]
+    C_\theta A_{LTI}^3 &= \begin{bmatrix} 0 & \beta_m^2-\gamma_m\nu_e & -\gamma_m(\beta_m+\alpha_q) & 0 & 0 \end{bmatrix}.
+\end{align*}
+
+Ensamblando la matriz de observabilidad completa:
 
 \begin{equation}
-	C_\theta=
-	\begin{bmatrix}
-		1 & 0 & 0 & 0 & 0
-	\end{bmatrix}.
+    \mathcal{O}_\theta =
+    \begin{bmatrix}
+        1 & 0 & 0 & 0 & 0\\[2mm]
+        0 & 1 & 0 & 0 & 0\\[2mm]
+        0 & -\beta_m & \gamma_m & 0 & 0\\[2mm]
+        0 & \beta_m^2-\gamma_m\nu_e & -\gamma_m(\beta_m+\alpha_q) & 0 & 0\\[2mm]
+        0 & \dots & \dots & 0 & 0
+    \end{bmatrix}.
 \end{equation}
 
-La matriz de observabilidad se define como
+Inspeccionando la matriz $\mathcal{O}_\theta$, se destaca inmediatamente que la cuarta y quinta columna están compuestas enteramente por ceros. Esto implica que los estados asociados a dichas columnas no propagan ninguna información hacia la salida medida ni a sus derivadas. 
+
+Las primeras tres columnas son linealmente independientes (asumiendo que la constante de torque no es nula, es decir, $\gamma_m \neq 0$). En consecuencia, el rango de la matriz es:
 
 \begin{equation}
-	\mathcal{O}_\theta=
-	\begin{bmatrix}
-		C_\theta\\
-		C_\theta A_{LTI}\\
-		C_\theta A_{LTI}^2\\
-		C_\theta A_{LTI}^3\\
-		C_\theta A_{LTI}^4
-	\end{bmatrix}.
+    \operatorname{rank}(\mathcal{O}_\theta) = 3 < n = 5.
 \end{equation}
 
-Calculando los primeros términos,
+Se concluye formalmente que el \textbf{modelo LTI equivalente aumentado no es completamente observable desde la posición angular $\theta_m(t)$}.
+
+\paragraph{Identificación de estados:}
+\begin{itemize}
+    \item \textbf{Estados observables:} La posición $\theta_m(t)$, la velocidad $\omega_m(t)$ (ya que es la derivada directa de la posición) y la corriente formadora de torque $i_{qs}^r(t)$ (cuyas variaciones inducen aceleración e impactan en la trayectoria posicional).
+    \item \textbf{Estados no observables:} La corriente de magnetización residual $i_{ds}^r(t)$ y la temperatura del estator $T_s^\circ(t)$. Ambos conforman dinámicas aisladas que no inyectan excitación alguna sobre el canal mecánico en el modelo de pequeña señal.
+\end{itemize}
+
+
+\subsection*{4.b) Alternativa utilizando Tacogenerador: Medición de velocidad $\omega_m(t)$}
+
+La consigna plantea una alternativa arquitectónica: prescindir del encoder y utilizar un tacogenerador para medir directamente la velocidad rotacional. En este escenario, la ecuación de salida se redefine como:
 
 \begin{equation}
-	C_\theta=
-	\begin{bmatrix}
-		1 & 0 & 0 & 0 & 0
-	\end{bmatrix},
+    y(t) = \omega_m(t) = C_\omega \mathbf{x}_a(t),
 \end{equation}
+
+con la nueva matriz de salida $C_\omega$:
 
 \begin{equation}
-	C_\theta A_{LTI}=
-	\begin{bmatrix}
-		0 & 1 & 0 & 0 & 0
-	\end{bmatrix},
+    C_\omega =
+    \begin{bmatrix}
+        0 & 1 & 0 & 0 & 0
+    \end{bmatrix}.
 \end{equation}
+
+Construyendo la respectiva matriz de observabilidad $\mathcal{O}_\omega$:
+
+\begin{align*}
+    C_\omega &= \begin{bmatrix} 0 & 1 & 0 & 0 & 0 \end{bmatrix}, \\[2mm]
+    C_\omega A_{LTI} &= \begin{bmatrix} 0 & -\beta_m & \gamma_m & 0 & 0 \end{bmatrix}, \\[2mm]
+    C_\omega A_{LTI}^2 &= \begin{bmatrix} 0 & \beta_m^2-\gamma_m\nu_e & -\gamma_m(\beta_m+\alpha_q) & 0 & 0 \end{bmatrix}.
+\end{align*}
+
+La matriz resultante adquiere la forma:
 
 \begin{equation}
-	C_\theta A_{LTI}^2=
-	\begin{bmatrix}
-		-\alpha_m & -\beta_m & \gamma_m & 0 & 0
-	\end{bmatrix},
+    \mathcal{O}_\omega =
+    \begin{bmatrix}
+        0 & 1 & 0 & 0 & 0\\[2mm]
+        0 & -\beta_m & \gamma_m & 0 & 0\\[2mm]
+        0 & \beta_m^2-\gamma_m\nu_e & -\gamma_m(\beta_m+\alpha_q) & 0 & 0\\[2mm]
+        0 & \dots & \dots & 0 & 0\\[2mm]
+        0 & \dots & \dots & 0 & 0
+    \end{bmatrix}.
 \end{equation}
+
+Bajo esta configuración, no solo la cuarta y quinta columna son nulas, sino que la \textbf{primera columna también se ha vuelto nula}. El rango de la matriz se reduce severamente:
 
 \begin{equation}
-	C_\theta A_{LTI}^3=
-	\begin{bmatrix}
-		\alpha_m\beta_m &
-		-\alpha_m+\beta_m^2 &
-		-\gamma_m(\beta_m+\alpha_q) &
-		0 &
-		0
-	\end{bmatrix}.
+    \operatorname{rank}(\mathcal{O}_\omega) = 2 < 5.
 \end{equation}
 
-Por lo tanto, la matriz de observabilidad queda con la siguiente estructura:
+Esta pérdida de rango obedece a un principio fundamental de la cinemática: la derivada aniquila la constante de integración. Al medir únicamente la velocidad, se pierde la referencia absoluta de posición angular.
 
-\begin{equation}
-	\mathcal{O}_\theta=
-	\begin{bmatrix}
-		1 & 0 & 0 & 0 & 0\\
-		0 & 1 & 0 & 0 & 0\\
-		-\alpha_m & -\beta_m & \gamma_m & 0 & 0\\
-		\alpha_m\beta_m & -\alpha_m+\beta_m^2 & -\gamma_m(\beta_m+\alpha_q) & 0 & 0\\
-		\cdots & \cdots & \cdots & 0 & 0
-	\end{bmatrix}.
-\end{equation}
+\paragraph{Identificación de estados en la alternativa:}
+\begin{itemize}
+    \item \textbf{Estados observables:} Solo la velocidad $\omega_m(t)$ y la corriente de cuadratura $i_{qs}^r(t)$ permanecen observables, ya que interactúan directamente en la ecuación de equilibrio de pares.
+    \item \textbf{Estados no observables:} La corriente de magnetización $i_{ds}^r(t)$, la temperatura $T_s^\circ(t)$ y, críticamente, \textbf{la posición angular $\theta_m(t)$}.
+\end{itemize}
 
-Se observa que las columnas asociadas a $i_d(t)$ y $T_s^\circ(t)$ son nulas para todas las filas de la matriz de observabilidad. Esto significa que dichos estados no aportan información a la salida $\theta_m(t)$ ni a sus derivadas sucesivas dentro del modelo LTI aumentado.
+\paragraph{Conclusión arquitectónica.} 
+La alternativa de medir velocidad mediante un tacogenerador degrada sustancialmente el conocimiento del estado del sistema. Dado que el objetivo primordial del proyecto es el "Control Automático de Posición", perder la observabilidad sobre $\theta_m(t)$ imposibilita el cierre de un lazo de control de posición sin introducir sensores adicionales. Por consiguiente, la arquitectura óptima obliga a mantener el encoder acoplado al eje para garantizar la operabilidad del servomecanismo, requiriendo además sensores de corriente (Amperímetros/Shunts) y termopares para medir los estados eléctricamente inobservables ($i_{ds}^r$ y $T_s^\circ$).
 
-Como las tres primeras columnas son linealmente independientes, siempre que $\gamma_m \neq 0$, se obtiene
 
-\begin{equation}
-	\operatorname{rank}(\mathcal{O}_\theta)=3.
-\end{equation}
-
-Dado que el modelo aumentado tiene cinco estados,
-
-\begin{equation}
-	n=5,
-\end{equation}
-
-resulta
-
-\begin{equation}
-	\operatorname{rank}(\mathcal{O}_\theta)=3<5.
-\end{equation}
-
-Por lo tanto, el modelo LTI equivalente aumentado no es completamente observable desde la medición de $\theta_m(t)$.
-
-Los estados observables desde $\theta_m(t)$ son
-
-\begin{equation}
-	\theta_m(t), \qquad \omega_m(t), \qquad i_q(t).
-\end{equation}
-
-En cambio, los estados no observables desde $\theta_m(t)$ son
-
-\begin{equation}
-	i_d(t), \qquad T_s^\circ(t).
-\end{equation}
-
-La interpretación física es directa. La posición $\theta_m(t)$ permite inferir la velocidad $\omega_m(t)$, ya que
-
-\begin{equation}
-	\dot{\theta}_m(t)=\omega_m(t).
-\end{equation}
-
-Además, la aceleración mecánica depende del torque electromagnético generado por $i_q(t)$, por lo que la corriente de eje q queda reflejada en la evolución temporal de la posición. En cambio, la corriente $i_d(t)$ queda como una dinámica eléctrica residual desacoplada, y la temperatura $T_s^\circ(t)$ queda como una dinámica térmica interna que no afecta directamente a la posición en el modelo LTI aumentado.
-
-Por esta razón, aunque el subsistema electromecánico principal sí es observable desde la posición, el modelo aumentado completo no lo es. Para conocer $i_d(t)$ y $T_s^\circ(t)$ se requieren mediciones adicionales, tales como sensores de corriente y sensor de temperatura.
-
-\subsubsection{4.b) Alternativa: observabilidad desde la medición de velocidad $\omega_m(t)$}
-
-La consigna también propone reevaluar la observabilidad en el caso alternativo de medir velocidad angular $\omega_m(t)$ mediante un tacogenerador, en lugar de medir posición mediante encoder.
-
-En este caso, la salida medida es
-
-\begin{equation}
-	y_s(t)=\omega_m(t),
-\end{equation}
-
-por lo que la matriz de salida es
-
-\begin{equation}
-	C_\omega=
-	\begin{bmatrix}
-		0 & 1 & 0 & 0 & 0
-	\end{bmatrix}.
-\end{equation}
-
-La matriz de observabilidad correspondiente es
-
-\begin{equation}
-	\mathcal{O}_\omega=
-	\begin{bmatrix}
-		C_\omega\\
-		C_\omega A_{LTI}\\
-		C_\omega A_{LTI}^2\\
-		C_\omega A_{LTI}^3\\
-		C_\omega A_{LTI}^4
-	\end{bmatrix}.
-\end{equation}
-
-Calculando los primeros términos,
-
-\begin{equation}
-	C_\omega=
-	\begin{bmatrix}
-		0 & 1 & 0 & 0 & 0
-	\end{bmatrix},
-\end{equation}
-
-\begin{equation}
-	C_\omega A_{LTI}=
-	\begin{bmatrix}
-		-\alpha_m & -\beta_m & \gamma_m & 0 & 0
-	\end{bmatrix},
-\end{equation}
-
-\begin{equation}
-	C_\omega A_{LTI}^2=
-	\begin{bmatrix}
-		\alpha_m\beta_m &
-		-\alpha_m+\beta_m^2 &
-		-\gamma_m(\beta_m+\alpha_q) &
-		0 &
-		0
-	\end{bmatrix}.
-\end{equation}
-
-Nuevamente, las columnas asociadas a $i_d(t)$ y $T_s^\circ(t)$ son nulas. Por lo tanto, estos estados tampoco son observables desde la medición de velocidad.
-
-Para el modelo considerado, como existe rigidez gravitacional linealizada,
-
-\begin{equation}
-	K_g^o \neq 0,
-\end{equation}
-
-se tiene
-
-\begin{equation}
-	\alpha_m=\frac{K_g^o}{J_{eq}} \neq 0.
-\end{equation}
-
-En consecuencia, la posición $\theta_m(t)$ influye sobre la aceleración mecánica, y por eso puede ser reconstruida a partir de la medición de velocidad y del modelo dinámico. Bajo esta condición,
-
-\begin{equation}
-	\operatorname{rank}(\mathcal{O}_\omega)=3.
-\end{equation}
-
-Como el orden del modelo aumentado es $n=5$,
-
-\begin{equation}
-	\operatorname{rank}(\mathcal{O}_\omega)=3<5.
-\end{equation}
-
-Por lo tanto, el modelo LTI equivalente aumentado tampoco es completamente observable desde $\omega_m(t)$.
-
-Los estados observables desde $\omega_m(t)$ son
-
-\begin{equation}
-	\theta_m(t), \qquad \omega_m(t), \qquad i_q(t).
-\end{equation}
-
-Los estados no observables desde $\omega_m(t)$ son
-
-\begin{equation}
-	i_d(t), \qquad T_s^\circ(t).
-\end{equation}
-
-Cabe aclarar que esta conclusión depende de conservar el término gravitacional linealizado. Si se analizara un modelo sin rigidez gravitacional, es decir con $K_g^o=0$, la medición de velocidad no permitiría reconstruir un desplazamiento constante de posición. En el presente modelo, en cambio, la gravedad linealizada introduce una relación entre posición y aceleración, por lo que $\theta_m(t)$ sí queda observable desde $\omega_m(t)$.
 
 \subsubsection{Síntesis del punto 4}
 
 El modelo LTI equivalente aumentado no es completamente observable desde la medición de posición $\theta_m(t)$ ni desde la medición alternativa de velocidad $\omega_m(t)$. En ambos casos, el rango de la matriz de observabilidad es
 
-\begin{equation}
+\begin{equation*}
 	\operatorname{rank}(\mathcal{O})=3<5.
-\end{equation}
+\end{equation*}
 
 La parte electromecánica principal del modelo, formada por $\theta_m(t)$, $\omega_m(t)$ e $i_q(t)$, sí resulta observable. Sin embargo, los estados $i_d(t)$ y $T_s^\circ(t)$ son no observables desde dichas salidas, debido a que en el modelo LTI aumentado quedan desacoplados de la dinámica que conduce a la posición y velocidad del rotor.
 
-\subsection{Punto 5: Análisis de controlabilidad completa de estado del modelo LTI equivalente aumentado}
+\section*{5. Análisis de Controlabilidad Completa de Estado del Modelo LTI Equivalente Aumentado}
 
-En este punto se analiza la controlabilidad completa de estado del modelo LTI equivalente aumentado desde la entrada manipulada $v_{qs}^r(t)$, sin considerar la perturbación de carga mecánica como entrada de control.
+En este apartado se evalúa la propiedad de controlabilidad completa de estado para el modelo LTI equivalente aumentado (de orden $n=5$), obtenido en el ítem 2.c.VI. El propósito analítico es determinar si, mediante la manipulación exclusiva de la tensión de comando del eje en cuadratura $v_{qs}^r(t)$ y asumiendo nula la perturbación de carga mecánica ($T_l(t)=0$), es posible transferir al sistema desde cualquier estado inicial hacia cualquier estado final deseado en un intervalo de tiempo finito.
 
-En el modelo físico, la tensión aplicada sobre el eje q es $v_q^\ast(t)$. Sin embargo, luego de aplicar la ley de desacoplamiento no lineal desarrollada en el punto 2.c.VI, la variable que ingresa linealmente al modelo LTI equivalente aumentado es la entrada auxiliar $u_q(t)$, definida mediante
-
-\begin{equation}
-	v_q^\ast(t)=u_q(t)+\left(\lambda_m^{\prime r}+L_d i_d(t)\right)P_p\omega_m(t).
-\end{equation}
-
-Por este motivo, el análisis de controlabilidad del modelo LTI se realiza desde la entrada auxiliar $u_q(t)$. Esta conclusión es equivalente a analizar la entrada manipulada $v_{qs}^r(t)$ una vez incorporada la compensación no lineal correspondiente.
-
-\subsubsection{5.a) Controlabilidad desde la entrada $u_q(t)$}
-
-La entrada $u_q(t)$ actúa directamente sobre la dinámica de corriente del eje q:
+Para un sistema lineal e invariante en el tiempo regido por la ecuación de estado $\dot{\mathbf{x}}(t) = A \cdot \mathbf{x}(t) + B \cdot \mathbf{u}(t)$, el criterio de controlabilidad de Kalman establece que la matriz de controlabilidad $\mathcal{C}$, construida como:
 
 \begin{equation}
-	\dot{i}_q(t)=
-	-\frac{R_s}{L_q}i_q(t)+\frac{1}{L_q}u_q(t).
+    \mathcal{C} = \begin{bmatrix} B & A \cdot B & A^2 \cdot B & \dots & A^{n-1} \cdot B \end{bmatrix},
 \end{equation}
 
-Por lo tanto, el vector de entrada asociado a $u_q(t)$ es
+debe poseer rango pleno. Es decir, los vectores columna que componen la matriz deben ser linealmente independientes, cumpliendo que $\operatorname{Rango}(\mathcal{C}) = n$.
+
+\subsection*{5.a) Evaluación de la matriz de controlabilidad}
+
+A partir del vector de estado aumentado (Ecuación \eqref{eq:vector_estado_aumentado}) y la matriz de estado dinámica (Ecuación \eqref{eq:matriz_A_LTI_alias}):
+
+\begin{equation*}
+    \mathbf{x}_a(t)=
+    \begin{bmatrix}
+        \theta_m(t)\\
+        \omega_m(t)\\
+        i_{qs}^r(t)\\
+        i_{ds}^r(t)\\
+        T_s^\circ(t)
+    \end{bmatrix}.
+\end{equation*}
+
+\begin{equation*}
+    A =
+    \begin{bmatrix}
+        0 & 1 & 0 & 0 & 0\\[3mm]
+        0 & -\dfrac{b_{eq}}{J_{eq}} & \dfrac{K_t}{J_{eq}} & 0 & 0\\[3mm]
+        0 & -\dfrac{K_v}{L_q} & -\dfrac{R_{s,\mathrm{REF}}}{L_q} & 0 & 0\\[3mm]
+        0 & 0 & 0 & -\dfrac{R_{s,\mathrm{REF}}}{L_d} & 0\\[3mm]
+        0 & 0 & 0 & 0 & -\dfrac{1}{R_{ts-amb}C_{ts}}
+    \end{bmatrix}.
+\end{equation*}
+
+La entrada manipulada bajo escrutinio es escalar ($u(t) = v_{qs}^r(t)$). 
+Inspeccionando el sistema, esta tensión actúa directa y exclusivamente sobre la derivada de la corriente en cuadratura $\dot{i}_{qs}^r(t)$. 
+Por consiguiente, el vector de distribución de entrada $B_q \in \mathbb{R}^{5 \times 1}$ resulta:
 
 \begin{equation}
-	B_q=
-	\begin{bmatrix}
-		0\\
-		0\\
-		\dfrac{1}{L_q}\\
-		0\\
-		0
-	\end{bmatrix}.
+    B_q =
+    \begin{bmatrix}
+        0 \\[1mm]
+        0 \\[1mm]
+        \dfrac{1}{L_q} \\[2mm]
+        0 \\[1mm]
+        0
+    \end{bmatrix}.
 \end{equation}
 
-La matriz de controlabilidad se define como
+Procedemos a construir la matriz de controlabilidad $\mathcal{C}_q$ de dimensión $5 \times 5$. Evaluando algebraicamente los tres primeros vectores columna:
 
 \begin{equation}
-	\mathcal{C}_q=
-	\begin{bmatrix}
-		B_q & A_{LTI}B_q & A_{LTI}^2B_q & A_{LTI}^3B_q & A_{LTI}^4B_q
-	\end{bmatrix}.
+    B_q = \begin{bmatrix} 0 \\[1mm] 0 \\[1mm] \dfrac{1}{L_q} \\[2mm] 0 \\[1mm] 0 \end{bmatrix}, \quad
+    A \cdot B_q = \begin{bmatrix} 0 \\[1mm] \dfrac{K_t}{J_{eq} L_q} \\[3mm] -\dfrac{R_{s,\mathrm{REF}}}{L_q^2} \\[3mm] 0 \\[1mm] 0 \end{bmatrix}, \quad
+    A^2 \cdot B_q = \begin{bmatrix} \dfrac{K_t}{J_{eq} L_q} \\[3mm] -\dfrac{K_t}{J_{eq} L_q} \left( \dfrac{b_{eq}}{J_{eq}} + \dfrac{R_{s,\mathrm{REF}}}{L_q} \right) \\[4mm] \dfrac{R_{s,\mathrm{REF}}^2}{L_q^3} - \dfrac{K_t K_v}{J_{eq} L_q} \\[3mm] 0 \\[1mm] 0 \end{bmatrix}.
 \end{equation}
 
-Calculando sus primeras columnas, se obtiene la siguiente estructura:
+Ensamblando la matriz completa, se evidencia de inmediato su estructura:
 
 \begin{equation}
-	\mathcal{C}_q=
-	\begin{bmatrix}
-		0 & 0 & \dfrac{\gamma_m}{L_q} & \cdots & \cdots\\[2mm]
-		0 & \dfrac{\gamma_m}{L_q} & -\dfrac{\gamma_m(\beta_m+\alpha_q)}{L_q} & \cdots & \cdots\\[2mm]
-		\dfrac{1}{L_q} & -\dfrac{\alpha_q}{L_q} & \dfrac{\alpha_q^2}{L_q} & \cdots & \cdots\\[2mm]
-		0 & 0 & 0 & 0 & 0\\
-		0 & 0 & 0 & 0 & 0
-	\end{bmatrix}.
+    \mathcal{C}_q =
+    \begin{bmatrix}
+        0 & 0 & \dfrac{K_t}{J_{eq} L_q} & \dots & \dots \\[4mm]
+        0 & \dfrac{K_t}{J_{eq} L_q} & \dots & \dots & \dots \\[4mm]
+        \dfrac{1}{L_q} & -\dfrac{R_{s,\mathrm{REF}}}{L_q^2} & \dots & \dots & \dots \\[4mm]
+        0 & 0 & 0 & 0 & 0 \\[2mm]
+        0 & 0 & 0 & 0 & 0
+    \end{bmatrix}.
+    \label{eq:matriz_controlabilidad_q}
 \end{equation}
 
-Se observa que la entrada $u_q(t)$ excita directamente la corriente $i_q(t)$. Luego, $i_q(t)$ genera torque electromagnético y, por lo tanto, afecta la aceleración, velocidad y posición del rotor. Es decir, existe la cadena causal
+Se constata que la cuarta y quinta fila de la matriz de controlabilidad $\mathcal{C}_q$ están compuestas enteramente por ceros. Evaluando el sub-bloque superior izquierdo de $3 \times 3$, se verifica que sus vectores son linealmente independientes (dado que las constantes $L_q, J_{eq}, K_t \neq 0$). Por lo tanto, el rango máximo alcanzable por la matriz es:
 
 \begin{equation}
-	u_q(t) \longrightarrow i_q(t) \longrightarrow \omega_m(t) \longrightarrow \theta_m(t).
+    \operatorname{Rango}(\mathcal{C}_q) = 3 < n = 5.
 \end{equation}
 
-Sin embargo, las filas asociadas a $i_d(t)$ y $T_s^\circ(t)$ son nulas. Por lo tanto, desde $u_q(t)$ no se puede actuar directamente sobre esos dos estados dentro del modelo LTI equivalente aumentado.
+Se concluye formalmente que el \textbf{modelo LTI equivalente aumentado no es completamente controlable} utilizando únicamente la componente de tensión en cuadratura $v_{qs}^r(t)$.
 
-Como las tres primeras filas de la matriz de controlabilidad son linealmente independientes, siempre que $\gamma_m\neq 0$, se obtiene
+\subsection*{5.b) Análisis físico y alternativas de controlabilidad}
 
-\begin{equation}
-	\operatorname{rank}(\mathcal{C}_q)=3.
-\end{equation}
+A partir del desarrollo matricial, es posible discernir sobre qué estados del accionamiento se posee autoridad de control y cuáles escapan a la acción de $v_{qs}^r(t)$:
 
-Dado que el modelo aumentado tiene cinco estados,
+\begin{itemize}
+    \item \textbf{Estados controlables:} La posición $\theta_m(t)$, la velocidad $\omega_m(t)$ y la corriente formadora de torque $i_{qs}^r(t)$. Físicamente, esto representa una propagación causal perfecta en el subsistema electromecánico: la tensión $v_{qs}^r(t)$ inyecta corriente $i_{qs}^r(t)$, la cual genera un torque que determina la aceleración del rotor y, por ende, gobierna su velocidad y posición angular.
+    
+    \item \textbf{Estados NO controlables:} La corriente de magnetización residual $i_{ds}^r(t)$ y la temperatura del estator $T_s^\circ(t)$. Al estar desacoplados en el modelo lineal, no existe ninguna trayectoria matemática por la cual $v_{qs}^r(t)$ pueda forzar un cambio de estado en estas dos variables.
+\end{itemize}
 
-\begin{equation}
-	n=5,
-\end{equation}
+A fin de adquirir observabilidad y control sobre los estados no controlables, se requeriría el empleo de grados de libertad adicionales en la actuación del sistema. A continuación se analiza la naturaleza física de dichos grados de libertad:
 
-resulta
+\paragraph{1. Control de la corriente de magnetización $i_{ds}^r(t)$:}
+Desde el análisis matemático puro, bastaría con añadir la tensión $v_{ds}^r(t)$ como una segunda entrada para controlar el eje directo. Sin embargo, es imperativo recordar que $v_{ds}^r(t)$ y $v_{qs}^r(t)$ son tensiones \textit{virtuales} obtenidas mediante transformaciones rotacionales de Park. 
 
-\begin{equation}
-	\operatorname{rank}(\mathcal{C}_q)=3<5.
-\end{equation}
+En la realidad física del accionamiento, el hardware de actuación es un inversor trifásico que inyecta tres tensiones de fase reales ($v_{as}, v_{bs}, v_{cs}$) a los bornes del estator. Dado que las corrientes trifásicas suman cero en un sistema equilibrado sin neutro, el inversor proporciona naturalmente \textbf{dos grados de libertad independientes}. Esta bidimensionalidad física de la actuación es exactamente la que permite sintetizar simultáneamente tanto $v_{qs}^r(t)$ como $v_{ds}^r(t)$. Por consiguiente, el control de la corriente de magnetización $i_{ds}^r(t)$ sí es perfectamente gobernable por el hardware existente, utilizando el segundo grado de libertad del inversor.
 
-Por lo tanto, el modelo LTI equivalente aumentado no es completamente controlable desde la entrada $u_q(t)$, o equivalentemente desde $v_{qs}^r(t)$ una vez aplicada la compensación de desacoplamiento correspondiente.
+\paragraph{2. Control de la temperatura del estator $T_s^\circ(t)$:}
+La dinámica térmica presenta una restricción física insoslayable: la actuación eléctrica sobre el estator (mediante inyección de corrientes) puede incrementar la temperatura por pérdidas de efecto Joule, pero carece de la capacidad para sustraer calor y enfriar la máquina de manera activa. 
 
-Los estados controlables desde la entrada de eje q son
+Por lo tanto, la temperatura del motor no puede ser estabilizada a un estado arbitrario utilizando únicamente el inversor trifásico. Para que el estado $T_s^\circ(t)$ se vuelva completamente controlable, resulta indispensable incorporar un actuador de índole térmica al hardware del sistema. Una alternativa razonable y ampliamente utilizada en la industria es la integración de un sistema de \textbf{ventilación forzada} (con velocidad variable) o un sistema de refrigeración líquida, el cual funcionaría como una nueva entrada de control físico ($u_T(t)$) capaz de regular activamente el coeficiente de extracción de calor hacia el ambiente.
 
-\begin{equation}
-	\theta_m(t), \qquad \omega_m(t), \qquad i_q(t).
-\end{equation}
-
-Los estados no controlables desde la entrada de eje q son
-
-\begin{equation}
-	i_d(t), \qquad T_s^\circ(t).
-\end{equation}
-
-\subsubsection{5.b) Interpretación física del resultado}
-
-El resultado anterior tiene una interpretación física clara. La tensión de eje q controla la corriente $i_q(t)$, y dicha corriente es la responsable principal de la generación de torque electromagnético en la PMSM bajo la estrategia de campo orientado. Por eso, desde $u_q(t)$ se puede controlar la dinámica mecánica principal del sistema.
-
-En cambio, la corriente de eje directo $i_d(t)$ está asociada al canal de flujo magnético y su dinámica desacoplada queda dada por
-
-\begin{equation}
-	\dot{i}_d(t)=
-	-\frac{R_s}{L_d}i_d(t)+\frac{1}{L_d}u_d(t).
-\end{equation}
-
-Si en el análisis sólo se considera la entrada $u_q(t)$, entonces no existe acción de control sobre $i_d(t)$.
-
-Por otro lado, la temperatura del estator queda representada por la dinámica térmica lineal
-
-\begin{equation}
-	\dot{T}_s^\circ(t)=
-	-\frac{1}{R_{ts-amb}C_{ts}}T_s^\circ(t)
-	+\frac{1}{C_{ts}}P_J(t)
-	+\frac{1}{R_{ts-amb}C_{ts}}T_{amb}^\circ(t).
-\end{equation}
-
-En el modelo LTI aumentado, esta dinámica térmica queda desacoplada de la entrada eléctrica $u_q(t)$. Por lo tanto, la temperatura no es controlable desde la tensión de eje q en este modelo lineal equivalente.
-
-A pesar de no ser completamente controlable, los modos no controlables son estables, ya que sus polos son
-
-\begin{equation}
-	p_d=-\frac{R_s}{L_d}<0,
-\end{equation}
-
-\begin{equation}
-	p_T=-\frac{1}{R_{ts-amb}C_{ts}}<0.
-\end{equation}
-
-Esto significa que el par $(A_{LTI},B_q)$ no es completamente controlable, pero sí es estabilizable, ya que los estados no controlables decaen naturalmente en ausencia de excitación externa.
-
-\subsubsection{5.c) Entradas adicionales razonables para controlar los estados no controlables}
-
-Para controlar la corriente de eje directo $i_d(t)$, la entrada razonable es agregar la tensión auxiliar del eje d, $u_d(t)$, asociada físicamente a la tensión $v_{ds}^r(t)$ luego del desacoplamiento correspondiente. En ese caso, el vector de entrada se amplía a
-
-\begin{equation}
-	B_{qd}=
-	\begin{bmatrix}
-		0 & 0\\
-		0 & 0\\
-		\dfrac{1}{L_q} & 0\\
-		0 & \dfrac{1}{L_d}\\
-		0 & 0
-	\end{bmatrix}.
-\end{equation}
-
-Con las entradas $u_q(t)$ y $u_d(t)$, se puede controlar la parte electromecánica principal y también la corriente directa $i_d(t)$. Sin embargo, la temperatura $T_s^\circ(t)$ sigue sin ser controlable desde entradas eléctricas independientes dentro del modelo LTI equivalente aumentado. Por lo tanto,
-
-\begin{equation}
-	\operatorname{rank}(\mathcal{C}_{qd})=4<5.
-\end{equation}
-
-Para controlar también la temperatura del estator sería necesario agregar una entrada térmica razonable. Físicamente, esto podría representar un sistema de refrigeración activa, por ejemplo ventilación forzada, o una entrada equivalente de extracción de calor. Si se define una entrada térmica $u_T(t)$ que actúa sobre la ecuación térmica como
-
-\begin{equation}
-	\dot{T}_s^\circ(t)=
-	-\alpha_T T_s^\circ(t)+b_T u_T(t),
-\end{equation}
-
-entonces el vector de entrada térmica asociado sería
-
-\begin{equation}
-	B_T=
-	\begin{bmatrix}
-		0\\
-		0\\
-		0\\
-		0\\
-		b_T
-	\end{bmatrix},
-	\qquad b_T\neq 0.
-\end{equation}
-
-Con las entradas $u_q(t)$, $u_d(t)$ y $u_T(t)$, el sistema aumentado podría volverse completamente controlable:
-
-\begin{equation}
-	\operatorname{rank}(\mathcal{C}_{qdT})=5.
-\end{equation}
-
-De esta manera, cada entrada actuaría sobre un subsistema físico distinto:
-
-\begin{equation}
-	u_q(t) \longrightarrow i_q(t), \omega_m(t), \theta_m(t),
-\end{equation}
-
-\begin{equation}
-	u_d(t) \longrightarrow i_d(t),
-\end{equation}
-
-\begin{equation}
-	u_T(t) \longrightarrow T_s^\circ(t).
-\end{equation}
-
-\subsubsection{Síntesis del punto 5}
-
-El modelo LTI equivalente aumentado no es completamente controlable desde la entrada manipulada de eje q, $v_{qs}^r(t)$, interpretada en el modelo desacoplado como la entrada auxiliar $u_q(t)$. El rango de la matriz de controlabilidad es
-
-\begin{equation}
-	\operatorname{rank}(\mathcal{C}_q)=3<5.
-\end{equation}
-
-Desde $u_q(t)$ sólo son controlables los estados
-
-\begin{equation}
-	\theta_m(t), \qquad \omega_m(t), \qquad i_q(t).
-\end{equation}
-
-Los estados no controlables desde $u_q(t)$ son
-
-\begin{equation}
-	i_d(t), \qquad T_s^\circ(t).
-\end{equation}
-
-La corriente $i_d(t)$ puede controlarse agregando la entrada de eje directo $u_d(t)$, asociada a la tensión $v_{ds}^r(t)$. La temperatura $T_s^\circ(t)$ requiere una entrada térmica adicional, por ejemplo una acción de refrigeración activa o extracción de calor. Por lo tanto, el sistema aumentado completo sólo podría ser completamente controlable si se agregan entradas físicas capaces de actuar sobre todos los modos internos considerados.
+\paragraph{Conclusión.}
+Aunque el sistema de orden 5 no es completamente controlable desde una única tensión, el subsistema electromecánico de posicionamiento (orden 3) sí lo es, cumpliendo el objetivo principal del diseño. Los estados incontrolables remanentes ($i_{ds}^r(t)$ y $T_s^\circ(t)$) poseen autovalores en el semiplano izquierdo, por lo que decaen y se estabilizan naturalmente. En rigor analítico, el accionamiento se clasifica como un sistema \textbf{estabilizable}, lo que permite proceder con el diseño del controlador de movimiento a lazo cerrado con total garantía de viabilidad física y matemática.
 
 
-
+============== HASTA ACA ================
 
 
 \subsection{Respuesta dinámica en el dominio temporal}
