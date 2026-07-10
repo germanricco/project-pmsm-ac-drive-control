@@ -193,7 +193,7 @@ El trabajo se organiza siguiendo la guía del Proyecto Global Integrador \cite{g
 % ---------------------------------------------------------
 % DESARROLLO
 % ---------------------------------------------------------
-\section{Modelado, Análisis y Simulación dinámica a Lazo Abierto}
+\section{Modelado, Análisis y Simulación dinámica del SISTEMA FÍSICO a Lazo Abierto}
 
 \subsection{Definición del sistema bajo estudio}
 
@@ -2437,7 +2437,7 @@ cuyos coeficientes son positivos para \(J_{eq}>0\), \(b_{eq}>0\) y \(K_g^o>0\). 
 
 La estabilidad parcial se analiza observando las funciones de transferencia particulares entre una entrada y una salida. En este caso, desde la entrada auxiliar \(u_q(t)\) hacia la posición \(\theta_m(t)\) aparecen el polo eléctrico del eje \(q\) y los polos mecánicos. En cambio, desde la perturbación \(T_{ld}(t)\) hacia \(\theta_m(t)\) aparece únicamente el modo mecánico.
 
-Los modos \(i_d(t)\) y \(T_s^{\circ}(t)\) no aparecen directamente en las funciones de transferencia mecánicas obtenidas en \eqref{eq:ft_theta_uq_p2} y \eqref{eq:ft_theta_tld_p2}. Sin embargo, sí forman parte del modelo aumentado y por eso deben incluirse al evaluar la estabilidad completa. Esta distinción es importante: una función de transferencia puede mostrar solamente los modos observables y excitables desde un par entrada-salida, mientras que la estabilidad interna exige analizar todos los autovalores del sistema.
+Los modos \(i_d(t)\) y \(T_s^{\circ}(t)\) no aparecen directamente en las funciones de transferencia mecánicas obtenidas en () y (). Sin embargo, sí forman parte del modelo aumentado y por eso deben incluirse al evaluar la estabilidad completa. Esta distinción es importante: una función de transferencia puede mostrar solamente los modos observables y excitables desde un par entrada-salida, mientras que la estabilidad interna exige analizar todos los autovalores del sistema.
 
 \paragraph{Efecto de los ceros.}
 
@@ -3088,7 +3088,67 @@ Los estados no controlables desde $u_q(t)$ son
 La corriente $i_d(t)$ puede controlarse agregando la entrada de eje directo $u_d(t)$, asociada a la tensión $v_{ds}^r(t)$. La temperatura $T_s^\circ(t)$ requiere una entrada térmica adicional, por ejemplo una acción de refrigeración activa o extracción de calor. Por lo tanto, el sistema aumentado completo sólo podría ser completamente controlable si se agregan entradas físicas capaces de actuar sobre todos los modos internos considerados.
 
 
-\subsection{Diseño del sistema de control}
+
+
+
+\subsection{Respuesta dinámica en el dominio temporal}
+
+En esta sección se analiza la respuesta dinámica del sistema en el dominio temporal, comparando el modelo no lineal completo desacoplado mediante ley de control no lineal con el modelo LTI equivalente aumentado. Para ello se aplican consignas de tensión en el eje $q$ y perturbaciones de torque de carga, evaluando la evolución de las variables internas del sistema y la coherencia entre ambos modelos.
+
+\subsubsection{Respuesta temporal de los estados internos}
+
+Se presenta la evolución temporal de las principales variables del sistema: posición $\theta_m(t)$, velocidad $\omega_m(t)$, corrientes $i_{qs}^r(t)$ e $i_{ds}^r(t)$, torque electromagnético $T_m(t)$, tensiones en coordenadas $qd0$ y $abc$, y temperatura del estator. El objetivo es verificar el comportamiento dinámico del accionamiento frente a los cambios de consigna y de carga.
+
+
+\paragraph{Excitaciones aplicadas al sistema}
+
+Se definen las señales de entrada utilizadas en la simulación: una consigna de tensión $v_{qs}^{r*}(t)$ aplicada en forma de pulsos y una perturbación de torque de carga $T_l(t)$ aplicada como doble pulso. Estas entradas permiten analizar tanto la respuesta forzada por tensión como el efecto de las perturbaciones mecánicas externas.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/sim_la/vqs_ref.pdf}
+	\caption{Consigna de tensión aplicada en el eje $q$, $v_{qs}^{r*}(t)$.}
+	\label{fig:consigna-tension-q}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/sim_la/Tld_ref.pdf}
+	\caption{Perturbación de torque de carga aplicada al sistema, $T_{ld}(t)$.}
+	\label{fig:torque-carga}
+\end{figure}
+
+
+
+\subsubsection{Comparación entre modelo NL y modelo LTI equivalente aumentado}
+
+Se comparan las respuestas del modelo no lineal desacoplado y del modelo LTI equivalente aumentado. Esta comparación permite verificar si la ley de control no lineal logra desacoplar correctamente los ejes $q$ y $d$, y si el modelo LTI reproduce adecuadamente el comportamiento dinámico del sistema en las condiciones simuladas.
+
+\subsubsection{Curva torque-velocidad y cuadrantes de operación}
+
+Se analiza la curva paramétrica $T_m(t)$ vs. $\omega_m(t)$ para identificar los cuadrantes de operación del accionamiento. A partir del signo relativo entre torque y velocidad se distingue entre motorización y frenado regenerativo, evaluando cómo cambia el punto de operación ante las consignas de tensión y los pulsos de torque de carga.
+
+\subsubsection{Indicadores de respuesta transitoria}
+
+Se determinan los valores finales de establecimiento de velocidad y corriente luego de cada transitorio, junto con el tiempo de crecimiento, tiempo de establecimiento y sobrepico. Estos indicadores permiten cuantificar la respuesta dinámica y comparar la influencia relativa de la tensión aplicada y del torque de carga.
+
+\subsubsection{Efecto de la condición inicial de $i_{ds}^r$}
+
+Se compara la respuesta del sistema para $i_{ds}^r(0)=+0.5\,A$, $i_{ds}^r(0)=-0.5\,A$ e $i_{ds}^r(0)=0\,A$. El objetivo es verificar si una corriente inicial no nula en el eje directo afecta de forma apreciable la evolución de los estados o si, por el contrario, decae rápidamente debido a la dinámica residual del eje $d$.
+
+\subsubsection{Consigna adicional en el eje directo}
+
+Se agrega una consigna de tensión en el eje directo $v_{ds}^{r*}(t)$, sumada a la ley de control no lineal, para evaluar efectos de reforzamiento y debilitamiento de campo. Se analiza cómo esta acción modifica la corriente directa, el torque electromagnético y la velocidad del motor en ambos modelos.
+
+
+
+
+
+
+
+
+
+\section{Diseño, Análisis, Simulación e Implementación de CONTROLADOR de Movimiento en Cascada con Modulador de Torque}
 \textit{Sección pendiente. Aquí se desarrollarán el modulador de torque, los lazos de corriente, el observador de estado y el controlador externo de movimiento.}
 
 \subsection{Simulación, resultados y verificación de restricciones}
