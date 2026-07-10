@@ -2221,218 +2221,65 @@ A partir de las funciones de transferencia~\eqref{eq:ft_theta_vqs} y~\eqref{eq:f
 \end{itemize}
 
 \paragraph{Evaluación numérica y correspondencia física.}
+A partir de las expresiones analíticas deducidas, el análisis de estabilidad a lazo abierto se concreta evaluando numéricamente los polos y ceros del modelo LTI equivalente aumentado. Reemplazando los parámetros nominales del accionamiento en las fórmulas previamente obtenidas, se determinan los índices de desempeño dinámico.
 
-===== INFORME ACTUALIZADO Y COREJIDO HASTA ESTE PUNTO =====
-ESTO DE ABAJO HAY QUE BORRARLO (REEMPLAZAR) LOS CALCULOS BIEN HECHOS
-
-se tienen los valores ya calculados en el punto 1:
-
+En primer lugar, evaluando las Ecuaciones~\eqref{eq:wn_em_p3} y~\eqref{eq:zeta_em_p3}, la frecuencia natural y el factor de amortiguamiento del subsistema electromecánico resultan:
+\begin{align*}
+    \omega_{n,em} &= 174.10 \, \mathrm{rad/s} \quad (27.71 \, \mathrm{Hz}) \\
+    \zeta_{em} &= 0.5082
+\end{align*}
+Al tratarse de un sistema subamortiguado ($0 < \zeta_{em} < 1$), el par de polos complejos conjugados dominante se ubica en:
 \begin{equation}
-	J_{eq}=1.978\times10^{-5}\,\si{\kilogram\meter\squared},
-	\qquad
-	b_{eq}=2.194\times10^{-5}\,\si{\newton\meter\second\per\radian}.
+    p_{2,3} = -88.49 \pm j149.94 \, \mathrm{rad/s}.
 \end{equation}
 
-Además,
-
+Por otro lado, el único cero finito del sistema, introducido de forma exclusiva por la transferencia de perturbación $G_d(s)$, se localiza en:
 \begin{equation}
-	k_l=0.25\,\si{\kilogram\meter},
-	\qquad
-	K_g^o=\frac{gk_l}{r^2}=1.703\times10^{-4}\,\si{\newton\meter\per\radian}.
+    z_d = -\frac{R_{s,\mathrm{REF}}}{L_q} = -175.86 \, \mathrm{rad/s}.
 \end{equation}
 
-Con estos valores, los parámetros del modo mecánico resultan
+Finalmente, las raíces correspondientes a los modos inobservables desde la variable de posición (la dinámica de magnetización residual y la dinámica térmica) se evalúan como:
+\begin{align*}
+    p_d &= -\frac{R_{s,\mathrm{REF}}}{L_d} = -154.55 \, \mathrm{rad/s}, \\
+    p_T &= -\frac{1}{R_{ts-amb}C_{ts}} = -0.0083 \, \mathrm{rad/s}.
+\end{align*}
 
-\begin{equation}
-	\omega_{n,m}=2.933\,\si{\radian\per\second},
-	\qquad
-	\zeta_m=0.189,
-\end{equation}
-
-\begin{equation}
-	\sigma_m=0.555\,\si{\radian\per\second},
-	\qquad
-	\omega_{d,m}=2.881\,\si{\radian\per\second}.
-\end{equation}
-
-Por lo tanto,
-
-\begin{equation}
-	p_{m,1,2}
-	=
-	-0.555
-	\pm j\,2.881
-	\quad [\si{\radian\per\second}].
-	\label{eq:polos_mecanicos_nominales_p3}
-\end{equation}
-
-Para los modos eléctricos, usando \(R_s=1.02\,\si{\ohm}\), \(L_q=5.8\times10^{-3}\,\si{\henry}\) y \(L_d=6.6\times10^{-3}\,\si{\henry}\), se obtiene
-
-\begin{equation}
-	p_q=-175.862\,\si{\radian\per\second},
-	\qquad
-	\tau_q=5.686\times10^{-3}\,\si{\second},
-\end{equation}
-
-\begin{equation}
-	p_d=-154.545\,\si{\radian\per\second},
-	\qquad
-	\tau_d=6.471\times10^{-3}\,\si{\second}.
-\end{equation}
-
-Para el modo térmico, usando \(R_{ts-amb}=146.7\,^{\circ}\mathrm{C/W}\) y \(C_{ts}=0.818\,\mathrm{J}/^{\circ}\mathrm{C}\), se obtiene
-
-\begin{equation}
-	\tau_T\simeq 120\,\si{\second},
-	\qquad
-	p_T=-8.33\times10^{-3}\,\si{\radian\per\second}.
-\end{equation}
-
-En consecuencia, los autovalores nominales del modelo LTI aumentado son
-
-\begin{equation}
-	\lambda(A_{LTI})
-	=
-	\left\{
-	-0.555\pm j\,2.881,\;
-	-175.862,\;
-	-154.545,\;
-	-0.00833
-	\right\}.
-	\label{eq:autovalores_nominales_p3}
-\end{equation}
-
-La Tabla \ref{tab:autovalores_nominales_p3} resume la correspondencia entre autovalores, modos físicos y parámetros dinámicos.
+Todos estos resultados numéricos, en conjunto con el polo integrador cinemático ($p_1=0$), se consolidan en la Tabla~\ref{tab:autovalores_lti_num}, en la cual se detallan sus constantes de tiempo asociadas y su efecto fenoménico sobre la planta.
 
 \begin{table}[H]
-	\centering
-	\caption{Autovalores nominales del modelo LTI equivalente aumentado.}
-	\label{tab:autovalores_nominales_p3}
-	\begin{tabular}{>{\centering\arraybackslash}p{2.8cm}
-			>{\centering\arraybackslash}p{3.5cm}
-			>{\centering\arraybackslash}p{3.6cm}
-			>{\centering\arraybackslash}p{4.2cm}}
-		\toprule
-		\textbf{Modo} & \textbf{Autovalor o polos} & \textbf{Parámetro asociado} & \textbf{Interpretación física} \\
-		\midrule
-		Mecánico &
-		\(-0.555\pm j\,2.881\) &
-		\(\omega_{n,m}=2.933\,\si{\radian\per\second}\), \(\zeta_m=0.189\) &
-		Oscilación amortiguada de posición y velocidad \\
-		\midrule
-		Eléctrico \(q\) &
-		\(-175.862\) &
-		\(\tau_q=5.686\,\si{\milli\second}\) &
-		Dinámica de corriente generadora de torque \\
-		\midrule
-		Eléctrico \(d\) &
-		\(-154.545\) &
-		\(\tau_d=6.471\,\si{\milli\second}\) &
-		Decaimiento residual de la corriente directa \\
-		\midrule
-		Térmico &
-		\(-0.00833\) &
-		\(\tau_T\simeq120\,\si{\second}\) &
-		Calentamiento/enfriamiento del bobinado \\
-		\bottomrule
-	\end{tabular}
+    \centering
+    \caption{Singularidades numéricas y propiedades del modelo LTI equivalente a lazo abierto.}
+    \label{tab:autovalores_lti_num}
+    \begin{tabular}{>{\raggedright\arraybackslash}p{3.8cm} >{\centering\arraybackslash}p{4cm} >{\centering\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{4.5cm}}
+        \toprule
+        \textbf{Subsistema / Modo} & \textbf{Ubicación en $s$ (\si{\radian\per\second})} & \textbf{Cte. de Tiempo} & \textbf{Efecto Dinámico} \\
+        \midrule
+        Cinemático (Integrador) & $p_1 = 0.00$ & $\infty$ & Posición libre sin resorte de retorno. Origina inestabilidad BIBO. \\
+        \addlinespace
+        Electromecánico (Dominante) & $p_{2,3} = -88.49 \pm j149.94$ & $\tau_{em} = \SI{11.3}{\milli\second}$ & Dinámica acoplada subamortiguada. Decaimiento de la envolvente oscilatoria. \\
+        \addlinespace
+        Eléctrico residual Eje $d$ & $p_d = -154.55$ & $\tau_d = \SI{6.5}{\milli\second}$ & Decaimiento autónomo y estable de la corriente de magnetización. \\
+        \addlinespace
+        Térmico (Estator) & $p_T = -0.0083$ & $\tau_T = \SI{120.0}{\second}$ & Inercia calórica de extrema lentitud. Desacoplada del transitorio. \\
+        \midrule
+        Cero (Entrada $T_l$) & $z_d = -175.86$ & $\tau_q = \SI{5.7}{\milli\second}$ & Adelanto de fase local ante perturbación de torque de carga. \\
+        \bottomrule
+    \end{tabular}
 \end{table}
-
-\paragraph{Ceros de las funciones de transferencia.}
-
-A partir de las funciones de transferencia mínimas ya obtenidas, se observa que
-
-\begin{equation}
-	\frac{\Theta_m(s)}{U_q(s)}
-	=
-	\frac{K_t}
-	{\left(L_qs+R_s\right)
-		\left(J_{eq}s^2+b_{eq}s+K_g^o\right)}
-\end{equation}
-
-no posee ceros finitos, porque su numerador es constante. De la misma manera,
-
-\begin{equation}
-	\frac{\Theta_m(s)}{T_{ld}(s)}
-	=
-	\frac{-\dfrac{1}{r}}
-	{J_{eq}s^2+b_{eq}s+K_g^o}
-\end{equation}
-
-tampoco posee ceros finitos. Por lo tanto, en las transferencias mínimas hacia la posición no aparecen ceros de fase no mínima ni ceros que introduzcan inversión inicial de respuesta. La forma de la respuesta queda determinada por la ubicación de los polos.
-
-La Tabla \ref{tab:ceros_p3} resume el resultado.
-
-\begin{table}[H]
-	\centering
-	\caption{Ceros finitos de las funciones de transferencia mínimas hacia \(\theta_m(t)\).}
-	\label{tab:ceros_p3}
-	\begin{tabular}{>{\centering\arraybackslash}p{5.2cm}
-			>{\centering\arraybackslash}p{4.2cm}
-			>{\centering\arraybackslash}p{5.2cm}}
-		\toprule
-		\textbf{Función de transferencia} & \textbf{Ceros finitos} & \textbf{Efecto dinámico} \\
-		\midrule
-		\(\Theta_m(s)/U_q(s)\) & No presenta & La respuesta queda determinada por el polo eléctrico \(q\) y el par mecánico \\
-		\midrule
-		\(\Theta_m(s)/T_{ld}(s)\) & No presenta & La perturbación excita directamente la dinámica mecánica \\
-		\bottomrule
-	\end{tabular}
-\end{table}
-
-\paragraph{Mapa de polos y ceros en el plano \(s\).}
-
-La Fig. \ref{fig:pzmap_nominal_p3} muestra el mapa de polos y ceros nominal del modelo LTI aumentado. Dado que los polos eléctricos se encuentran alrededor de \(-150\) a \(-176\,\si{\radian\per\second}\), mientras que los polos mecánicos y térmico se encuentran mucho más cerca del origen, será conveniente incluir además un zoom cercano al origen, como se indica en la Fig. \ref{fig:pzmap_zoom_p3}.
 
 \begin{figure}[H]
 	\centering
-	\fbox{
-		\begin{minipage}[c][5.2cm][c]{0.88\textwidth}
-			\centering
-			\textit{ mapa de polos y ceros nominal del modelo LTI aumentado.}\\[2mm]
-
-		\end{minipage}
-	}
-	\caption{Mapa de polos y ceros nominal del modelo LTI equivalente aumentado en el plano \(s\).}
-	\label{fig:pzmap_nominal_p3}
+	\includegraphics[width=0.95\linewidth]{img/mapa_pz_nominal.pdf}
+	\caption{Mapa de polos y ceros nominal del modelo LTI equivalente.}
+	\label{fig:pzmap_nominal}
 \end{figure}
 
-\begin{figure}[H]
-	\centering
-	\fbox{
-		\begin{minipage}[c][5.2cm][c]{0.88\textwidth}
-			\centering
-			\textit{zoom del mapa de polos y ceros cerca del origen.}\\[2mm]
-			\textit{visualizar el polo térmico y el par de polos mecánicos.}
-		\end{minipage}
-	}
-	\caption{Detalle del mapa de polos y ceros nominal cerca del origen.}
-	\label{fig:pzmap_zoom_p3}
-\end{figure}
+\paragraph{Conclusión sobre la estabilidad a lazo abierto.}
+El análisis espectral de los autovalores revela que el sistema global es \textbf{marginalmente estable} a lazo abierto. Esta condición es impuesta de manera exclusiva por la inercia integradora de la posición ($p_1 = 0$). Cualquier perturbación de carga $T_l(t)$ constante y sostenida en el tiempo provocará un desplazamiento angular ilimitado de tipo rampa, indicando que el sistema no posee estabilidad BIBO (Bounded-Input Bounded-Output) para la variable de salida $\theta_m(t)$. 
 
-% ---------------------------------------------------------
-\subsubsection{3.b) Estabilidad parcial, estabilidad completa y efecto de los ceros}
+No obstante, debido a que el resto de las raíces características ($p_2, p_3, p_d, p_T$) se ubican estrictamente en el semiplano izquierdo del plano $s$, la velocidad angular $\omega_m(t)$ y todos los estados internos (corrientes y temperatura) sí poseen \textbf{estabilidad asintótica parcial}. Este comportamiento es inherente a los servoaccionamientos electromecánicos y justifica analíticamente la necesidad imperativa de diseñar y cerrar un lazo de control de posición externo en etapas posteriores.
 
-\paragraph{Estabilidad completa.}
-
-La estabilidad completa del modelo aumentado se evalúa mediante todos los autovalores de la matriz \(A_{LTI}\). Para el punto de operación nominal se obtuvo
-
-\begin{equation}
-	\operatorname{Re}\{\lambda_i(A_{LTI})\}<0
-	\qquad
-	\forall i.
-\end{equation}
-
-Por lo tanto, el modelo LTI equivalente aumentado es internamente estable alrededor del punto de operación considerado.
-
-Este resultado puede justificarse también a partir de la estructura de los subsistemas. El modo mecánico tiene polinomio
-
-\begin{equation}
-	J_{eq}s^2+b_{eq}s+K_g^o,
-\end{equation}
-
-cuyos coeficientes son positivos para \(J_{eq}>0\), \(b_{eq}>0\) y \(K_g^o>0\). Por lo tanto, el par mecánico se ubica en el semiplano izquierdo. A su vez, los polos eléctricos son negativos porque \(R_s>0\), \(L_q>0\) y \(L_d>0\), mientras que el polo térmico es negativo porque \(R_{ts-amb}>0\) y \(C_{ts}>0\).
-
+\paragraph{Conclusion ANTERIOR - MODIFICAR o JUNTAR CON LA NUEVA}
 \paragraph{Estabilidad parcial.}
 
 La estabilidad parcial se analiza observando las funciones de transferencia particulares entre una entrada y una salida. En este caso, desde la entrada auxiliar \(u_q(t)\) hacia la posición \(\theta_m(t)\) aparecen el polo eléctrico del eje \(q\) y los polos mecánicos. En cambio, desde la perturbación \(T_{ld}(t)\) hacia \(\theta_m(t)\) aparece únicamente el modo mecánico.
@@ -2444,7 +2291,35 @@ Los modos \(i_d(t)\) y \(T_s^{\circ}(t)\) no aparecen directamente en las funcio
 Como las funciones de transferencia mínimas hacia \(\theta_m(t)\) no presentan ceros finitos, no se observa modificación de la respuesta debida a ceros. En particular, no existen ceros de fase no mínima que provoquen inversión inicial de la salida, ni ceros dominantes que reduzcan o aumenten el sobrepico de manera significativa. Por lo tanto, la respuesta transitoria de la planta queda gobernada principalmente por el par de polos mecánicos y, en el canal \(u_q\rightarrow\theta_m\), por el polo eléctrico del eje \(q\).
 
 % ---------------------------------------------------------
-\subsubsection{Migración de propiedades ante variación de parámetros de carga}
+\subsubsection{3.b) Estabilidad y migración de propiedades (Incertidumbre paramétrica)}
+
+Las aplicaciones mecatrónicas reales están sometidas a incertidumbres operativas. En este accionamiento, la inserción de una carga útil en el extremo del brazo manipulador altera drásticamente los parámetros mecánicos equivalentes reflejados en el eje motriz. Para evaluar la robustez pasiva de la planta y comprender cómo migra la dinámica del sistema frente a estas variaciones, se realiza un análisis paramétrico por barrido (sweep) de la masa de la carga útil ($m_l$).
+
+Como se definió en el modelado mecánico, un incremento de $m_l \in [0,\;1.5]\,\si{\kilogram}$ genera un aumento simultáneo tanto en la inercia rotacional total equivalente ($J_{eq}$) como en la fricción viscosa de la articulación reflejada ($b_{eq}$). Al proyectar estas variaciones sobre las Ecuaciones~\eqref{eq:wn_em_p3} y~\eqref{eq:zeta_em_p3}, se observa que los polos electromecánicos $p_{2,3}$ son los únicos afectados directamente por la carga mecánica.
+
+La Figura~\ref{fig:mapa_polos_migracion} ilustra las trayectorias que trazan los polos dominantes en el plano complejo $s$ al transitar desde la condición de operación nominal o en vacío ($m_l = 0\,\si{\kilogram}$, en azul) hasta la condición de carga máxima ($m_l = 1.5\,\si{\kilogram}$, en amarillo/rojo).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]{img/mapa_polos_migracion_LTI_Incertidumbre_Carga.pdf}
+	\caption{Migración de los polos electromecánicos conjugados $p_{2,3}$ en el plano $s$ ante el aumento progresivo de la masa de carga útil $m_l$ (desde $0\%$ a $100\%$ de carga máxima).}
+	\label{fig:mapa_polos_migracion}
+\end{figure}
+
+Del análisis del mapa de polos y de la resolución analítica, se desprenden las siguientes conclusiones fundamentales respecto a la migración de propiedades dinámicas:
+
+\begin{enumerate}
+    \item \textbf{Reducción de la rapidez de respuesta:} A medida que la inercia $J_{eq}$ se incrementa por efecto de la masa útil, la frecuencia natural $\omega_{n,em}$ del sistema disminuye (trasladando los polos hacia el origen). Físicamente, esto obedece a la segunda ley de Newton para la rotación: una inercia mayor requiere una cantidad superior de torque para alcanzar la misma aceleración, volviendo al accionamiento inherentemente más \"perezoso\" para responder ante transitorios de tensión o perturbaciones.
+    
+    \item \textbf{Aumento del amortiguamiento relativo:} Paradójicamente, a pesar de volverse más lento, la trayectoria curva de los polos indica que el sistema se vuelve \textit{menos oscilatorio} frente a cargas pesadas. Al evaluar las fórmulas para la carga máxima ($m_l = 1.5\,\si{\kilogram}$), el factor de amortiguamiento sube considerablemente hasta alcanzar $\zeta \approx 0.77$. Si bien el aumento de fricción ($b_{eq}$) colabora disipando energía de la oscilación, el principal responsable de este efecto estabilizador es el hecho de que el término de inercia ($J_{eq}$) crece en el denominador más lentamente de lo que crece la suma de los términos disipativos.
+    
+    \item \textbf{Conservación de la estabilidad marginal:} A lo largo de todo el barrido paramétrico de la carga, la parte real de los polos electromecánicos ($\sigma_{em}$) permanece estrictamente confinada en el semiplano izquierdo. Asimismo, la incertidumbre mecánica no altera en absoluto la posición del polo integrador en el origen ($p_1=0$), el cero de perturbación ($z_d$) ni las raíces inobservables de alta y bajísima frecuencia ($p_d$ y $p_T$). 
+\end{enumerate}
+
+En síntesis, la inserción de carga útil no desestabiliza la planta, pero suprime su velocidad de respuesta natural. Este hallazgo será un factor crítico a considerar en la fase de síntesis del controlador en lazo cerrado, el cual deberá dotar al sistema del ancho de banda necesario para compensar la lentitud mecánica sin sacrificar los márgenes de estabilidad frente a la máxima inercia posible.
+
+
+============== HASTA ACA ================
 
 La consigna indica evaluar la migración de propiedades ante variaciones de carga. Para ello se considera la variación de la masa útil
 
@@ -3104,19 +2979,19 @@ Se presenta la evolución temporal de las principales variables del sistema: pos
 
 Se definen las señales de entrada utilizadas en la simulación: una consigna de tensión $v_{qs}^{r*}(t)$ aplicada en forma de pulsos y una perturbación de torque de carga $T_l(t)$ aplicada como doble pulso. Estas entradas permiten analizar tanto la respuesta forzada por tensión como el efecto de las perturbaciones mecánicas externas.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.82\linewidth]{img/sim_la/vqs_ref.pdf}
-	\caption{Consigna de tensión aplicada en el eje $q$, $v_{qs}^{r*}(t)$.}
-	\label{fig:consigna-tension-q}
-\end{figure}
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.82\linewidth]{img/sim_la/vqs_ref.pdf}
+%	\caption{Consigna de tensión aplicada en el eje $q$, $v_{qs}^{r*}(t)$.}
+%	\label{fig:consigna-tension-q}
+%\end{figure}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.82\linewidth]{img/sim_la/Tld_ref.pdf}
-	\caption{Perturbación de torque de carga aplicada al sistema, $T_{ld}(t)$.}
-	\label{fig:torque-carga}
-\end{figure}
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.82\linewidth]{img/sim_la/Tld_ref.pdf}
+%	\caption{Perturbación de torque de carga aplicada al sistema, $T_{ld}(t)$.}
+%	\label{fig:torque-carga}
+%\end{figure}
 
 
 
