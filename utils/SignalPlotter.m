@@ -96,7 +96,93 @@ classdef SignalPlotter < handle
             
             hold(ax, 'off');
         end
+
+        %% 
+        function [fig, ax] = plotTimeStairs(obj, t, Y, options)
+            % plotTimeStairs Grafica una o múltiples señales escalonadas en el tiempo.
+            arguments
+                obj
+                t (:,1) double
+                Y (:,:) double
+                options.Title string = "Señales Escalonadas en el Dominio del Tiempo"
+                options.XLabel string = "Tiempo (s)"
+                options.YLabel string = "Amplitud"
+                options.Legends cell = {}
+                options.WindowPosition (1,4) double = [200, 150, 850, 420]
+            end
         
+            % Validación de dimensiones
+            if size(Y, 1) ~= length(t)
+                if size(Y, 2) == length(t)
+                    Y = Y';
+                else
+                    error("SignalPlotter:numel", ...
+                        "El número de filas de Y debe coincidir con la longitud de t.");
+                end
+            end
+        
+            numSignals = size(Y, 2);
+            fig = figure('Color', 'w', 'Position', options.WindowPosition);
+            ax = axes(fig);
+            hold(ax, 'on');
+        
+            % Ploteo escalonado
+            for idx = 1:numSignals
+                colorIdx = mod(idx - 1, length(obj.ColorPalette)) + 1;
+                stairs(ax, t, Y(:, idx), ...
+                    'Color', obj.ColorPalette{colorIdx}, ...
+                    'LineWidth', obj.LineWidth, ...
+                    'LineStyle', '-');
+            end
+        
+            % Línea de referencia en cero si cruza el eje
+            minGlobal = min(Y(:));
+            maxGlobal = max(Y(:));
+            if minGlobal < 0 && maxGlobal > 0
+                yline(ax, 0, '--', 'Color', [0.3 0.3 0.3], ...
+                    'LineWidth', 0.8, 'HandleVisibility', 'off');
+            end
+        
+            % Formato de ejes
+            grid(ax, 'on');
+            xlim(ax, [min(t), max(t)]);
+        
+            rangoY = maxGlobal - minGlobal;
+            if rangoY == 0
+                rangoY = 1;
+            end
+            ylim(ax, [minGlobal - (obj.MarginY * rangoY), ...
+                      maxGlobal + (obj.MarginY * rangoY)]);
+        
+            set(ax, 'FontName', obj.FontFamily, ...
+                    'FontSize', obj.FontSizeTicks, ...
+                    'GridColor', obj.GridColor, ...
+                    'GridAlpha', obj.GridAlpha);
+        
+            title(ax, options.Title, ...
+                'FontName', obj.FontFamily, ...
+                'FontSize', obj.FontSizeTitle, ...
+                'FontWeight', 'bold');
+        
+            xlabel(ax, options.XLabel, ...
+                'FontName', obj.FontFamily, ...
+                'FontSize', obj.FontSizeLabel);
+        
+            ylabel(ax, options.YLabel, ...
+                'FontName', obj.FontFamily, ...
+                'FontSize', obj.FontSizeLabel);
+        
+            if ~isempty(options.Legends)
+                legend(ax, options.Legends, ...
+                    'Location', 'best', ...
+                    'FontName', obj.FontFamily, ...
+                    'FontSize', obj.FontSizeLegend);
+            end
+        
+            hold(ax, 'off');
+        end
+
+        %% 
         function [fig, ax] = plotSpectrum(obj, y, fs, options)
             % plotSpectrum Calcula y grafica el espectro de magnitud unilateral nativamente
             arguments
