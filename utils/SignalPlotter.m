@@ -29,6 +29,7 @@ classdef SignalPlotter < handle
             end
         end
         
+        %%
         function [fig, ax] = plotTime(obj, t, Y, options)
             % plotTime Grafica una o múltiples señales en el dominio del tiempo.
             % Y puede ser un vector columna o una matriz donde cada columna es una fase.
@@ -97,7 +98,7 @@ classdef SignalPlotter < handle
             hold(ax, 'off');
         end
 
-        %% 
+        %%
         function [fig, ax] = plotTimeStairs(obj, t, Y, options)
             % plotTimeStairs Grafica una o múltiples señales escalonadas en el tiempo.
             arguments
@@ -182,7 +183,7 @@ classdef SignalPlotter < handle
             hold(ax, 'off');
         end
 
-        %% 
+        %%
         function [fig, ax] = plotSpectrum(obj, y, fs, options)
             % plotSpectrum Calcula y grafica el espectro de magnitud unilateral nativamente
             arguments
@@ -221,6 +222,7 @@ classdef SignalPlotter < handle
             ylabel(ax, "|Y(f)|", 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeLabel);
         end
 
+        %%
         function [fig, ax] = plotTimeSweep(obj, t, Y, paramVals, paramName, options)
             % plotTimeSweep Grafica múltiples respuestas temporales variando un parámetro.
             arguments
@@ -273,43 +275,84 @@ classdef SignalPlotter < handle
             hold(ax, 'off');
         end
 
+        %%
         function [fig, ax] = plotPoleSweep(obj, polesList, paramVals, paramName, options)
-            % plotPoleSweep Grafica la migración de polos variando un parámetro.
+            % plotPoleSweep Grafica la migración de polos de forma robusta.
             arguments
                 obj
                 polesList cell
                 paramVals (1,:) double
                 paramName (1,1) string
-                options.Title string = "Lugar de Raíces"
-                options.WindowPosition (1,4) double = [250, 200, 700, 450]
+                options.Title string = ""
+                options.WindowPosition (1,4) double = [200, 200, 750, 480]
+                options.ShowColorbar (1,1) logical = true
             end
-            
-            numSteps = length(paramVals);
-            colores = turbo(numSteps); % Misma paleta, sincronización perfecta
             
             fig = figure('Color', 'w', 'Position', options.WindowPosition);
             ax = axes(fig);
             hold(ax, 'on'); grid(ax, 'on');
             
-            legendHandles = gobjects(numSteps, 1); 
-            legendStrings = strings(numSteps, 1);
+            % Configuración de estilo global (Texto normal)
+            set(ax, 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeTicks, ...
+                    'GridColor', obj.GridColor, 'GridAlpha', obj.GridAlpha);
             
             % Ejes cartesianos de referencia
-            xline(ax, 0, '-', 'Color', [0.2 0.2 0.2], 'LineWidth', 1, 'HandleVisibility', 'off');
-            yline(ax, 0, '-', 'Color', [0.2 0.2 0.2], 'LineWidth', 1, 'HandleVisibility', 'off');
+            xline(ax, 0, '-', 'Color', [0.4 0.4 0.4], 'LineWidth', 1.2, 'HandleVisibility', 'off');
+            yline(ax, 0, '-', 'Color', [0.4 0.4 0.4], 'LineWidth', 1.2, 'HandleVisibility', 'off');
             
-            for i = 1:numSteps
-                p = polesList{i};
-                legendHandles(i) = scatter(ax, real(p), imag(p), 60, colores(i, :), 'x', 'LineWidth', 1.5);
-                legendStrings(i) = sprintf('%s = %0.3g', paramName, paramVals(i));
+            numSteps = length(paramVals);
+            
+            % LÓGICA 1: CASO NOMINAL (1 SOLO PUNTO)
+            if numSteps == 1
+                p = polesList{1};
+                scatter(ax, real(p), imag(p), 120, 'x', 'MarkerEdgeColor', obj.ColorPalette{1}, ...
+                        'LineWidth', 2, 'DisplayName', 'Polos Dominantes');
+                
+                if options.Title ~= ""
+                    title(ax, options.Title, 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeTitle, 'FontWeight', 'bold');
+                end
+                
+            % LÓGICA 2: MIGRACIÓN DE POLOS (BARRIDO MULTIPLE)
+            else
+                colormap(ax, turbo(numSteps));
+                colores = turbo(numSteps);
+                numPoles = length(polesList{1});
+                
+                % 1. Dibujar línea punteada de trayectoria
+                for pIdx = 1:numPoles
+                    trayectoria = zeros(numSteps, 1);
+                    for step = 1:numSteps
+                       trayectoria(step) = polesList{step}(pIdx);
+                    end
+                    plot(ax, real(trayectoria), imag(trayectoria), '--', ...
+                         'Color', [0.6 0.6 0.6], 'LineWidth', 1, 'HandleVisibility', 'off');
+                end
+                
+                % 2. Dibujar las cruces variando el color
+                for i = 1:numSteps
+                    p = polesList{i};
+                    scatter(ax, real(p), imag(p), 100, 'x', 'MarkerEdgeColor', colores(i, :), ...
+                            'LineWidth', 1.8, 'HandleVisibility', 'off');
+                end
+                
+                % 3. Insertar la Barra de Color (Colorbar)
+                if options.ShowColorbar
+                    cb = colorbar(ax);
+                    clim(ax, [min(paramVals), max(paramVals)]);
+                    cb.Label.String = paramName; 
+                    cb.Label.FontName = obj.FontFamily;
+                    cb.Label.FontSize = obj.FontSizeLabel;
+                end
+                
+                if options.Title ~= ""
+                    title(ax, options.Title, 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeTitle, 'FontWeight', 'bold');
+                end
             end
             
-            title(ax, sprintf('%s para distintos %s', options.Title, paramName), 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeTitle);
+            % Etiquetas de ejes (MATLAB soporta \sigma y \omega por defecto sin modo LaTeX)
             xlabel(ax, 'Eje Real (\sigma)', 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeLabel);
             ylabel(ax, 'Eje Imaginario (j\omega)', 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeLabel);
-            set(ax, 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeTicks, 'GridColor', obj.GridColor, 'GridAlpha', obj.GridAlpha);
             
-            legend(ax, legendHandles, legendStrings, 'Location', 'bestoutside', 'FontName', obj.FontFamily, 'FontSize', obj.FontSizeLegend);
             hold(ax, 'off');
         end
         
