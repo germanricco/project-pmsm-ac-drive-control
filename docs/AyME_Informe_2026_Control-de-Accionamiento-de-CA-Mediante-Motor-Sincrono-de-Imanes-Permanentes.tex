@@ -2779,7 +2779,7 @@ Por lo tanto, la temperatura del motor no puede ser estabilizada a un estado arb
 Aunque el sistema de orden 5 no es completamente controlable desde una única tensión, el subsistema electromecánico de posicionamiento (orden 3) sí lo es, cumpliendo el objetivo principal del diseño. Los estados incontrolables remanentes ($i_{ds}^r(t)$ y $T_s^\circ(t)$) poseen autovalores en el semiplano izquierdo, por lo que decaen y se estabilizan naturalmente. En rigor analítico, el accionamiento se clasifica como un sistema \textbf{estabilizable}, lo que permite proceder con el diseño del controlador de movimiento a lazo cerrado con total garantía de viabilidad física y matemática.
 
 
-============== HASTA ACA ================
+============== AGREGAR PUNTO 6 A CONTINUACION ================
 
 
 \subsection{Respuesta dinámica en el dominio temporal}
@@ -2823,7 +2823,7 @@ Se analiza la curva paramétrica $T_m(t)$ vs. $\omega_m(t)$ para identificar los
 
 Se determinan los valores finales de establecimiento de velocidad y corriente luego de cada transitorio, junto con el tiempo de crecimiento, tiempo de establecimiento y sobrepico. Estos indicadores permiten cuantificar la respuesta dinámica y comparar la influencia relativa de la tensión aplicada y del torque de carga.
 
-\subsubsection{Efecto de la condición inicial de $i_{ds}^r$}
+\subsubsection{Efecto de la condición inicial de \texorpdfstring{$i_{ds}^r$}{i\_ds\_r}}
 
 Se compara la respuesta del sistema para $i_{ds}^r(0)=+0.5\,A$, $i_{ds}^r(0)=-0.5\,A$ e $i_{ds}^r(0)=0\,A$. El objetivo es verificar si una corriente inicial no nula en el eje directo afecta de forma apreciable la evolución de los estados o si, por el contrario, decae rápidamente debido a la dinámica residual del eje $d$.
 
@@ -2832,18 +2832,193 @@ Se compara la respuesta del sistema para $i_{ds}^r(0)=+0.5\,A$, $i_{ds}^r(0)=-0.
 Se agrega una consigna de tensión en el eje directo $v_{ds}^{r*}(t)$, sumada a la ley de control no lineal, para evaluar efectos de reforzamiento y debilitamiento de campo. Se analiza cómo esta acción modifica la corriente directa, el torque electromagnético y la velocidad del motor en ambos modelos.
 
 
-
-
-
-
-
-
+======== HASTA ACA. SIGO CON LA SECCION DE DISEÑO ==========
 
 \section{Diseño, Análisis, Simulación e Implementación de CONTROLADOR de Movimiento en Cascada con Modulador de Torque}
-\textit{Sección pendiente. Aquí se desarrollarán el modulador de torque, los lazos de corriente, el observador de estado y el controlador externo de movimiento.}
 
-\subsection{Simulación, resultados y verificación de restricciones}
-\textit{Sección pendiente. Aquí se presentarán las simulaciones del sistema completo, el seguimiento de referencia, el rechazo de perturbaciones y la verificación de límites de corriente, tensión, velocidad, torque y temperatura.}
+En esta segunda etapa del proyecto se abandona el régimen de lazo abierto para diseñar e implementar una estrategia de control en lazo cerrado capaz de garantizar el seguimiento robusto de trayectorias de posición y velocidad. 
+Debido a la complejidad y los fuertes acoplamientos del motor PMSM, 
+se descarta el control por realimentación completa de estados a favor de una arquitectura jerárquica de \textbf{Control en Cascada}.
+
+Esta arquitectura segmenta el problema en dos escalas de tiempo claramente diferenciadas:
+\begin{enumerate}
+    \item \textbf{Lazo Interno (Rápido):} Un Modulador de Torque / Control Vectorial de Corrientes, encargado de cancelar las no linealidades eléctricas y forzar a las corrientes del motor a seguir referencias instantáneas.
+    \item \textbf{Lazo Externo (Lento):} Un Controlador de Movimiento (PI/PID) que evalúa el error de posición/velocidad y genera las consignas de torque electromagnético que el lazo interno deberá satisfacer.
+\end{enumerate}
+
+\subsection*{1. Modulador de Torque y Desacoplamiento (Controlador interno vectorial)}
+
+El objetivo primario del lazo interno es transformar las consignas de tensión virtuales demandadas por los controladores en tensiones reales aplicadas a la máquina, 
+garantizando que el torque generado responda lineal y proporcionalmente a la orden de entrada.
+
+Se asume la disponibilidad de un inversor electrónico trifásico con un modulador PWM de alta frecuencia. 
+Desde el punto de vista del control de pequeña señal y asumiendo que no existen saturaciones por límite de bus de continua, 
+este hardware de potencia se modelará analíticamente como una etapa de ganancia unitaria y ancho de banda infinito. 
+En consecuencia, las tensiones de comando generadas por el algoritmo de control se asumen instantáneamente aplicadas a la planta:
+
+\begin{equation}
+    v_{qd0s}^r(t) \approx v_{qd0s}^{r*}(t)
+\end{equation}
+
+\subsubsection*{1.a) Compensación de realimentaciones físicas naturales}
+
+Retomando el modelo electromagnético no lineal en coordenadas sincrónicas (qd0) derivado en la Ecuación~\eqref{eq:dinamica_corrientes_qd0}, 
+se observan fuertes acoplamientos cruzados producidos por las fuerzas contraelectromotrices y las caídas óhmicas:
+
+\begin{equation}
+	\begin{aligned}
+		\frac{di_{qs}^{r}}{dt} &= \frac{1}{L_q}\left[v_{qs}^{r} - R_s\left(T_s^{\circ}\right)i_{qs}^{r} - \left(\lambda_m^{\prime r}+L_d i_{ds}^{r}\right)P_p\omega_m\right],\\
+		\frac{di_{ds}^{r}}{dt} &= \frac{1}{L_d}\left[v_{ds}^{r} - R_s\left(T_s^{\circ}\right)i_{ds}^{r} + L_q i_{qs}^{r}P_p\omega_m\right],\\
+		\frac{di_{0s}}{dt} &= \frac{1}{L_{ls}}\left[v_{0s} - R_s\left(T_s^{\circ}\right)i_{0s}\right].
+	\end{aligned}
+	\label{eq:dinamica_corrientes_qd0_2}
+\end{equation}
+
+Para otorgarle al controlador de corriente autoridad total y aislada sobre cada eje magnético, es imperativo cancelar estos términos de perturbación interna. 
+Para ello, se formula una ley de control por \textit{feedback linearization} (linealización por realimentación exacta) que define las tensiones de referencia $v_{qd0s}^{r*}(t)$ como la suma de una nueva señal de control auxiliar $\bar{v}_{qd0}(t)$ y términos de pre-compensación que replican, en sentido inverso, los acoplamientos medidos del motor:
+
+\begin{equation}
+    \left\{
+    \begin{aligned}
+        v_{qs}^{r*}(t) &= \bar{v}_q(t) + \hat{R}_s i_{qs}^r(t) + P_p \omega_m(t) \left[ L_d i_{ds}^r(t) + \lambda_m^{\prime r} \right] \\[2mm]
+        v_{ds}^{r*}(t) &= \bar{v}_d(t) + \hat{R}_s i_{ds}^r(t) - P_p \omega_m(t) L_q i_{qs}^r(t) \\[2mm]
+        v_{0s}^{r*}(t) &= \bar{v}_0(t) + \hat{R}_s i_{0s}^r(t)
+    \end{aligned}
+    \right.
+    \label{eq:ley_desacople_corriente}
+\end{equation}
+
+Sustituyendo el vector de control \eqref{eq:ley_desacople_corriente} en la dinámica original de la planta \eqref{eq:dinamica_corrientes_qd0_2} y asumiendo un conocimiento perfecto de los parámetros estáticos (ej: $\hat{L}_{q,d} = L_{q,d}$), se fuerza la anulación de los acoplamientos, rindiendo un sistema puramente lineal, diagonal e integrador para las corrientes:
+
+\begin{equation}
+    \frac{di_{qs}^r(t)}{dt} = \frac{1}{L_q} \bar{v}_q(t), \qquad 
+    \frac{di_{ds}^r(t)}{dt} = \frac{1}{L_d} \bar{v}_d(t), \qquad 
+    \frac{di_{0s}^r(t)}{dt} = \frac{1}{L_{ls}} \bar{v}_0(t)
+    \label{eq:corrientes_desacopladas_integradores}
+\end{equation}
+
+\paragraph{Impacto de la estimación térmica de la resistencia $\hat{R}_s(T_s^\circ(t))$:}
+Un factor crítico en la robustez de este esquema radica en el término de compensación de la caída óhmica ($\hat{R}_s i_{qs}^r$). 
+La resistencia estatórica real del motor $R_s(t)$ es fuertemente dependiente de la temperatura. 
+
+Si el controlador se programa empleando un valor nominal constante ($\hat{R}_s = R_{s,\mathrm{REF}}$) parametrizado a temperatura ambiente (ej. $20^\circ\text{C}$), a medida que la máquina alcance su temperatura máxima de diseño ($115^\circ\text{C}$), el término real $R_s(T)$ crecerá hasta un $30-40\%$. Esto provocará que la cancelación en la ecuación diferencial no sea perfecta, induciendo un error de seguimiento transitorio y acoplamientos parásitos residuales en el lazo de corriente.
+
+Por el contrario, si el algoritmo de control implementa un observador o estima activamente la dependencia $R_s(T_s^\circ(t))$ mediante la lectura del termopar estatórico, la ley de linealización por retroalimentación será topológicamente exacta. Esta técnica adaptativa suprime el error de modelado, asegurando que la dinámica de la Ecuación \eqref{eq:corrientes_desacopladas_integradores} permanezca invariante y perfectamente predecible bajo todo el espectro térmico operativo de la máquina.
+
+\subsubsection*{1.b) Diseño del lazo proporcional desacoplado de corrientes}
+
+A partir del sistema de ecuaciones \eqref{eq:corrientes_desacopladas_integradores}, se evidencia que la dinámica de las corrientes ha quedado completamente independizada. Para generalizar la nomenclatura y facilitar el análisis, se define el subíndice genérico $x \in \{q, d, 0\}$ para representar a cualquier eje del sistema. Así, la relación dinámica entre la tensión auxiliar $\bar{v}_x(t)$ y la corriente resultante $i_x^r(t)$ se describe mediante una integración pura, escalada por la inductancia equivalente del eje $L_x$:
+
+\begin{equation}
+    \frac{di_x^r(t)}{dt} = \frac{1}{L_x} \bar{v}_x(t)
+\end{equation}
+
+Aplicando la transformada de Laplace bajo condiciones iniciales nulas, se obtiene la función de transferencia de la planta desacoplada a controlar:
+\begin{equation}
+    s I_x^r(s) = \frac{1}{L_x} \bar{V}_x(s) \quad \implies \quad G_{p,x}(s) = \frac{I_x^r(s)}{\bar{V}_x(s)} = \frac{1}{s L_x}
+	\label{eq:funcion_transferencia_planta_desacoplada}
+\end{equation}
+
+Para forzar a la corriente medida $i_x^r(t)$ a seguir una trayectoria de referencia arbitraria $i_x^{r*}(t)$ impuesta por el lazo de velocidad, se define el error de seguimiento instantáneo:
+\begin{equation*}
+    e_x(t) = i_x^{r*}(t) - i_x^r(t)
+\end{equation*}
+
+Se propone implementar un \textbf{controlador puramente Proporcional (P)} con ganancia $R_x^\prime$. La ley de control en el dominio del tiempo que dictamina la acción de la tensión auxiliar es:
+\begin{equation*}
+    \bar{v}_x(t) = R_x^\prime \cdot e_x(t) = R_x^\prime \left[ i_x^{r*}(t) - i_x^r(t) \right]
+\end{equation*}
+
+Transformando esta ley de control al dominio de la variable compleja $s$:
+\begin{equation*}
+    \bar{V}_x(s) = R_x^\prime \left[ I_x^{r*}(s) - I_x^r(s) \right]
+\end{equation*}
+
+Sustituyendo la acción del controlador en la Ecuación~\eqref{eq:funcion_transferencia_planta_desacoplada}, se obtiene la expresión algebraica del lazo cerrado:
+\begin{equation*}
+    I_x^r(s) = \left( \frac{1}{s L_x} \right) R_x^\prime \left[ I_x^{r*}(s) - I_x^r(s) \right]
+\end{equation*}
+
+Agrupando los términos de $I_x^r(s)$ y despejando la relación entrada-salida, la función de transferencia de lazo cerrado adopta la forma canónica de un filtro pasa-bajos de primer orden puro:
+\begin{equation}
+    G_{cl,x}(s) = \frac{I_x^r(s)}{I_x^{r*}(s)} = \frac{ \dfrac{R_x^\prime}{L_x} }{ s + \dfrac{R_x^\prime}{L_x} } = \frac{1}{\tau_c s + 1}
+    \label{eq:lazo_cerrado_corriente_PT}
+\end{equation}
+
+El comportamiento dinámico transitorio queda unívocamente determinado por la ubicación del polo a lazo cerrado ($p_c$), el cual se obtiene al igualar el denominador a cero:
+\begin{equation}
+    s + \frac{R_x^\prime}{L_x} = 0 \quad \implies \quad p_c = -\frac{R_x^\prime}{L_x}
+\end{equation}
+
+De esta expresión se deduce que la ganancia proporcional necesaria para ubicar el polo de corriente en una posición deseada se calcula de forma directa como:
+\begin{equation}
+    R_x^\prime = -p_c \cdot L_x
+    \label{eq:sintonia_proporcional_Rx}
+\end{equation}
+
+\paragraph{Justificación de la Acción de Control.}
+La consigna exige sintonizar este lazo interior con un polo fuertemente negativo ubicado en $p_c = -5000\,\text{rad/s}$, otorgando un ancho de banda colosal ($BW \approx 796\,\text{Hz}$). Utilizando la Ecuación \eqref{eq:sintonia_proporcional_Rx} y los parámetros inductivos nominales, las ganancias proporcionales requeridas para cada eje resultan:
+
+\begin{align*}
+    R_q^\prime &= (5000)\cdot L_q = 5000 \cdot (5.8 \times 10^{-3}) = 29.0\,\si{\ohm} \\
+    R_d^\prime &= (5000)\cdot L_d = 5000 \cdot (6.6 \times 10^{-3}) = 33.0\,\si{\ohm} \\
+    R_0^\prime &= (5000)\cdot L_{ls} = 5000 \cdot (0.8 \times 10^{-3}) = 4.0\,\si{\ohm}
+\end{align*}
+
+Bajo este ajuste, las corrientes del motor convergerán hacia sus referencias en un tiempo de asentamiento imperceptible ($\tau_c = 1/5000 = 0.2\,\text{ms}$, asentamiento al $99\%$ en $\approx 0.9\,\text{ms}$). 
+
+\paragraph{¿Es necesaria una acción Integral (PI) en el lazo de corriente?}
+Al comparar esta dinámica con la planta LTI analizada en la sección de estabilidad (donde el polo eléctrico natural de lazo abierto residía en $\approx -154\,\text{rad/s}$), el lazo cerrado ha inyectado un ancho de banda extraordinariamente más rápido. 
+
+Debido a que el esquema de pre-compensación no lineal (Ecuación \eqref{eq:ley_desacople_corriente}) ya se encargó de anular estáticamente la caída resistiva $R_s i_x^r(t)$ y las fuerzas contraelectromotrices de estado estable, el controlador proporcional $R_x^\prime$ \textbf{no necesita luchar contra errores de estado estacionario} (asumiendo un conocimiento paramétrico preciso). Por consiguiente, el agregado de una acción Integral (control PI) no es estrictamente necesario desde el punto de vista del seguimiento teórico. Un controlador proporcional es suficiente, resulta en una ejecución más rápida y es intrínsecamente inmune a saturaciones de tipo \textit{wind-up} ante este nivel de desacoplamiento exacto. La acción integral se reservará exclusivamente para el controlador externo de cinemática (velocidad/posición) a fin de rechazar perturbaciones constantes mecánicas.
+
+\subsubsection*{1.c y 1.d) Incorporación de Consigna de Torque y Compensación de Carga}
+
+Una vez garantizado el seguimiento rápido de las corrientes mediante el Controlador P diseñado en el inciso anterior ($i_q^r(t) \approx i_q^{r*}(t)$), 
+es necesario proporcionar una interfaz abstracta para que el controlador de movimiento externo (lazo de velocidad) pueda gobernar el accionamiento emitiendo una única \textbf{consigna de torque} electromagnético ($T_m^*$).
+
+Recordando la ecuación fundamental de producción de torque de la PMSM \eqref{eq:torque_electromagnetico_PMSM}, y definiendo las constantes equivalentes de torque principal ($K_t$) y de reluctancia ($K_{rel}$):
+
+\begin{equation*}
+	T_m(t) = \frac{3}{2}P_p \lambda_m^{\prime r} i_{qs}^{r}(t) + \frac{3}{2}P_p \left(L_d - L_q\right) i_{ds}^{r}(t)i_{qs}^{r}(t).
+\end{equation*}
+
+\begin{equation*}
+    K_t = \frac{3}{2}P_p \lambda_m^{\prime r}, \qquad K_{rel} = \frac{3}{2}P_p \left(L_d - L_q\right),
+\end{equation*}
+
+La expresion del torque adopta la forma compacta analizada en la Ecuacion \eqref{eq:torque_kt_krel}:
+
+\begin{equation*}
+	T_m(t) = K_t i_{qs}^{r}(t) + K_{rel} i_{ds}^{r}(t)i_{qs}^{r}(t).
+\end{equation*}
+
+Por otro lado, recordando la dinámica de aceleración del subsistema mecánico referida al eje del motor:
+
+\begin{equation*}
+    \dot{\omega}_m(t) = \frac{1}{J_{eq}} \left[ T_m(t) - b_{eq}\omega_m(t) - \frac{g k_l}{r} \sin\left(\frac{\theta_m(t)}{r}\right) - \frac{T_{ld}(t)}{r} \right],
+\end{equation*}
+
+se evidencia que el controlador PID externo, cuya acción bruta se define como $T_{m}^{*\prime}(t)$, debe lidiar con disipaciones no lineales. Para lograr que la planta responda idealmente como una inercia pura ($J_{eq}\dot{\omega}_m = T_{m}^{*\prime}$), el Modulador de Torque aplica \textit{feedback linearization}. Utilizando los estados mecánicos medidos por el encoder ($\theta_m$ y $\omega_m$), se anulan estas perturbaciones internas sumando términos de \textit{feedforward} a la orden del PID:
+
+\begin{itemize}
+    \item \textbf{Fricción Viscosa:} Se compensa sumando $\hat{b}_{eq} \omega_m(t)$ usando el valor nominal estimado. El pequeño error residual por incertidumbre paramétrica en la carga será absorbido naturalmente por la acción Integral (I) del PID externo.
+    \item \textbf{Gravedad (Torque Precalculado):} Se anula el esfuerzo estático sumando exactamente la expresión no lineal $\frac{g \hat{k}_l}{r} \sin\left(\frac{\theta_m(t)}{r}\right)$, garantizando un rechazo global e instantáneo sin obligar al PID a integrar el error en régimen permanente para sostener la masa.
+\end{itemize}
+
+Igualando el requerimiento total de torque a la expresión compacta de la PMSM y despejando, se obtiene la \textbf{consigna de corriente en cuadratura $i_{qs}^{r*}(t)$} definitiva que el Modulador debe emitir hacia el Controlador P de corrientes:
+
+\begin{equation}
+    \boxed{
+        i_{qs}^{r*}(t) = \frac{T_{m}^{*\prime}(t) + \hat{b}_{eq} \omega_m(t) + \dfrac{g \hat{k}_l}{r} \sin\left(\dfrac{\theta_m(t)}{r}\right)}{K_t + K_{rel} i_{ds}^r(t)}
+    }
+    \label{eq:modulador_torque_final}
+\end{equation}
+
+La Ecuación~\eqref{eq:modulador_torque_final} define estructuralmente al bloque \textbf{Modulador de Torque}. Sus \textbf{entradas} son la acción del lazo PID ($T_m^{*\prime}$) y los estados sensados ($\omega_m$, $\theta_m$, $i_{ds}^r$), mientras que su \textbf{salida} es la referencia de corriente comandada $i_{qs}^{r*}$.
+
+\paragraph{Impacto de la estrategia de magnetización ($i_{ds}^{r*}(t)$):}
+La Ecuación~\eqref{eq:modulador_torque_final} expone cómo el estado de la corriente del eje directo ($i_{ds}^{r}$) altera la ganancia efectiva de torque. Operar a \textbf{Campo Orientado} ($i_{ds}^{r*} = 0$) anula la reluctancia en el denominador y maximiza la eficiencia nominal. Por el contrario, aplicar \textbf{Debilitamiento de Campo} ($i_{ds}^{r*} < 0$) reduce el denominador (dado que $L_d > L_q$), demandando mayor corriente de cuadratura para generar el mismo torque, lo cual permite alcanzar mayores velocidades a expensas de sacrificar la eficiencia energética.
 
 % ---------------------------------------------------------
 % CONCLUSIONES
