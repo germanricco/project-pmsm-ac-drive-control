@@ -16,6 +16,7 @@
 \usepackage{array}
 \usepackage{float}
 \usepackage{graphicx}
+\usepackage{placeins}
 \usepackage{subcaption}
 \usepackage{xcolor}
 \usepackage{tikz}
@@ -2670,7 +2671,7 @@ El modelo LTI equivalente aumentado no es completamente observable desde la medi
 
 La parte electromecánica principal del modelo, formada por $\theta_m(t)$, $\omega_m(t)$ e $i_q(t)$, sí resulta observable. Sin embargo, los estados $i_d(t)$ y $T_s^\circ(t)$ son no observables desde dichas salidas, debido a que en el modelo LTI aumentado quedan desacoplados de la dinámica que conduce a la posición y velocidad del rotor.
 
-\section*{5. Análisis de Controlabilidad Completa de Estado del Modelo LTI Equivalente Aumentado}
+\subsection*{5. Análisis de Controlabilidad Completa de Estado del Modelo LTI Equivalente Aumentado}
 
 En este apartado se evalúa la propiedad de controlabilidad completa de estado para el modelo LTI equivalente aumentado (de orden $n=5$), obtenido en el ítem 2.c.VI. El propósito analítico es determinar si, mediante la manipulación exclusiva de la tensión de comando del eje en cuadratura $v_{qs}^r(t)$ y asumiendo nula la perturbación de carga mecánica ($T_l(t)=0$), es posible transferir al sistema desde cualquier estado inicial hacia cualquier estado final deseado en un intervalo de tiempo finito.
 
@@ -2795,41 +2796,850 @@ Se presenta la evolución temporal de las principales variables del sistema: pos
 
 Se definen las señales de entrada utilizadas en la simulación: una consigna de tensión $v_{qs}^{r*}(t)$ aplicada en forma de pulsos y una perturbación de torque de carga $T_l(t)$ aplicada como doble pulso. Estas entradas permiten analizar tanto la respuesta forzada por tensión como el efecto de las perturbaciones mecánicas externas.
 
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=0.82\linewidth]{img/sim_la/vqs_ref.pdf}
-%	\caption{Consigna de tensión aplicada en el eje $q$, $v_{qs}^{r*}(t)$.}
-%	\label{fig:consigna-tension-q}
-%\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/entrada_v_qs.pdf}
+	\caption{Consigna de tensión aplicada en el eje $q$, $v_{qs}^{r*}(t)$.}
+	\label{fig:consigna-tension-q}
+\end{figure}
 
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=0.82\linewidth]{img/sim_la/Tld_ref.pdf}
-%	\caption{Perturbación de torque de carga aplicada al sistema, $T_{ld}(t)$.}
-%	\label{fig:torque-carga}
-%\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/entrada_T_ld.pdf}
+	\caption{Perturbación de torque de carga aplicada al sistema, $T_{ld}(t)$.}
+	\label{fig:torque-carga}
+\end{figure}
 
+\paragraph{Respuesta de las variables mecánicas}
+
+En las Figuras~\ref{fig:posicion_motor_nl},
+\ref{fig:velocidad_motor_nl} y \ref{fig:torque_motor_nl} se presentan,
+respectivamente, la posición angular, la velocidad angular y el torque
+electromagnético desarrollado por el motor para la secuencia de entradas
+considerada.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/theta_m_nl.pdf}
+	\caption{Evolución temporal de la posición angular del rotor
+		\(\theta_m(t)\).}
+	\label{fig:posicion_motor_nl}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/w_m_nl.pdf}
+	\caption{Evolución temporal de la velocidad angular del rotor
+		\(\omega_m(t)\).}
+	\label{fig:velocidad_motor_nl}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/T_m_nl.pdf}
+	\caption{Evolución temporal del torque electromagnético desarrollado
+		por el motor \(T_m(t)\).}
+	\label{fig:torque_motor_nl}
+\end{figure}
+\FloatBarrier
+
+% ============================================================
+% COMPORTAMIENTO TÉRMICO
+% ============================================================
+
+\paragraph{Evolución térmica del estator}
+
+La dinámica térmica del modelo no lineal considera las pérdidas resistivas
+por efecto Joule en los devanados. La Figura~\ref{fig:temperatura_estator_nl}
+muestra la evolución de la temperatura del estator durante el intervalo
+de simulación.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/T_s_nl.pdf}
+	\caption{Evolución temporal de la temperatura de los devanados del
+		estator \(T_s(t)\).}
+	\label{fig:temperatura_estator_nl}
+\end{figure}
+\FloatBarrier
+
+% ============================================================
+% VARIABLES ELECTROMAGNÉTICAS
+% ============================================================
+
+\paragraph{Corrientes estatóricas en coordenadas \texorpdfstring{\(abc\)}
+	{abc} y \texorpdfstring{\(qd0\)}{qd0}}
+
+Las corrientes estatóricas se presentan tanto en las coordenadas reales
+y estacionarias \(abc\) como en el sistema de coordenadas virtuales
+\(qd0\) fijo al rotor. Esta representación permite verificar la
+correspondencia entre las corrientes trifásicas y sus componentes en los
+ejes de cuadratura, directo y homopolar.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.95\linewidth]{img/simulacion_nl_lti/corrientes_abc_nl.pdf}
+	\caption{Corrientes estatóricas de fase \(i_a(t)\), \(i_b(t)\) e
+		\(i_c(t)\), expresadas en coordenadas \(abc\).}
+	\label{fig:corrientes_abc_nl}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.95\linewidth]{img/simulacion_nl_lti/corrientes_qd0_nl.pdf}
+	\caption{Corrientes estatóricas \(i_{qs}^{r}(t)\),
+		\(i_{ds}^{r}(t)\) e \(i_{0s}(t)\), expresadas en coordenadas
+		virtuales \(qd0\).}
+	\label{fig:corrientes_qd0_nl}
+\end{figure}
+\FloatBarrier
+
+\paragraph{Tensiones estatóricas en coordenadas \texorpdfstring{\(abc\)}
+	{abc} y \texorpdfstring{\(qd0\)}{qd0}}
+
+De manera análoga, las tensiones aplicadas al estator se representan en
+los sistemas de coordenadas \(abc\) y \(qd0\). Las tensiones trifásicas
+se obtienen mediante la transformación inversa de Park a partir de las
+componentes definidas en el marco rotórico.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/tensiones_abc_nl.pdf}
+	\caption{Tensiones estatóricas de fase \(v_a(t)\), \(v_b(t)\) y
+		\(v_c(t)\), expresadas en coordenadas \(abc\).}
+	\label{fig:tensiones_abc_nl}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/tensiones_qd0_nl.pdf}
+	\caption{Tensiones estatóricas \(v_{qs}^{r}(t)\),
+		\(v_{ds}^{r}(t)\) y \(v_{0s}(t)\), expresadas en coordenadas
+		virtuales \(qd0\).}
+	\label{fig:tensiones_qd0_nl}
+\end{figure}
+\FloatBarrier
 
 
 \subsubsection{Comparación entre modelo NL y modelo LTI equivalente aumentado}
 
 Se comparan las respuestas del modelo no lineal desacoplado y del modelo LTI equivalente aumentado. Esta comparación permite verificar si la ley de control no lineal logra desacoplar correctamente los ejes $q$ y $d$, y si el modelo LTI reproduce adecuadamente el comportamiento dinámico del sistema en las condiciones simuladas.
 
-\subsubsection{Curva torque-velocidad y cuadrantes de operación}
+Para ello,se consideran la corriente del eje de cuadratura, la velocidad angular,la posición angular y el torque electromagnético del motor.
 
-Se analiza la curva paramétrica $T_m(t)$ vs. $\omega_m(t)$ para identificar los cuadrantes de operación del accionamiento. A partir del signo relativo entre torque y velocidad se distingue entre motorización y frenado regenerativo, evaluando cómo cambia el punto de operación ante las consignas de tensión y los pulsos de torque de carga.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/comparacion_i_q.pdf}
+	\caption{Comparación de la corriente del eje de cuadratura
+		\(i_{qs}^{r}(t)\) obtenida con los modelos no lineal y LTI.}
+	\label{fig:comparacion_iq_nl_lti}
+\end{figure}
 
-\subsubsection{Indicadores de respuesta transitoria}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/comparacion_theta_m.pdf}
+	\caption{Comparación de la posición angular del rotor
+		\(\theta_m(t)\) obtenida con los modelos no lineal y LTI.}
+	\label{fig:comparacion_posicion_nl_lti}
+\end{figure}
 
-Se determinan los valores finales de establecimiento de velocidad y corriente luego de cada transitorio, junto con el tiempo de crecimiento, tiempo de establecimiento y sobrepico. Estos indicadores permiten cuantificar la respuesta dinámica y comparar la influencia relativa de la tensión aplicada y del torque de carga.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/comparacion_w_m.pdf}
+	\caption{Comparación de la velocidad angular del rotor
+		\(\omega_m(t)\) obtenida con los modelos no lineal y LTI.}
+	\label{fig:comparacion_velocidad_nl_lti}
+\end{figure}
 
-\subsubsection{Efecto de la condición inicial de \texorpdfstring{$i_{ds}^r$}{i\_ds\_r}}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/comparacion_T_m.pdf}
+	\caption{Comparación del torque electromagnético del motor
+		\(T_m(t)\) obtenido con los modelos no lineal y LTI.}
+	\label{fig:comparacion_torque_nl_lti}
+\end{figure}
+\FloatBarrier
 
-Se compara la respuesta del sistema para $i_{ds}^r(0)=+0.5\,A$, $i_{ds}^r(0)=-0.5\,A$ e $i_{ds}^r(0)=0\,A$. El objetivo es verificar si una corriente inicial no nula en el eje directo afecta de forma apreciable la evolución de los estados o si, por el contrario, decae rápidamente debido a la dinámica residual del eje $d$.
+\subsubsection{Análisis de la curva paramétrica torque--velocidad}
+\label{subsec:torque_velocidad}
+
+La evolución conjunta del torque electromagnético y de la velocidad angular
+del rotor se analiza mediante la curva paramétrica
+\(T_m\) en función de \(\omega_m\). Cada punto de la trayectoria corresponde
+a un mismo instante de simulación, por lo que esta representación permite
+identificar los procesos de aceleración, frenado e inversión del sentido de
+giro del accionamiento.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\linewidth]
+	{img/simulacion_nl_lti/torque_velocidad_nl_analisis.pdf}
+	\caption{Trayectoria paramétrica torque--velocidad del modelo no lineal,
+		con identificación de los cuatro cuadrantes de operación, puntos de
+		cambio de entrada y características cuasiestacionarias correspondientes
+		a los diferentes niveles de \(v_{qs}^{r}\).}
+	\label{fig:torque_velocidad_nl_qs}
+\end{figure}
+
+En la Figura~\ref{fig:torque_velocidad_nl_qs} se observa que el
+accionamiento recorre los cuatro cuadrantes del plano
+\(\omega_m\)--\(T_m\). Cuando el torque y la velocidad poseen el mismo
+signo, la potencia mecánica
+%
+\begin{equation}
+	P_m(t)=T_m(t)\,\omega_m(t)
+\end{equation}
+%
+es positiva y el sistema opera en motorización. Esta condición corresponde
+al cuadrante I para el giro directo y al cuadrante III para el giro inverso.
+Cuando el torque y la velocidad presentan signos opuestos, la potencia
+mecánica es negativa y se produce frenado regenerativo, correspondiente a
+los cuadrantes II y IV.
+
+El recorrido ubicado en el semiplano derecho representa principalmente el
+ciclo de operación con velocidad positiva. El motor acelera en el cuadrante I
+y, al invertirse el signo del torque mientras la velocidad continúa siendo
+positiva, pasa al cuadrante II. De manera análoga, el recorrido del semiplano
+izquierdo muestra la motorización inversa en el cuadrante III y el frenado
+regenerativo inverso en el cuadrante IV.
+
+Los lazos de menor tamaño observados cerca de las velocidades extremas y
+alrededor del origen se originan durante los cambios de tensión y torque de
+carga. Debido a la inercia del subsistema mecánico y a la dinámica eléctrica
+del estator, la velocidad y las corrientes no pueden modificarse
+instantáneamente, por lo que aparecen trayectorias transitorias cerradas.
+
+Las características cuasiestacionarias representan la relación
+torque--velocidad obtenida para valores constantes de \(v_{qs}^{r}\),
+despreciando las derivadas eléctricas. La trayectoria dinámica no permanece
+sobre estas rectas debido a que las entradas cambian antes de que el sistema
+alcance completamente el régimen estacionario. No obstante, los estados
+alcanzados hacia el final de cada intervalo tienden a aproximarse a la
+característica asociada al nivel de tensión aplicado.
+
+\paragraph{Comparación entre los modelos no lineal y LTI}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\linewidth]
+	{img/simulacion_nl_lti/torque_velocidad_nl_vs_lti.pdf}
+	\caption{Comparación de las trayectorias paramétricas torque--velocidad
+		obtenidas con el modelo no lineal y con el modelo LTI.}
+	\label{fig:torque_velocidad_nl_lti}
+\end{figure}
+
+La Figura~\ref{fig:torque_velocidad_nl_lti} muestra que el modelo LTI
+reproduce adecuadamente la forma global de la respuesta del modelo no
+lineal. Ambos modelos recorren los mismos cuadrantes y presentan velocidades
+máximas y valores de torque de magnitudes semejantes.
+
+Las principales diferencias aparecen en los máximos de torque y en la
+extensión de los lazos. En varias regiones, la trayectoria LTI queda
+ligeramente por fuera de la correspondiente al modelo no lineal, indicando
+una pequeña sobreestimación de la respuesta. Las discrepancias también se
+incrementan durante las conmutaciones, especialmente en los pequeños bucles
+próximos al origen y a las velocidades extremas.
+
+Estas diferencias se explican porque el modelo no lineal incorpora la
+variación de la resistencia estatórica con la temperatura, el torque
+gravitacional dependiente de la posición y otros efectos no lineales que no
+están completamente incluidos en el modelo LTI. Sin embargo, la semejanza
+general entre ambas trayectorias permite considerar al modelo LTI como una
+aproximación válida para el análisis del comportamiento global del sistema.
+
+\paragraph{Descomposición de la trayectoria según la polaridad de tensión}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]
+	{img/simulacion_nl_lti/torque_velocidad_por_polaridad.pdf}
+	\caption{Descomposición auxiliar de la trayectoria torque--velocidad del
+		modelo no lineal según la polaridad de la tensión
+		\(v_{qs}^{r}\): tensión positiva a la izquierda y tensión negativa a la
+		derecha.}
+	\label{fig:torque_velocidad_polaridad}
+\end{figure}
+
+La Figura~\ref{fig:torque_velocidad_polaridad} permite distinguir la
+contribución de cada polaridad de tensión. Para \(v_{qs}^{r}>0\), la
+trayectoria se desarrolla principalmente en la región de velocidad positiva:
+el motor acelera en el cuadrante I y posteriormente puede ingresar al
+cuadrante II durante el frenado regenerativo.
+
+Para \(v_{qs}^{r}<0\), la trayectoria presenta un comportamiento
+aproximadamente simétrico. El torque negativo acelera al rotor en sentido
+inverso y lleva al sistema al cuadrante III, mientras que un torque positivo
+con velocidad negativa produce frenado regenerativo en el cuadrante IV.
+
+Esta separación facilita la interpretación de los dos recorridos principales,
+pero no reemplaza a la curva completa, ya que no incluye los intervalos con
+\(v_{qs}^{r}=0\) ni muestra de forma continua la secuencia temporal completa
+del ensayo.
+
+\paragraph{Evolución del ángulo de torque del rotor}
+
+El ángulo de torque eléctrico se definió como la diferencia entre el
+ángulo del vector de tensión del estator y el ángulo eléctrico del rotor:
+
+\begin{equation}
+	\delta(t)=\theta_{ev}(t)-\theta_r(t),
+	\qquad
+	\theta_r(t)=P_p\,\theta_m(t).
+\end{equation}
+
+El ángulo $\theta_{ev}(t)$ se obtuvo a partir de las tensiones trifásicas,
+aplicando la transformación de Clarke y calculando
+
+\begin{equation}
+	\theta_{ev}(t)=
+	\operatorname{atan2}\left(v_{\beta}(t),v_{\alpha}(t)\right).
+\end{equation}
+
+El resultado se representó en el intervalo
+$[-180^{\circ},180^{\circ}]$.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.5\linewidth]
+	{img/simulacion_nl_lti/angulo_torque_rotor.pdf}
+	\caption{Evolución temporal del ángulo de torque eléctrico del rotor
+		$\delta(t)$.}
+	\label{fig:angulo_torque_rotor}
+\end{figure}
+
+En la Fig.~\ref{fig:angulo_torque_rotor} se observan distintos niveles
+aproximadamente constantes durante los intervalos de entrada constante.
+Los cambios bruscos coinciden con las variaciones de tensión y torque de
+carga. Los saltos entre $+180^{\circ}$ y $-180^{\circ}$ no representan
+una discontinuidad física, sino que se deben a la representación angular
+acotada, dado que ambos valores describen la misma orientación.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\linewidth]{img/simulacion_nl_lti/angulo_torque_y_torque.pdf}
+	\caption{Comparación entre el ángulo de torque $\delta(t)$ y el torque
+		electromagnético $T_m(t)$.}
+	\label{fig:angulo_torque_y_torque}
+\end{figure}
+
+En la Fig.~\ref{fig:angulo_torque_y_torque} se observa que los principales
+transitorios del ángulo coinciden temporalmente con los cambios del torque
+electromagnético. Sin embargo, no existe una correspondencia directa entre
+sus signos durante toda la simulación, ya que el torque depende
+principalmente de la corriente $i_{qs}^{r}$, mientras que $\delta(t)$
+representa la orientación del vector de tensión respecto del rotor.
+
+Por lo tanto, la identificación de los cuadrantes de operación debe
+realizarse considerando conjuntamente los signos del torque
+electromagnético $T_m(t)$ y de la velocidad angular $\omega_m(t)$.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.5\linewidth]
+	{img/simulacion_nl_lti/verificacion_angulo_torque.pdf}
+	\caption{Verificación del cálculo de $\delta(t)$ mediante las tensiones
+		en coordenadas $abc$ y $qd0$.}
+	\label{fig:verificacion_angulo_torque}
+\end{figure}
+
+Para verificar el cálculo, también se obtuvo el ángulo directamente desde
+las tensiones rotóricas:
+
+\begin{equation}
+	\delta_{qd0}(t)=
+	\operatorname{atan2}
+	\left(-v_{ds}^{r}(t),v_{qs}^{r}(t)\right).
+\end{equation}
+
+La superposición prácticamente completa de ambas curvas en la
+Fig.~\ref{fig:verificacion_angulo_torque} confirma la consistencia de las
+transformaciones utilizadas y la correcta implementación del cálculo del
+ángulo de torque.
+
+\paragraph{Trayectoria de las corrientes en el plano \(d-q\)}
+\label{subsec:trayectoria_corrientes_dq}
+
+Con el objetivo de analizar la distribución de la corriente estatórica entre los ejes directo y de cuadratura, se construyó la trayectoria paramétrica
+
+\begin{equation}
+	\left(i_{ds}^{r}(t),\,i_{qs}^{r}(t)\right),
+\end{equation}
+
+donde cada punto de la curva corresponde a un mismo instante de la simulación, por lo tantom debe interpretarse como la evolución temporal del vector de corriente expresado en coordenadas rotóricas \(d-q\).
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/simulacion_nl_lti/plano_corrientes_dq_fisico.pdf}
+		\caption{Trayectoria paramétrica del vector de corriente en el plano \(d-q\).}
+		\label{fig:plano_corrientes_dq_fisico}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/simulacion_nl_lti/plano_corrientes_dq_zoom_numerico.pdf}
+		\caption{Ampliación de la trayectoria en el eje \(d\), expresado en microamperes.}
+		\label{fig:plano_corrientes_dq_zoom}
+	\end{minipage}
+\end{figure}
+
+En la Fig.~\ref{fig:plano_corrientes_dq_fisico} se observa que las trayectorias correspondientes al modelo no lineal y al modelo LTI permanecen prácticamente superpuestas sobre la recta \(i_{ds}^{r}=0\). El desplazamiento del vector de corriente se produce casi exclusivamente en dirección vertical, debido a las variaciones de la corriente de cuadratura \(i_{qs}^{r}\).
+
+Este comportamiento es coherente con la estrategia de desacoplamiento empleada, cuya finalidad es mantener nula la componente directa de corriente. En estas condiciones, el torque electromagnético de la PMSM puede aproximarse mediante
+
+\begin{equation}
+	T_m(t)
+	\approx
+	\frac{3}{2}P_p\lambda_m^{\prime r}i_{qs}^{r}(t)
+	=
+	K_T i_{qs}^{r}(t).
+\end{equation}
+
+En consecuencia, la corriente \(i_{qs}^{r}\) constituye la componente asociada principalmente a la producción de torque. Sus valores positivos y negativos representan cambios en el signo del torque electromagnético, mientras que la corriente \(i_{ds}^{r}\) permanece cercana a su referencia nula.
+
+La trayectoria vertical también indica que la magnitud del vector de corriente puede aproximarse como
+
+\begin{equation}
+	\left\lVert\mathbf{i}_{dq}\right\rVert
+	=
+	\sqrt{\left(i_{ds}^{r}\right)^2+
+		\left(i_{qs}^{r}\right)^2}
+	\approx
+	\left|i_{qs}^{r}\right|.
+\end{equation}
+
+Por lo tanto, prácticamente toda la corriente estatórica es utilizada en el eje de cuadratura, sin una contribución apreciable de la componente directa.
+
+La ampliación presentada en la Fig.~\ref{fig:plano_corrientes_dq_zoom} permite observar pequeñas excursiones laterales en el modelo no lineal. Sin embargo, el eje horizontal se encuentra expresado en microamperes, por lo que dichas variaciones son despreciables frente a los valores alcanzados por \(i_{qs}^{r}\), medidos en amperes.
+
+El modelo LTI permanece exactamente sobre \(i_{ds}^{r}=0\), debido a que esta condición forma parte de las hipótesis utilizadas para obtenerlo. El modelo no lineal reproduce prácticamente el mismo comportamiento, lo que verifica que la acción de desacoplamiento aplicada resulta efectiva durante la secuencia de operación analizada.
+
+\subsubsection{Caracterización de la respuesta transitoria}
+
+Se determinaron los valores finales de velocidad y corriente luego de cada
+cambio de entrada. Para cada transitorio se consideró el intervalo de
+variación
+
+\begin{equation}
+	\Delta y = y_f-y_i,
+\end{equation}
+
+donde $y_i$ e $y_f$ representan los valores inicial y final de la señal.
+El tiempo de crecimiento se calculó entre los instantes en que la respuesta
+alcanza el 10~\% y el 90~\% de dicho intervalo:
+
+\begin{equation}
+	t_c=t_{90}-t_{10}.
+\end{equation}
+
+El tiempo de establecimiento se midió desde el instante de aplicación del
+escalón, $t_k$, hasta el instante $t_s$ a partir del cual la respuesta
+permanece dentro de una banda de $\pm 1$~\% alrededor del valor final:
+
+\begin{equation}
+	t_e=t_s-t_k,
+\end{equation}
+
+\begin{equation}
+	\left|y(t)-y_f\right|
+	\leq
+	0{,}01\left|y_f-y_i\right|.
+\end{equation}
+
+El sobrepaso se expresa respecto del intervalo total de variación:
+
+\begin{equation}
+	M_p[\%]=
+	\frac{M_p^{\mathrm{abs}}}
+	{\left|y_f-y_i\right|}\,100.
+\end{equation}
+
+Las entradas utilizadas durante la simulación y las respuestas principales
+se muestran en las Figuras~\ref{fig:entrada_velocidad} y
+\ref{fig:carga_corriente_torque}.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/simulacion_nl_lti/entrada_v_qs.pdf}
+		\caption{Tensión aplicada en el eje $q$.}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/simulacion_nl_lti/w_m_nl.pdf}
+		\caption{Respuesta de velocidad angular.}
+	\end{subfigure}
+	
+	\caption{Correlación entre la tensión $v_{qs}^{r}(t)$ y la velocidad
+		angular del rotor $\omega_m(t)$.}
+	\label{fig:entrada_velocidad}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.32\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/simulacion_nl_lti/entrada_T_ld.pdf}
+		\caption{Torque de perturbación.}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.32\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/simulacion_nl_lti/corrientes_qd0_nl.pdf}
+		\caption{Corrientes en coordenadas $qd0$.}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.32\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/simulacion_nl_lti/T_m_nl.pdf}
+		\caption{Torque electromagnético.}
+	\end{subfigure}
+	
+	\caption{Correlación entre el torque de perturbación, la corriente
+		$i_{qs}^{r}(t)$ y el torque electromagnético $T_m(t)$.}
+	\label{fig:carga_corriente_torque}
+\end{figure}
+
+\paragraph{Valores finales luego de cada transitorio}
+
+Los valores finales obtenidos antes del siguiente cambio de entrada se
+resumen en la Tabla~\ref{tab:valores_finales_transitorios}.
+
+\begin{table}[H]
+	\centering
+	\caption{Valores finales de velocidad, corriente y torque motor luego de
+		cada transitorio.}
+	\label{tab:valores_finales_transitorios}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{ccccc}
+			\toprule
+			$t_k$ [s] & Cambio aplicado &
+			$\omega_{m,f}$ [rad/s] &
+			$i_{qs,f}^{r}$ [A] &
+			$T_{m,f}$ [N\,m] \\
+			\midrule
+			0,1 & $v_{qs}^{r}:0\rightarrow 19{,}596$       &  401,572 &  0,285 &  0,0205 \\
+			0,3 & $T_{ld}:0\rightarrow 6{,}28$             &  382,519 &  1,112 &  0,0801 \\
+			0,5 & $T_{ld}:6{,}28\rightarrow -6{,}28$       &  416,019 & -0,335 & -0,0241 \\
+			0,7 & $v_{qs}^{r}:19{,}596\rightarrow 0$       &   10,910 & -0,468 & -0,0337 \\
+			0,9 & $T_{ld}:-6{,}28\rightarrow 0$            &   -5,916 &  0,254 &  0,0183 \\
+			1,1 & $v_{qs}^{r}:0\rightarrow -19{,}596$      & -411,856 &  0,155 &  0,0111 \\
+			1,3 & $T_{ld}:0\rightarrow 6{,}28$             & -426,375 &  0,776 &  0,0559 \\
+			1,5 & $T_{ld}:6{,}28\rightarrow -6{,}28$       & -388,381 & -0,841 & -0,0605 \\
+			1,7 & $v_{qs}^{r}:-19{,}596\rightarrow 0$      &   17,144 & -0,725 & -0,0522 \\
+			1,9 & $T_{ld}:-6{,}28\rightarrow 0$            &    0,055 & -0,002 & -0,0001 \\
+			\bottomrule
+	\end{tabular}}
+\end{table}
+
+\paragraph{Respuesta de velocidad ante cambios de tensión}
+
+Los indicadores correspondientes a los cuatro cambios de
+$v_{qs}^{r}(t)$ se presentan en la
+Tabla~\ref{tab:metricas_velocidad_vqs}.
+
+\begin{table}[H]
+	\centering
+	\caption{Indicadores de la respuesta de velocidad ante cambios de
+		$v_{qs}^{r}(t)$.}
+	\label{tab:metricas_velocidad_vqs}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{cccccccc}
+			\toprule
+			$t_k$ [s] &
+			$v_{qs,i}^{r}$ [V] &
+			$v_{qs,f}^{r}$ [V] &
+			$\omega_{m,i}$ [rad/s] &
+			$\omega_{m,f}$ [rad/s] &
+			$t_c$ [ms] &
+			$t_e$ [ms] &
+			$M_p$ [\%] \\
+			\midrule
+			0,1 &   0,000 &  19,596 &    0,000 &  401,572 &  9,91 & 37,99 & 13,37 \\
+			0,7 &  19,596 &   0,000 &  416,107 &   10,910 & 10,06 & 50,56 & 12,08 \\
+			1,1 &   0,000 & -19,596 &   -5,916 & -411,856 & 10,17 & 49,65 & 11,83 \\
+			1,7 & -19,596 &   0,000 & -388,381 &   17,144 & 10,19 & 49,64 & 11,68 \\
+			\bottomrule
+	\end{tabular}}
+\end{table}
+
+Los cambios de tensión producen variaciones de velocidad cercanas a
+$405~\mathrm{rad/s}$, verificándose una influencia directa sobre el sentido
+y la magnitud de giro. Los tiempos de crecimiento permanecen próximos a
+$10~\mathrm{ms}$ y los tiempos de establecimiento se encuentran entre
+$38$ y $51~\mathrm{ms}$.
+
+Los sobrepasos, comprendidos entre 11,68~\% y 13,37~\%, indican una
+respuesta moderadamente subamortiguada y de comportamiento similar para
+ambos sentidos de giro. Las pequeñas diferencias entre los transitorios se
+deben a que cada cambio se produce con distintas condiciones de velocidad,
+posición y torque de carga.
+
+Al retirar la tensión en $t=0,7~\mathrm{s}$ y $t=1,7~\mathrm{s}$, la
+velocidad no se establece inmediatamente en cero porque el torque
+$T_{ld}=-6,28~\mathrm{N\,m}$ continúa aplicado durante esos intervalos.
+
+\paragraph{Respuesta de corriente y torque ante cambios de carga}
+
+Los indicadores correspondientes a los cambios de $T_{ld}(t)$ se presentan
+en la Tabla~\ref{tab:metricas_corriente_tld}.
+
+\begin{table}[H]
+	\centering
+	\caption{Indicadores de la respuesta de corriente y torque motor ante
+		cambios de $T_{ld}(t)$.}
+	\label{tab:metricas_corriente_tld}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{ccccccccc}
+			\toprule
+			$t_k$ [s] &
+			Cambio de $T_{ld}$ [N\,m] &
+			$i_{q,i}^{r}$ [A] &
+			$i_{q,f}^{r}$ [A] &
+			$T_{m,f}$ [N\,m] &
+			$t_c$ [ms] &
+			$t_e$ [ms] &
+			$M_p$ [A] &
+			$M_p$ [\%] \\
+			\midrule
+			0,3 & $0\rightarrow 6,28$          &  0,290 &  1,112 &  0,0801 & 12,58 & 188,30 & 0,0066 &  0,80 \\
+			0,5 & $6,28\rightarrow -6,28$      &  1,114 & -0,335 & -0,0241 & 10,41 & 145,98 & 0,1649 & 11,39 \\
+			0,9 & $-6,28\rightarrow 0$         & -0,468 &  0,254 &  0,0183 & 10,77 &  51,93 & 0,0869 & 12,02 \\
+			1,3 & $0\rightarrow 6,28$          &  0,154 &  0,776 &  0,0559 &  8,87 & 184,95 & 0,1810 & 29,09 \\
+			1,5 & $6,28\rightarrow -6,28$      &  0,770 & -0,841 & -0,0605 & 12,24 & 193,04 & 0,0158 &  0,98 \\
+			1,9 & $-6,28\rightarrow 0$         & -0,724 & -0,002 & -0,0001 & 10,82 &  51,38 & 0,0849 & 11,76 \\
+			\bottomrule
+	\end{tabular}}
+\end{table}
+
+La corriente $i_{qs}^{r}(t)$ modifica su valor y su signo para adaptar el
+torque electromagnético al nuevo balance de carga. Cuando $T_{ld}$ aumenta,
+la corriente y el torque motor también aumentan; cuando la perturbación se
+invierte, ambas variables cambian de signo.
+
+Los tiempos de crecimiento se encuentran entre $8,87$ y
+$12,58~\mathrm{ms}$, por lo que la respuesta rápida conserva un orden
+temporal similar en todos los casos. Los tiempos de establecimiento
+mayores, cercanos a $150$--$193~\mathrm{ms}$, aparecen en los intervalos en
+los que la corriente continúa variando lentamente debido al cambio del
+punto de operación mecánico.
+
+El sobrepaso depende de las condiciones existentes en el instante del
+escalón. Esto se observa especialmente en $t=1,3~\mathrm{s}$, donde se
+obtiene un sobrepaso del 29,09~\% al aplicar la perturbación mientras el
+rotor gira en sentido negativo.
+
+La relación entre corriente de eje $q$ y torque electromagnético permanece
+aproximadamente constante:
+
+\begin{equation}
+	T_m(t)=K_t i_{qs}^{r}(t),
+	\qquad
+	K_t \approx 0,072\ \mathrm{\frac{N\,m}{A}}.
+\end{equation}
+
+Por esta razón, ambas variables presentan la misma forma temporal y los
+mismos indicadores normalizados.
+
+\paragraph{Influencia relativa de las acciones externas}
+
+Los escalones de tensión producen variaciones de velocidad del orden de
+
+\begin{equation}
+	\left|\Delta\omega_m\right|
+	\approx 405\ \mathrm{rad/s},
+\end{equation}
+
+mientras que los cambios de torque de carga producen variaciones de
+velocidad aproximadamente comprendidas entre $15$ y
+$38~\mathrm{rad/s}$. En consecuencia, $v_{qs}^{r}(t)$ constituye la acción
+con mayor influencia sobre la velocidad angular.
+
+Por otra parte, los cambios de $T_{ld}(t)$ generan variaciones de corriente
+comprendidas entre aproximadamente $0,62$ y $1,61~\mathrm{A}$, superiores
+a las variaciones finales de corriente provocadas por los cambios de
+tensión. Por lo tanto, el torque de carga presenta su mayor influencia
+sobre $i_{qs}^{r}(t)$ y, en consecuencia, sobre $T_m(t)$.
+
+En síntesis, los resultados verifican la correlación solicitada:
+
+\begin{equation}
+	v_{qs}^{r}(t)
+	\longrightarrow
+	\omega_m(t),
+	\qquad
+	T_{ld}(t)
+	\longrightarrow
+	i_{qs}^{r}(t)
+	\longrightarrow
+	T_m(t).
+\end{equation}
+
+\subsubsection{Efecto de la condición inicial de la corriente en el eje directo}
+
+Para analizar la influencia de la condición inicial de la corriente directa,
+se realizaron simulaciones manteniendo las mismas entradas y condiciones
+iniciales del resto de los estados, considerando:
+
+\[
+i_{ds}^{r}(0)=0\ \mathrm{A}, \qquad
+i_{ds}^{r}(0)=+0.5\ \mathrm{A}, \qquad
+i_{ds}^{r}(0)=-0.5\ \mathrm{A}.
+\]
+
+Al aplicar la ley de desacoplamiento del eje directo, la dinámica residual de
+esta corriente queda determinada por:
+
+\[
+\frac{d i_{ds}^{r}(t)}{dt}
+=
+-\frac{R_{s,\mathrm{REF}}}{L_d}i_{ds}^{r}(t),
+\]
+
+cuya solución es:
+
+\[
+i_{ds}^{r}(t)
+=
+i_{ds}^{r}(0)
+e^{-\frac{R_{s,\mathrm{REF}}}{L_d}t}.
+\]
+
+Para los valores nominales utilizados,
+
+\[
+p_d=-\frac{R_{s,\mathrm{REF}}}{L_d}
+=-154.545\ \mathrm{s^{-1}},
+\qquad
+\tau_d=\frac{L_d}{R_{s,\mathrm{REF}}}
+=6.471\ \mathrm{ms}.
+\]
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.78\textwidth]{img/simulacion_nl_lti/comparacion_i_d_inicial_positivo.pdf}
+	\caption{Evolución de $i_{ds}^{r}(t)$ en los modelos no lineal
+		desacoplado y LTI equivalente aumentado para
+		$i_{ds}^{r}(0)=+0.5\,\mathrm{A}$.}
+	\label{fig:id_inicial_positivo}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.78\textwidth]{img/simulacion_nl_lti/comparacion_i_d_inicial_negativo.pdf}
+	\caption{Evolución de $i_{ds}^{r}(t)$ en los modelos no lineal
+		desacoplado y LTI equivalente aumentado para
+		$i_{ds}^{r}(0)=-0.5\,\mathrm{A}$.}
+	\label{fig:id_inicial_negativo}
+\end{figure}
+
+En ambos casos, la corriente presenta un decaimiento exponencial rápido hacia
+cero, con respuestas prácticamente coincidentes para los modelos no lineal
+desacoplado y LTI equivalente aumentado. Para
+$i_{ds}^{r}(0)=0\,\mathrm{A}$, la corriente permanece nula.
+
+Por lo tanto, una condición inicial $i_{ds}^{r}(0)\neq 0$ únicamente introduce
+un transitorio eléctrico de corta duración. No se observan modificaciones
+apreciables en la evolución de la posición, la velocidad, la corriente
+$i_{qs}^{r}$ ni el torque electromagnético, confirmándose la efectividad del
+desacoplamiento entre los ejes $q$ y $d$.
 
 \subsubsection{Consigna adicional en el eje directo}
+Con el objetivo de analizar el efecto de la corriente en el eje directo, se
+agregó a la ley mínima de control una consigna de tensión adicional
+$\Delta v_{ds}^{r*}(t)$, aplicada en $t=0.5~\mathrm{s}$:
 
-Se agrega una consigna de tensión en el eje directo $v_{ds}^{r*}(t)$, sumada a la ley de control no lineal, para evaluar efectos de reforzamiento y debilitamiento de campo. Se analiza cómo esta acción modifica la corriente directa, el torque electromagnético y la velocidad del motor en ambos modelos.
+\begin{equation}
+	v_{ds}^{r*}(t)
+	=
+	-P_p L_q i_{qs}^{r}(t)\omega_m(t)
+	+
+	\Delta v_{ds}^{r*}(t),
+\end{equation}
+
+donde se consideraron los casos
+
+\begin{equation}
+	\Delta v_{ds}^{r*}
+	=
+	\left\{
+	+1.9596,\;
+	-1.9596,\;
+	0
+	\right\}\mathrm{V}.
+\end{equation}
+
+De acuerdo con la convención adoptada, una tensión positiva produce una
+corriente $i_{ds}^{r}>0$, incrementando el flujo equivalente y dando lugar
+al reforzamiento de campo. En cambio, una tensión negativa produce
+$i_{ds}^{r}<0$, reduciendo el flujo y generando debilitamiento de campo.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/field_forcing_weakening/velocidad_vd_tres_casos_nl.pdf}
+	\caption{Velocidad angular del modelo no lineal ante reforzamiento y
+		debilitamiento de campo.}
+	\label{fig:velocidad_field}
+\end{figure}
+
+Como se observa en la Fig.~\ref{fig:velocidad_field}, el debilitamiento de
+campo, obtenido para $\Delta v_{ds}^{r*}=-1.9596~\mathrm{V}$, permite
+alcanzar una velocidad angular mayor. Por el contrario, el reforzamiento
+de campo, correspondiente a $\Delta v_{ds}^{r*}=+1.9596~\mathrm{V}$,
+produce una velocidad menor. El caso sin tensión adicional presenta un
+comportamiento intermedio.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/field_forcing_weakening/torque_vd_tres_casos_nl.pdf}
+	\caption{Torque electromagnético del modelo no lineal ante
+		reforzamiento y debilitamiento de campo.}
+	\label{fig:torque_field}
+\end{figure}
+
+En la Fig.~\ref{fig:torque_field} se observa el efecto complementario sobre
+el torque electromagnético. Durante el intervalo analizado el torque adopta
+valores negativos, por lo que el debilitamiento de campo produce una menor
+magnitud de torque, es decir, valores más próximos a cero. El reforzamiento
+de campo incrementa su magnitud, alcanzando valores más negativos durante
+el transitorio.
+
+Las diferencias en el torque son reducidas y se manifiestan principalmente
+durante el transitorio. Esto se debe a que la contribución de reluctancia,
+
+\begin{equation}
+	T_{\mathrm{rel}}
+	=
+	\frac{3}{2}P_p(L_d-L_q)i_{ds}^{r}i_{qs}^{r},
+\end{equation}
+
+es pequeña frente al torque principal producido por los imanes permanentes.
+No obstante, los resultados verifican el comportamiento esperado: el
+debilitamiento de campo aumenta la velocidad disponible a costa de reducir
+la capacidad de torque, mientras que el reforzamiento de campo produce el
+efecto opuesto.
+
+
+En el modelo LTI, el efecto del reforzamiento y debilitamiento de campo es
+prácticamente nulo, debido a que el modelo fue obtenido alrededor de la
+condición $i_{ds}^{r}=0$. Por este motivo, las variaciones de torque y
+velocidad asociadas a la corriente del eje directo no son apreciables,
+constituyendo una limitación de la aproximación lineal frente al modelo no
+lineal.
 
 
 ======== HASTA ACA. SIGO CON LA SECCION DE DISEÑO ==========
