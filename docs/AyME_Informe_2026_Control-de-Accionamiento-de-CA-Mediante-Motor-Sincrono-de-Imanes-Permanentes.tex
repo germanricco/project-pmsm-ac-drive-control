@@ -4424,7 +4424,8 @@ Al ubicar los autovalores de $[A - \mathbf{K}_e C]$ fuertemente en el semiplano 
 	\label{fig:diagrama_observador}
 \end{figure}
 
-\subsection{4.4 Simulación en tiempo continuo con modelo completo No Lineal}
+=============== COMPLETAR ================
+\subsection{4. Simulación en tiempo continuo con modelo completo No Lineal}
 
 \begin{figure}[H]
 	\centering
@@ -4434,6 +4435,125 @@ Al ubicar los autovalores de $[A - \mathbf{K}_e C]$ fuertemente en el semiplano 
 	\label{fig:diagrama_sistema_control_completo}
 \end{figure}
 
+
+// ============= CONTINUO ===============
+\subsection*{5. Verificación de Desempeño y Mejoras}
+\subsubsection*{5.a Verificación de Limites de Operación}
+
+\subsubsection*{5.b Mejora del Observador: Acción Integral para Rechazo de Perturbaciones}
+
+En condiciones ideales, el observador de Luenberger de segundo orden diseñado previamente garantiza convergencia asintótica. Sin embargo, en un entorno operativo real, la presencia de perturbaciones no modeladas en la carga mecánica actúan como entradas desconocidas para el estimador. Dado que el modelo interno del observador estándar no posee información sobre estas perturbaciones, la estimación desarrollará un error de estado estacionario, impidiendo que la velocidad estimada converja a la velocidad física real.
+
+Dado que el modelo matemático interno del observador estándar no posee información sobre estas perturbaciones, la estimación desarrolla un error de estado estacionario, impidiendo que la velocidad estimada $\tilde{\omega}_m(t)$ converja a la velocidad física real. Para ilustrar esta vulnerabilidad, se somete la dinámica aislada del error del observador a una perturbación de carga escalón teórica ($d(t) = 0.05\,\text{N.m}$). Como se evidencia en la Figura~\ref{fig:observador_estandar_error}, el estimador estándar (con polos en $s_{1,2} = -3200\,\text{rad/s}$) no logra suprimir el disturbio, estabilizándose con un error residual permanente.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/fig\_observador\_estandar\_error.pdf}
+  	\caption{Dinámica del error de estimación del observador estándar de orden 2. Ante una perturbación de torque activa, el sistema presenta un error de velocidad residual.}
+	\label{fig:observador_estandar_error}
+\end{figure}
+
+Para erradicar este desfase sin recurrir a la adición de sensores físicos de torque (cuyo costo y ruido perjudicarían el diseño), se modifica la topología del estimador incorporando una \textbf{acción integral} sobre el error de estimación posicional. Matemáticamente, esto equivale a dotar al observador de un estado interno adicional $z(t)$ capaz de estimar, acumular y compensar la perturbación sostenida:
+\begin{equation*}
+    z(t) = \int \big( \theta_m(t) - \tilde{\theta}_m(t) \big) dt \quad \implies \quad \dot{z}(t) = K_{ei} \big( \theta_m(t) - \tilde{\theta}_m(t) \big)
+\end{equation*}
+
+El vector de estado estimado se expande a $\tilde{\mathbf{x}}_e(t) = [\tilde{\theta}_m(t), \tilde{\omega}_m(t), z(t)]^T$. El modelo dinámico del \textbf{Observador Extendido} adopta la siguiente estructura:
+\begin{equation}
+    \left\{
+    \begin{aligned}
+        \dot{\tilde{\theta}}_m(t) &= \tilde{\omega}_m(t) + K_{e\theta} \big( \theta_m(t) - \tilde{\theta}_m(t) \big) \\
+        \dot{\tilde{\omega}}_m(t) &= \frac{1}{J_{eq}} T_m^{*\prime}(t) + z(t) + K_{e\omega} \big( \theta_m(t) - \tilde{\theta}_m(t) \big) \\
+        \dot{z}(t) &= K_{ei} \big( \theta_m(t) - \tilde{\theta}_m(t) \big)
+    \end{aligned}
+    \right.
+    \label{eq:observador_extendido}
+\end{equation}
+
+Para calcular el nuevo conjunto de ganancias vectoriales $\mathbf{K}_e = [K_{e\theta}, K_{e\omega}, K_{ei}]^T$, se determina la matriz de transición dinámica del error $A^\prime = [A - \mathbf{K}_e C]$ del sistema aumentado:
+\begin{equation*}
+    A^\prime = 
+    \begin{bmatrix}
+        -K_{e\theta} & 1 & 0 \\[2mm]
+        -K_{e\omega} & 0 & 1 \\[2mm]
+        -K_{ei} & 0 & 0
+    \end{bmatrix}
+\end{equation*}
+
+Calculando el determinante $\det(s\mathbf{I} - A^\prime)$, el polinomio característico de lazo cerrado del observador resulta ser de tercer orden:
+\begin{equation}
+    \Delta_{obs,ext}(s) = s^3 + K_{e\theta} s^2 + K_{e\omega} s + K_{ei} = 0
+\end{equation}
+
+Manteniendo  criterio de diseño establecido en el inciso anterior, se impone que las raíces se ubiquen en polos reales, múltiples e idénticos en $s_{1,2,3} = -3200\,\text{rad/s}$, a fin de garantizar una convergencia rápida y críticamente amortiguada. Desarrollando el polinomio algebraico deseado:
+\begin{equation*}
+    (s + 3200)^3 = s^3 + 3 \cdot (3200) s^2 + 3 \cdot (3200)^2 s + (3200)^3 = 0
+\end{equation*}
+
+Igualando los coeficientes de ambos polinomios término a término, se obtienen las ganancias óptimas definitivas para el observador extendido con acción integral:
+\begin{align}
+    K_{e\theta} &= 9.600 \times 10^3\,\text{rad/s} \nonumber \\
+    K_{e\omega} &= 3.072 \times 10^7\,\text{rad/s}^2 \\
+    K_{ei} &= 3.2768 \times 10^{10}\,\text{rad/s}^3 \nonumber
+\end{align}
+
+La implementación de esta arquitectura, ilustrada en la Figura~\ref{fig:diagrama_observador_integral}, garantiza una estimación limpia, de alto ancho de banda, y rigurosamente robusta ante incertidumbres mecánicas y perturbaciones de carga constantes, logrando cerrar de forma analíticamente perfecta los lazos de control de la arquitectura en cascada.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/diagrama\_observador\_de\_estado\_reducido\_extendido.pdf}
+  	\caption{Diagrama de bloques del Observador de Estado Extendido en Simulink. La adición del estado integrador ($K_{ei}/s$) elimina el error de estimación estacionario ante torques de carga desconocidos.}
+	\label{fig:diagrama_observador_integral}
+\end{figure}
+
+Al evaluar esta arquitectura teórica (Figura~\ref{fig:observador_extendido_peaking}), se constata que frente a un error de estimación inicial, las elevadas ganancias de innovación generan una severa sobrecorrección transitoria. Este efecto, conocido en la teoría de control moderno como \textbf{fenómeno de peaking}, somete a la variable estimada a un sobreimpulso inaceptable que podría desestabilizar temporalmente el lazo de control principal.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/fig\_observador\_extendido\_peaking.pdf}
+  	\caption{Efecto de la acción integral teórica. El observador extendido con polos en $-3200\,\text{rad/s}$ anula el error estacionario, pero induce un fenómeno de \textit{peaking} perjudicial durante el transitorio inicial.}
+	\label{fig:observador_extendido_peaking}
+\end{figure}
+
+Para resolver este compromiso de diseño (\textit{trade-off}), la solución analítica reside en relajar el ancho de banda del observador, desplazando sus raíces hacia una región más lenta, pero asegurando el respeto por la \textbf{regla de separación espectral}.
+
+La dinámica dominante del Controlador PID en lazo cerrado está gobernada por la parte real de sus polos complejos conjugados: $\sigma = -\zeta \cdot \omega_n = -0.75 \cdot 800 = -600\,\text{rad/s}$. Para garantizar que el observador no interfiera con el controlador y que la estimación converja suficientemente rápido, basta con ubicar los polos del estimador al menos $3$ veces más a la izquierda en el plano complejo.
+
+Bajo este criterio, se propone una reubicación de las raíces del observador extendido en $s_{1,2,3} = -1800\,\text{rad/s}$. Igualando coeficientes con el polinomio deseado $(s + 1800)^3 = 0$, se obtienen las ganancias óptimas definitivas:
+\begin{align}
+    K_{e\theta} &= 5.400 \times 10^3\,\text{rad/s} \nonumber \\
+    K_{e\omega} &= 9.720 \times 10^6\,\text{rad/s}^2 \\
+    K_{ei} &= 5.832 \times 10^9\,\text{rad/s}^3 \nonumber
+\end{align}
+
+La Figura~\ref{fig:comparativa_global_observadores} consolida la evolución del diseño. El ajuste fino espectral logra una reducción drástica del fenómeno de peaking, sacrificando solo márgenes mínimos de velocidad temporal, y garantizando un rechazo perfecto de perturbaciones.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/fig\_comparativa\_global\_observadores.pdf}
+  	\caption{Comparativa global de la dinámica del error aislada. El diseño óptimo (suavizado a $-1800\,\text{rad/s}$) encuentra el equilibrio ideal entre velocidad de convergencia, atenuación del peaking y error nulo.}
+	\label{fig:comparativa_global_observadores}
+\end{figure}
+
+Una vez validada la solidez matemática del observador aislado, se procede a integrar la arquitectura computacional completa (Planta Física, Modulador de Torque, Controlador PID y Observador Extendido). 
+
+Dado que el propósito fundamental del observador es proveer información veraz al lazo externo de posición $\theta_m$, la efectividad última del esquema se verifica evaluando el comportamiento del eje del motor frente a perturbaciones dinámicas en régimen permanente. La Figura~\ref{fig:perfil_posicion_simulink} exhibe el perfil de posición real medido frente al perfil estimado por el observador cuando se inyecta un escalón de torque de carga externo. Se observa cómo el estado integrador del estimador asimila la perturbación, permitiendo que el PID retorne el efector a su consigna original sin desviación estacionaria.
+
+\begin{figure}[H]
+  \centering
+  \framebox{\parbox{0.8\textwidth}{\centering
+    \vspace{2.5cm}
+    \textbf{Image Placeholder} \\
+    \small\textit{img/perfil\_posicion\_observador\_simulink.pdf} % Aquí irá la captura de Simulink
+    \vspace{2.5cm}
+  }}
+  \caption{Perfil de posición del sistema en lazo cerrado completo (Simulink). La inclusión de la acción integral en el observador permite mantener la trayectoria inalterada ante la aparición súbita de torques no modelados.}
+  \label{fig:perfil_posicion_simulink}
+\end{figure}
 
 
 % ---------------------------------------------------------

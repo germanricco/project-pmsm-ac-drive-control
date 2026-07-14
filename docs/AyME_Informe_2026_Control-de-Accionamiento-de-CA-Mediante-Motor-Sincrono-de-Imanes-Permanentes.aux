@@ -346,15 +346,26 @@
 \newlabel{eq:polinomio_observador}{{111}{85}{3.b) Sintonía de las Ganancias de Estimación}{equation.111}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {64}{\ignorespaces Diagrama de bloques del Observador de Estado Cinemático de orden reducido implementado en Simulink.}}{86}{figure.caption.160}\protected@file@percent }
 \newlabel{fig:diagrama_observador}{{64}{86}{Diagrama de bloques del Observador de Estado Cinemático de orden reducido implementado en Simulink}{figure.caption.160}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}4. Simulación en tiempo continuo con modelo completo No Lineal}{87}{subsection.4.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {65}{\ignorespaces Diagrama Sistema de Control completo.}}{87}{figure.caption.161}\protected@file@percent }
+\newlabel{fig:diagrama_sistema_control_completo}{{65}{87}{Diagrama Sistema de Control completo}{figure.caption.161}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {66}{\ignorespaces Dinámica del error de estimación del observador estándar de orden 2. Ante una perturbación de torque activa, el sistema presenta un error de velocidad residual.}}{88}{figure.caption.165}\protected@file@percent }
+\newlabel{fig:observador_estandar_error}{{66}{88}{Dinámica del error de estimación del observador estándar de orden 2. Ante una perturbación de torque activa, el sistema presenta un error de velocidad residual}{figure.caption.165}{}}
+\newlabel{eq:observador_extendido}{{112}{88}{5.b Mejora del Observador: Acción Integral para Rechazo de Perturbaciones}{equation.112}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {67}{\ignorespaces Diagrama de bloques del Observador de Estado Extendido en Simulink. La adición del estado integrador ($K_{ei}/s$) elimina el error de estimación estacionario ante torques de carga desconocidos.}}{89}{figure.caption.166}\protected@file@percent }
+\newlabel{fig:diagrama_observador_integral}{{67}{89}{Diagrama de bloques del Observador de Estado Extendido en Simulink. La adición del estado integrador ($K_{ei}/s$) elimina el error de estimación estacionario ante torques de carga desconocidos}{figure.caption.166}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {68}{\ignorespaces Efecto de la acción integral teórica. El observador extendido con polos en $-3200\,\text  {rad/s}$ anula el error estacionario, pero induce un fenómeno de \textit  {peaking} perjudicial durante el transitorio inicial.}}{90}{figure.caption.167}\protected@file@percent }
+\newlabel{fig:observador_extendido_peaking}{{68}{90}{Efecto de la acción integral teórica. El observador extendido con polos en $-3200\,\text {rad/s}$ anula el error estacionario, pero induce un fenómeno de \textit {peaking} perjudicial durante el transitorio inicial}{figure.caption.167}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {69}{\ignorespaces Comparativa global de la dinámica del error aislada. El diseño óptimo (suavizado a $-1800\,\text  {rad/s}$) encuentra el equilibrio ideal entre velocidad de convergencia, atenuación del peaking y error nulo.}}{91}{figure.caption.168}\protected@file@percent }
+\newlabel{fig:comparativa_global_observadores}{{69}{91}{Comparativa global de la dinámica del error aislada. El diseño óptimo (suavizado a $-1800\,\text {rad/s}$) encuentra el equilibrio ideal entre velocidad de convergencia, atenuación del peaking y error nulo}{figure.caption.168}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {70}{\ignorespaces Perfil de posición del sistema en lazo cerrado completo (Simulink). La inclusión de la acción integral en el observador permite mantener la trayectoria inalterada ante la aparición súbita de torques no modelados.}}{91}{figure.caption.169}\protected@file@percent }
+\newlabel{fig:perfil_posicion_simulink}{{70}{91}{Perfil de posición del sistema en lazo cerrado completo (Simulink). La inclusión de la acción integral en el observador permite mantener la trayectoria inalterada ante la aparición súbita de torques no modelados}{figure.caption.169}{}}
 \bibcite{guia_trabajo}{1}
 \bibcite{guia_informe}{2}
 \bibcite{krause}{3}
 \bibcite{astrom}{4}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}4.4 Simulación en tiempo continuo con modelo completo No Lineal}{87}{subsection.4.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {65}{\ignorespaces Diagrama Sistema de Control completo.}}{87}{figure.caption.161}\protected@file@percent }
-\newlabel{fig:diagrama_sistema_control_completo}{{65}{87}{Diagrama Sistema de Control completo}{figure.caption.161}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones}{87}{section.5}\protected@file@percent }
-\newlabel{LastPage}{{5}{87}{Conclusiones}{page.87}{}}
-\gdef\lastpage@lastpage{87}
-\gdef\lastpage@lastpageHy{87}
-\gdef \@abspage@last{88}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones}{92}{section.5}\protected@file@percent }
+\newlabel{LastPage}{{5}{92}{Conclusiones}{page.92}{}}
+\gdef\lastpage@lastpage{92}
+\gdef\lastpage@lastpageHy{92}
+\gdef \@abspage@last{93}
