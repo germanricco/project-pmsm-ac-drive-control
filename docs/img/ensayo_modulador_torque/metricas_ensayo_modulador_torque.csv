@@ -1,0 +1,2 @@
+K_t_Nm_A,K_rel_Nm_A2,Tm_ref_aux_max_Nm,Tm_ref_total_max_Nm,Tm_real_max_Nm,error_RMSE_Nm,error_MAE_Nm,error_max_Nm,iq_max_A,id_max_A,vqd_mag_max_V,diferencia_compensador_max_Nm,cumple_torque_continuo,cumple_torque_pico,cumple_corriente_continua,cumple_corriente_pico,cumple_tension_indicativa
+0.072,0.0036,0.015,0.0152408253035457,0.0152289953320258,0.00141451918800981,0.000755930777925594,0.015,0.211523892436515,0.000980866461781915,6.04166666666667,1.73472347597681e-18,1,1,1,1,1

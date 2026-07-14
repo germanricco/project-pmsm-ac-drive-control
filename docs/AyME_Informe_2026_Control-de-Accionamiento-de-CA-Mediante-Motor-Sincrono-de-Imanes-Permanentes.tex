@@ -2834,6 +2834,29 @@ considerada.
 	\label{fig:velocidad_motor_nl}
 \end{figure}
 
+La aplicación de la tensión positiva \(v_{qs}^{r*}=19{,}6~\mathrm{V}\),
+entre \(t=0{,}1~\mathrm{s}\) y \(t=0{,}7~\mathrm{s}\), produce inicialmente
+un transitorio de aceleración y establece una velocidad de giro positiva.
+En consecuencia, la posición angular aumenta aproximadamente en forma
+lineal, ya que su pendiente está determinada por la velocidad
+\(\dot{\theta}_m(t)=\omega_m(t)\).
+
+Durante este intervalo, los cambios de \(T_{ld}(t)\) modifican principalmente
+el valor de equilibrio de la velocidad y el torque requerido por la máquina.
+Cuando se aplica una perturbación positiva en \(t=0{,}3~\mathrm{s}\), la
+velocidad disminuye y el torque electromagnético aumenta para compensar la
+mayor carga resistente. Por el contrario, la perturbación negativa aplicada
+en \(t=0{,}5~\mathrm{s}\) desplaza la velocidad hacia valores mayores y reduce
+el torque requerido.
+
+Al anularse la tensión en \(t=0{,}7~\mathrm{s}\), el accionamiento desacelera
+rápidamente. La perturbación negativa que permanece aplicada hasta
+\(t=0{,}9~\mathrm{s}\) produce un pequeño movimiento residual, luego del cual
+la velocidad se aproxima nuevamente a cero. De manera análoga, el pulso
+negativo de tensión aplicado entre \(t=1{,}1~\mathrm{s}\) y
+\(t=1{,}7~\mathrm{s}\) establece el giro en sentido inverso, por lo que la
+posición angular comienza a decrecer.
+
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/T_m_nl.pdf}
@@ -2841,6 +2864,18 @@ considerada.
 		por el motor \(T_m(t)\).}
 	\label{fig:torque_motor_nl}
 \end{figure}
+En este segundo intervalo, una perturbación positiva de carga desplaza la
+velocidad hacia valores algebraicamente menores, es decir, más negativos,
+mientras que una perturbación negativa hace que la velocidad sea menos
+negativa. Finalmente, al retirar la tensión y posteriormente el torque de
+carga, el sistema retorna a una condición próxima al reposo.
+
+Los mayores picos de \(T_m(t)\) se presentan en los cambios de tensión de
+\(t=0{,}1\), \(0{,}7\), \(1{,}1\) y \(1{,}7~\mathrm{s}\). Estos máximos
+corresponden al torque transitorio necesario para acelerar o frenar las
+inercias mecánicas. En cambio, los cambios de menor amplitud observados en
+\(t=0{,}3\), \(0{,}5\), \(0{,}9\), \(1{,}3\), \(1{,}5\) y
+\(1{,}9~\mathrm{s}\) se deben a las variaciones del torque de carga.
 \FloatBarrier
 
 % ============================================================
@@ -2878,7 +2913,7 @@ ejes de cuadratura, directo y homopolar.
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.95\linewidth]{img/simulacion_nl_lti/corrientes_abc_nl.pdf}
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/corrientes_abc_nl.pdf}
 	\caption{Corrientes estatóricas de fase \(i_a(t)\), \(i_b(t)\) e
 		\(i_c(t)\), expresadas en coordenadas \(abc\).}
 	\label{fig:corrientes_abc_nl}
@@ -2886,7 +2921,7 @@ ejes de cuadratura, directo y homopolar.
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.95\linewidth]{img/simulacion_nl_lti/corrientes_qd0_nl.pdf}
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/corrientes_qd0_nl.pdf}
 	\caption{Corrientes estatóricas \(i_{qs}^{r}(t)\),
 		\(i_{ds}^{r}(t)\) e \(i_{0s}(t)\), expresadas en coordenadas
 		virtuales \(qd0\).}
@@ -2918,6 +2953,34 @@ componentes definidas en el marco rotórico.
 		virtuales \(qd0\).}
 	\label{fig:tensiones_qd0_nl}
 \end{figure}
+
+En la Figura~\ref{fig:tensiones_qd0_nl} se observa que la componente
+\(v_{qs}^{r}(t)\) reproduce los pulsos de tensión utilizados como entrada
+principal del modelo. Dado que la corriente \(i_{ds}^{r}(t)\) permanece
+prácticamente nula, la compensación complementaria aplicada sobre el eje
+\(q\) también resulta despreciable, por lo que la tensión aplicada coincide
+prácticamente con la consigna definida.
+
+La componente \(v_{ds}^{r}(t)\), en cambio, no corresponde a una consigna
+independiente de magnetización, sino a la acción de desacoplamiento necesaria
+para mantener \(i_{ds}^{r}(t)\simeq0\). De acuerdo con la ley de control
+mínima,
+
+\begin{equation*}
+	v_{ds}^{r*}(t)
+	=
+	-L_qP_p\,i_{qs}^{r}(t)\omega_m(t),
+\end{equation*}
+
+su signo y amplitud dependen del producto entre la corriente de cuadratura y
+la velocidad del rotor. Por esta razón se observan distintos niveles de
+\(v_{ds}^{r}(t)\) ante los cambios de velocidad y torque de carga, además de
+picos transitorios durante las conmutaciones de la tensión.
+
+La componente \(v_{0s}(t)\) permanece nula, de acuerdo con la
+alimentación trifásica equilibrada y la conexión en estrella con neutro
+flotante. 
+
 \FloatBarrier
 
 
@@ -2935,13 +2998,20 @@ Para ello,se consideran la corriente del eje de cuadratura, la velocidad angular
 	\label{fig:comparacion_iq_nl_lti}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 	\centering
-	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/comparacion_theta_m.pdf}
-	\caption{Comparación de la posición angular del rotor
-		\(\theta_m(t)\) obtenida con los modelos no lineal y LTI.}
-	\label{fig:comparacion_posicion_nl_lti}
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/comparacion_T_m.pdf}
+	\caption{Comparación del torque electromagnético del motor
+		\(T_m(t)\) obtenido con los modelos no lineal y LTI.}
+	\label{fig:comparacion_torque_nl_lti}
 \end{figure}
+\FloatBarrier
+
+Las respuestas obtenidas con ambos modelos presentan gran similitud. Las curvas de corriente \(i_{qs}^{r}(t)\) y torque
+electromagnético \(T_m(t)\) prácticamente se superponen, lo cual confirma
+que la ley de realimentación no lineal desacopla adecuadamente los ejes
+\(q\) y \(d\). Además, como \(i_{ds}^{r}(t)\simeq0\), el torque queda
+determinado principalmente por la corriente en el eje q.
 
 \begin{figure}[htbp]
 	\centering
@@ -2951,12 +3021,21 @@ Para ello,se consideran la corriente del eje de cuadratura, la velocidad angular
 	\label{fig:comparacion_velocidad_nl_lti}
 \end{figure}
 
+La velocidad angular también es reproducida correctamente por el modelo
+LTI, tanto durante los intervalos de régimen aproximadamente constante como
+durante las inversiones del sentido de giro. Las diferencias más visibles
+se concentran en los transitorios y en algunos niveles de equilibrio. En la
+posición angular estas pequeñas diferencias se acumulan con el tiempo,
+debido a que \(\theta_m(t)\) es la integral de la velocidad, por lo que la
+separación entre modelos resulta ligeramente más apreciable al finalizar
+cada intervalo.
+
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/comparacion_T_m.pdf}
-	\caption{Comparación del torque electromagnético del motor
-		\(T_m(t)\) obtenido con los modelos no lineal y LTI.}
-	\label{fig:comparacion_torque_nl_lti}
+	\includegraphics[width=0.82\linewidth]{img/simulacion_nl_lti/comparacion_theta_m.pdf}
+	\caption{Comparación de la posición angular del rotor
+		\(\theta_m(t)\) obtenida con los modelos no lineal y LTI.}
+	\label{fig:comparacion_posicion_nl_lti}
 \end{figure}
 \FloatBarrier
 
@@ -3319,29 +3398,66 @@ resumen en la Tabla~\ref{tab:valores_finales_transitorios}.
 
 \begin{table}[H]
 	\centering
-	\caption{Valores finales de velocidad, corriente y torque motor luego de
-		cada transitorio.}
+	\caption{Valores finales de velocidad, corriente y torque motor luego de cada transición.}
 	\label{tab:valores_finales_transitorios}
-	\resizebox{\textwidth}{!}{
+	
+	\scriptsize
+	\setlength{\tabcolsep}{4pt}
+	\renewcommand{\arraystretch}{0.95}
+	
+	\resizebox{0.75\linewidth}{!}{%
 		\begin{tabular}{ccccc}
 			\toprule
-			$t_k$ [s] & Cambio aplicado &
+			$t_k$ [s] &
+			Cambio aplicado &
 			$\omega_{m,f}$ [rad/s] &
 			$i_{qs,f}^{r}$ [A] &
 			$T_{m,f}$ [N\,m] \\
 			\midrule
-			0,1 & $v_{qs}^{r}:0\rightarrow 19{,}596$       &  401,572 &  0,285 &  0,0205 \\
-			0,3 & $T_{ld}:0\rightarrow 6{,}28$             &  382,519 &  1,112 &  0,0801 \\
-			0,5 & $T_{ld}:6{,}28\rightarrow -6{,}28$       &  416,019 & -0,335 & -0,0241 \\
-			0,7 & $v_{qs}^{r}:19{,}596\rightarrow 0$       &   10,910 & -0,468 & -0,0337 \\
-			0,9 & $T_{ld}:-6{,}28\rightarrow 0$            &   -5,916 &  0,254 &  0,0183 \\
-			1,1 & $v_{qs}^{r}:0\rightarrow -19{,}596$      & -411,856 &  0,155 &  0,0111 \\
-			1,3 & $T_{ld}:0\rightarrow 6{,}28$             & -426,375 &  0,776 &  0,0559 \\
-			1,5 & $T_{ld}:6{,}28\rightarrow -6{,}28$       & -388,381 & -0,841 & -0,0605 \\
-			1,7 & $v_{qs}^{r}:-19{,}596\rightarrow 0$      &   17,144 & -0,725 & -0,0522 \\
-			1,9 & $T_{ld}:-6{,}28\rightarrow 0$            &    0,055 & -0,002 & -0,0001 \\
+			
+			0,1 &
+			$v_{qs}^{r}: 0 \rightarrow 19{,}596$ &
+			401,572 & 0,285 & 0,0205 \\
+			
+			0,3 &
+			$T_{ld}: 0 \rightarrow 6{,}28$ &
+			382,519 & 1,112 & 0,0801 \\
+			
+			0,5 &
+			$T_{ld}: 6{,}28 \rightarrow -6{,}28$ &
+			416,019 & -0,335 & -0,0241 \\
+			
+			0,7 &
+			$v_{qs}^{r}: 19{,}596 \rightarrow 0$ &
+			10,910 & -0,468 & -0,0337 \\
+			
+			0,9 &
+			$T_{ld}: -6{,}28 \rightarrow 0$ &
+			-5,916 & 0,254 & 0,0183 \\
+			
+			1,1 &
+			$v_{qs}^{r}: 0 \rightarrow -19{,}596$ &
+			-411,856 & 0,155 & 0,0111 \\
+			
+			1,3 &
+			$T_{ld}: 0 \rightarrow 6{,}28$ &
+			-426,375 & 0,776 & 0,0559 \\
+			
+			1,5 &
+			$T_{ld}: 6{,}28 \rightarrow -6{,}28$ &
+			-388,381 & -0,841 & -0,0605 \\
+			
+			1,7 &
+			$v_{qs}^{r}: -19{,}596 \rightarrow 0$ &
+			17,144 & -0,725 & -0,0522 \\
+			
+			1,9 &
+			$T_{ld}: -6{,}28 \rightarrow 0$ &
+			0,055 & -0,002 & -0,0001 \\
+			
 			\bottomrule
-	\end{tabular}}
+		\end{tabular}%
+	}
 \end{table}
 
 \paragraph{Respuesta de velocidad ante cambios de tensión}
@@ -3352,10 +3468,14 @@ Tabla~\ref{tab:metricas_velocidad_vqs}.
 
 \begin{table}[H]
 	\centering
-	\caption{Indicadores de la respuesta de velocidad ante cambios de
-		$v_{qs}^{r}(t)$.}
+	\caption{Indicadores de la respuesta de velocidad ante cambios de $v_{qs}^{r}(t)$.}
 	\label{tab:metricas_velocidad_vqs}
-	\resizebox{\textwidth}{!}{
+	
+	\scriptsize
+	\setlength{\tabcolsep}{3pt}
+	\renewcommand{\arraystretch}{0.95}
+	
+	\resizebox{0.75\linewidth}{!}{%
 		\begin{tabular}{cccccccc}
 			\toprule
 			$t_k$ [s] &
@@ -3364,15 +3484,49 @@ Tabla~\ref{tab:metricas_velocidad_vqs}.
 			$\omega_{m,i}$ [rad/s] &
 			$\omega_{m,f}$ [rad/s] &
 			$t_c$ [ms] &
-			$t_e$ [ms] &
+			$t_r$ [ms] &
 			$M_p$ [\%] \\
 			\midrule
-			0,1 &   0,000 &  19,596 &    0,000 &  401,572 &  9,91 & 37,99 & 13,37 \\
-			0,7 &  19,596 &   0,000 &  416,107 &   10,910 & 10,06 & 50,56 & 12,08 \\
-			1,1 &   0,000 & -19,596 &   -5,916 & -411,856 & 10,17 & 49,65 & 11,83 \\
-			1,7 & -19,596 &   0,000 & -388,381 &   17,144 & 10,19 & 49,64 & 11,68 \\
+			
+			0,1 &
+			0,000 &
+			19,596 &
+			0,000 &
+			401,572 &
+			9,91 &
+			37,99 &
+			13,37 \\
+			
+			0,7 &
+			19,596 &
+			0,000 &
+			416,107 &
+			10,910 &
+			10,06 &
+			50,56 &
+			12,08 \\
+			
+			1,1 &
+			0,000 &
+			-19,596 &
+			-5,916 &
+			-411,856 &
+			10,17 &
+			49,65 &
+			11,83 \\
+			
+			1,7 &
+			-19,596 &
+			0,000 &
+			-388,381 &
+			17,144 &
+			10,19 &
+			49,64 &
+			11,68 \\
+			
 			\bottomrule
-	\end{tabular}}
+		\end{tabular}%
+	}
 \end{table}
 
 Los cambios de tensión producen variaciones de velocidad cercanas a
@@ -3398,10 +3552,14 @@ en la Tabla~\ref{tab:metricas_corriente_tld}.
 
 \begin{table}[H]
 	\centering
-	\caption{Indicadores de la respuesta de corriente y torque motor ante
-		cambios de $T_{ld}(t)$.}
+	\caption{Indicadores de la respuesta de corriente y torque motor ante cambios de $T_{ld}(t)$.}
 	\label{tab:metricas_corriente_tld}
-	\resizebox{\textwidth}{!}{
+	
+	\scriptsize
+	\setlength{\tabcolsep}{2.5pt}
+	\renewcommand{\arraystretch}{0.95}
+	
+	\resizebox{0.75\linewidth}{!}{%
 		\begin{tabular}{ccccccccc}
 			\toprule
 			$t_k$ [s] &
@@ -3412,16 +3570,72 @@ en la Tabla~\ref{tab:metricas_corriente_tld}.
 			$t_c$ [ms] &
 			$t_e$ [ms] &
 			$M_p$ [A] &
-			$M_p$ [\%] \\
+			$m_p$ [\%] \\
 			\midrule
-			0,3 & $0\rightarrow 6,28$          &  0,290 &  1,112 &  0,0801 & 12,58 & 188,30 & 0,0066 &  0,80 \\
-			0,5 & $6,28\rightarrow -6,28$      &  1,114 & -0,335 & -0,0241 & 10,41 & 145,98 & 0,1649 & 11,39 \\
-			0,9 & $-6,28\rightarrow 0$         & -0,468 &  0,254 &  0,0183 & 10,77 &  51,93 & 0,0869 & 12,02 \\
-			1,3 & $0\rightarrow 6,28$          &  0,154 &  0,776 &  0,0559 &  8,87 & 184,95 & 0,1810 & 29,09 \\
-			1,5 & $6,28\rightarrow -6,28$      &  0,770 & -0,841 & -0,0605 & 12,24 & 193,04 & 0,0158 &  0,98 \\
-			1,9 & $-6,28\rightarrow 0$         & -0,724 & -0,002 & -0,0001 & 10,82 &  51,38 & 0,0849 & 11,76 \\
+			
+			0,3 &
+			$0 \rightarrow 6{,}28$ &
+			0,290 &
+			1,112 &
+			0,0801 &
+			12,58 &
+			188,30 &
+			0,0066 &
+			0,80 \\
+			
+			0,5 &
+			$6{,}28 \rightarrow -6{,}28$ &
+			1,114 &
+			-0,335 &
+			-0,0241 &
+			10,41 &
+			145,98 &
+			0,1649 &
+			11,39 \\
+			
+			0,9 &
+			$-6{,}28 \rightarrow 0$ &
+			-0,468 &
+			0,254 &
+			0,0183 &
+			10,77 &
+			51,93 &
+			0,0869 &
+			12,02 \\
+			
+			1,3 &
+			$0 \rightarrow 6{,}28$ &
+			0,154 &
+			0,776 &
+			0,0559 &
+			8,87 &
+			184,95 &
+			0,1810 &
+			29,09 \\
+			
+			1,5 &
+			$6{,}28 \rightarrow -6{,}28$ &
+			0,770 &
+			-0,841 &
+			-0,0605 &
+			12,24 &
+			193,04 &
+			0,0158 &
+			0,98 \\
+			
+			1,9 &
+			$-6{,}28 \rightarrow 0$ &
+			-0,724 &
+			-0,002 &
+			-0,0001 &
+			10,82 &
+			51,38 &
+			0,0849 &
+			11,76 \\
+			
 			\bottomrule
-	\end{tabular}}
+		\end{tabular}%
+	}
 \end{table}
 
 La corriente $i_{qs}^{r}(t)$ modifica su valor y su signo para adaptar el
@@ -3884,6 +4098,215 @@ La Ecuación~\eqref{eq:modulador_torque_final} define estructuralmente al bloque
 
 \paragraph{Impacto de la estrategia de magnetización ($i_{ds}^{r*}(t)$):}
 La Ecuación~\eqref{eq:modulador_torque_final} expone cómo el estado de la corriente del eje directo ($i_{ds}^{r}$) altera la ganancia efectiva de torque. Operar a \textbf{Campo Orientado} ($i_{ds}^{r*} = 0$) anula la reluctancia en el denominador y maximiza la eficiencia nominal. Por el contrario, aplicar \textbf{Debilitamiento de Campo} ($i_{ds}^{r*} < 0$) reduce el denominador (dado que $L_d > L_q$), demandando mayor corriente de cuadratura para generar el mismo torque, lo cual permite alcanzar mayores velocidades a expensas de sacrificar la eficiencia energética.
+
+
+\subsubsection{Simulación del modulador de torque en el dominio temporal}
+
+Para verificar el funcionamiento del modulador definido por la
+Ec.~\eqref{eq:modulador_torque_final}, se realizó un ensayo sobre el modelo
+global no lineal, imponiendo la estrategia base
+
+\[
+i_{ds}^{r*}(t)=0,
+\qquad
+T_{ld}(t)=0.
+\]
+
+La consigna utilizada corresponde únicamente a una señal de prueba y no a la
+salida definitiva del controlador externo de movimiento. Se aplicaron pulsos
+de $\pm0{,}015~\mathrm{N\,m}$, valor inferior al límite continuo adoptado de
+$0{,}023~\mathrm{N\,m}$.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]
+	{img/ensayo_modulador_torque/entradas_ensayo_modulador.pdf}
+	\caption{Consigna externa de torque y torque de perturbación utilizados
+		en el ensayo del modulador.}
+	\label{fig:entradas_ensayo_modulador}
+\end{figure}
+
+El compensador incorpora a la consigna externa los términos de fricción y
+gravedad incluidos en la Ec.~\eqref{eq:modulador_torque_final}. Debido a que
+estos aportes son reducidos durante el intervalo analizado, la referencia
+electromagnética total permanece próxima a la consigna aplicada.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.80\textwidth]
+	{img/ensayo_modulador_torque/seguimiento_torque_modulador.pdf}
+	\caption{Seguimiento de la referencia electromagnética total por el
+		torque generado por la máquina.}
+	\label{fig:seguimiento_torque_modulador}
+\end{figure}
+
+Como se observa en la Fig.~\ref{fig:seguimiento_torque_modulador}, el torque
+generado reproduce correctamente el signo y la forma de los pulsos, sin
+oscilaciones sostenidas ni evidencias de inestabilidad. Los valores medios
+obtenidos durante los intervalos activos se resumen en la
+Tabla~\ref{tab:resultados_modulador_torque}.
+
+\begin{table}[H]
+	\centering
+	\caption{Valores medios durante los pulsos de torque.}
+	\label{tab:resultados_modulador_torque}
+	\begin{tabular}{lccc}
+		\toprule
+		Intervalo &
+		$\overline{T_m^*}$ &
+		$\overline{T_m}$ &
+		$\overline{|e_T|}$ \\
+		& $(\mathrm{N\,m})$ & $(\mathrm{N\,m})$ & $(\mathrm{N\,m})$ \\
+		\midrule
+		Pulso positivo & $0{,}015204$ & $0{,}013644$ & $0{,}001560$ \\
+		Pulso negativo & $-0{,}014949$ & $-0{,}014426$ & $0{,}000523$ \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+Los máximos del error aparecen en los instantes de cambio de la referencia,
+ya que el escalón varía instantáneamente mientras que la corriente no puede
+hacerlo debido a la dinámica inductiva. La diferencia observada durante los
+pulsos no se atribuye a la ausencia de acción integral: de acuerdo con la
+Ec.~\eqref{eq:lazo_cerrado_corriente_PT}, el lazo ideal desacoplado posee
+ganancia estática unitaria. Por lo tanto, las desviaciones cuantitativas se
+asocian a las diferencias entre las hipótesis ideales de diseño y la
+implementación del modelo no lineal.
+
+\paragraph{Seguimiento de las corrientes.}
+
+La Fig.~\ref{fig:seguimiento_corrientes_modulador} muestra que
+$i_{qs}^{r}(t)$ sigue la referencia calculada por el modulador, alcanzando un
+máximo de aproximadamente $0{,}212~\mathrm{A}$.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.80\textwidth]
+	{img/ensayo_modulador_torque/seguimiento_corrientes_modulador.pdf}
+	\caption{Seguimiento de las referencias de corriente en los ejes
+		$q$ y $d$.}
+	\label{fig:seguimiento_corrientes_modulador}
+\end{figure}
+
+Para el eje directo se obtuvo
+
+\[
+|i_{ds}^{r}|_{\max}
+\simeq9{,}81\times10^{-4}~\mathrm{A},
+\]
+
+equivalente a aproximadamente el 0{,}46~\% de la corriente máxima en el
+eje $q$. En consecuencia,
+
+\[
+i_{ds}^{r}(t)\approx i_{ds}^{r*}(t)=0,
+\]
+
+confirmándose el correcto desacoplamiento entre ambos ejes y el mantenimiento
+de la orientación de campo.
+
+\paragraph{Tensiones y respuesta mecánica.}
+
+Las tensiones generadas por el desacoplador se presentan en la
+Fig.~\ref{fig:tensiones_modulador}. El módulo máximo en coordenadas $dq$ fue
+aproximadamente $6{,}04~\mathrm{V}$, por debajo del límite adoptado de
+$24~\mathrm{V}$, por lo que no se observan saturaciones.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.80\textwidth]
+	{img/ensayo_modulador_torque/tensiones_qd0_modulador.pdf}
+	\caption{Tensiones de control generadas por el modulador en coordenadas
+		$qd0$.}
+	\label{fig:tensiones_modulador}
+\end{figure}
+
+La respuesta mecánica de la Fig.~\ref{fig:respuesta_mecanica_modulador} debe
+interpretarse únicamente como el efecto de los pulsos de torque aplicados.
+No se exige seguimiento de posición o velocidad, dado que todavía no se ha
+incorporado el controlador externo de movimiento.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.80\textwidth]
+	{img/ensayo_modulador_torque/respuesta_mecanica_modulador.pdf}
+	\caption{Respuesta mecánica producida por los pulsos de torque.}
+	\label{fig:respuesta_mecanica_modulador}
+\end{figure}
+
+\paragraph{Estrategia base y estrategia extendida.}
+
+El ensayo anterior valida la estrategia base $i_{ds}^{r*}=0$, para la cual
+la relación torque--corriente se simplifica según la
+Ec.~\eqref{eq:torque_kt_krel} y la referencia $i_{qs}^{r*}$ se obtiene
+directamente de la Ec.~\eqref{eq:modulador_torque_final}.
+
+Para una estrategia extendida con $i_{ds}^{r*}\neq0$, la constante efectiva
+de torque deja de ser constante y el modulador debe considerar explícitamente
+la corriente directa en el denominador de dicha ecuación. Además, deben
+actualizarse los términos de desacoplamiento de la
+Ec.~\eqref{eq:ley_desacople_corriente} y verificarse conjuntamente los límites
+
+\[
+\sqrt{\left(i_{qs}^{r}\right)^2+\left(i_{ds}^{r}\right)^2},
+\qquad
+\sqrt{\left(v_{qs}^{r}\right)^2+\left(v_{ds}^{r}\right)^2}.
+\]
+
+\begin{table}[H]
+	\centering
+	\caption{Comparación entre las estrategias de magnetización.}
+	\label{tab:comparacion_estrategias_modulador}
+	\begin{tabular}{p{0.27\textwidth}
+			p{0.28\textwidth}
+			p{0.35\textwidth}}
+		\toprule
+		Aspecto &
+		$i_{ds}^{r*}=0$ &
+		$i_{ds}^{r*}\neq0$ \\
+		\midrule
+		Constante de torque &
+		Constante &
+		Dependiente de $i_{ds}^{r}$ \\
+		
+		Cálculo de $i_{qs}^{r*}$ &
+		Directo &
+		Variable según la magnetización \\
+		
+		Flujo magnético &
+		Nominal &
+		Debilitamiento o reforzamiento \\
+		
+		Complejidad &
+		Reducida &
+		Mayor cálculo y supervisión \\
+		
+		Pérdidas Joule &
+		Menores &
+		Mayores por la contribución de $i_{ds}^{r}$ \\
+		
+		Aplicación &
+		Operación nominal &
+		Operación próxima al límite de tensión \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+El debilitamiento de campo, $i_{ds}^{r*}<0$, reduce la fuerza
+contraelectromotriz y permite alcanzar velocidades mayores, mientras que el
+reforzamiento, $i_{ds}^{r*}>0$, produce el efecto opuesto. Estos
+comportamientos ya fueron verificados en las
+Figs.~\ref{fig:velocidad_field} y~\ref{fig:torque_field}; por ello, no se
+consideró necesario repetir el ensayo dinámico del modulador para valores
+adicionales de $i_{ds}^{r*}$.
+
+En síntesis, la simulación confirma el funcionamiento general del modulador
+con la estrategia base: el torque responde a la referencia, la corriente
+directa permanece prácticamente nula y las magnitudes eléctricas se mantienen
+dentro de sus límites admisibles.
+
+\FloatBarrier
+
 
 \subsection*{2. Controlador Externo de Movimiento (Posición/Velocidad)}
 
