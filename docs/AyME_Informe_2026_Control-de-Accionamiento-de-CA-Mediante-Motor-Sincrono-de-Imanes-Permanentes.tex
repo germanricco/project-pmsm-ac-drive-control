@@ -4441,6 +4441,107 @@ La eficiencia final del diseño se consolida al evaluar el seguimiento de trayec
 \end{figure}
 
 % ---------------------------------------------------------
+
+\subsection*{3. Observador de Estado Cinemático (Estimador de Velocidad)}
+
+Tal como se demostró rigurosamente en el análisis de observabilidad (Sección 4), la arquitectura física del sistema carece de un sensor analógico de velocidad (tacogenerador) y depende exclusivamente de un encoder acoplado al eje del motor para medir la posición $\theta_m(t)$. Sin embargo, tanto el Modulador de Torque (para desacoplar la fricción) como el Controlador PID (para el lazo de amortiguamiento) requieren conocer la velocidad angular instantánea $\omega_m(t)$ para operar.
+
+Dado que derivar numéricamente la señal del encoder inyectaría ruido de cuantización de alta frecuencia en la acción de control, resulta imperativa la síntesis de un \textbf{Observador de Estado de Luenberger}. 
+
+Para simplificar el orden del observador y optimizar la carga computacional, la estimación se restringirá exclusivamente al subsistema mecánico. Esto es lícito dado que los estados electromagnéticos ($i_{qs}^r, i_{ds}^r$) ya son medidos directamente por los sensores de corriente de fase del inversor. Además, asumiendo que el Modulador de Torque opera con un ancho de banda altísimo y cancela eficientemente las no linealidades, la planta mecánica "percibida" por el observador desde la entrada de comando $u(t) = T_m^{*\prime}(t)$ se reduce a un sistema inercial puro de la forma:
+\begin{equation*}
+    \left\{
+    \begin{aligned}
+        \dot{\mathbf{x}}(t) &= A \cdot \mathbf{x}(t) + B \cdot u(t) \\
+        y(t) &= C \cdot \mathbf{x}(t)
+    \end{aligned}
+    \right.
+    \quad \implies \quad
+    A = \begin{bmatrix} 0 & 1 \\ 0 & 0 \end{bmatrix}, \quad 
+    B = \begin{bmatrix} 0 \\ \frac{1}{J_{eq}} \end{bmatrix}, \quad 
+    C = \begin{bmatrix} 1 & 0 \end{bmatrix}
+\end{equation*}
+donde el vector de estado a estimar es $\mathbf{x}(t) = [\theta_m(t), \omega_m(t)]^T$ y la salida medida es $y(t) = \theta_m(t)$.
+
+\subsubsection*{3.a) Formulación del Observador de Luenberger}
+
+El observador de estado plantea generar un "clon" virtual del modelo matemático del sistema, sumando un término de innovación (corrección) proporcional al error entre la salida física real medida y la salida estimada. Definiendo el vector de estado estimado como $\tilde{\mathbf{x}}(t) = [\tilde{\theta}_m(t), \tilde{\omega}_m(t)]^T$, la dinámica del estimador se rige por:
+\begin{equation}
+    \left\{
+    \begin{aligned}
+        \dot{\tilde{\mathbf{x}}}(t) &= A \cdot \tilde{\mathbf{x}}(t) + B \cdot u(t) + \mathbf{K}_e \big[ y(t) - \tilde{y}(t) \big] \\
+        \tilde{y}(t) &= C \cdot \tilde{\mathbf{x}}(t)
+    \end{aligned}
+    \right.
+    \label{eq:dinamica_observador}
+\end{equation}
+
+donde $\mathbf{K}_e = \begin{bmatrix} K_{e\theta} \\ K_{e\omega} \end{bmatrix}$ representa el vector de ganancias de innovación del observador.
+
+Agrupando los términos del estado estimado, la Ecuación~\eqref{eq:dinamica_observador} se reescribe en su forma canónica de matriz dinámica corregida $[A - \mathbf{K}_e C]$:
+\begin{equation*}
+    \dot{\tilde{\mathbf{x}}}(t) = \left[ A - \mathbf{K}_e C \right] \tilde{\mathbf{x}}(t) + B \cdot u(t) + \mathbf{K}_e \cdot y(t)
+\end{equation*}
+
+\subsubsection*{3.b) Sintonía de las Ganancias de Estimación}
+
+La convergencia de las variables estimadas hacia los valores físicos reales depende de los autovalores de la matriz de transición del error $[A - \mathbf{K}_e C]$. Evaluando dicha matriz para el sistema inercial:
+\begin{equation*}
+    \left[ A - \mathbf{K}_e C \right] = 
+    \begin{bmatrix} 0 & 1 \\ 0 & 0 \end{bmatrix} - 
+    \begin{bmatrix} K_{e\theta} \\ K_{e\omega} \end{bmatrix} \begin{bmatrix} 1 & 0 \end{bmatrix} = 
+    \begin{bmatrix} -K_{e\theta} & 1 \\ -K_{e\omega} & 0 \end{bmatrix}
+\end{equation*}
+
+El polinomio característico que define la dinámica de estimación se obtiene calculando el determinante $\det(s\mathbf{I} - [A - \mathbf{K}_e C])$:
+\begin{equation}
+    \Delta_{obs}(s) = s^2 + K_{e\theta} s + K_{e\omega} = 0
+    \label{eq:polinomio_observador}
+\end{equation}
+
+Para garantizar una estimación veloz y estable, y respetando la jerarquía espectral del sistema en cascada, los polos del observador deben ser significativamente más rápidos que los del lazo de control dominante (PID: $\omega_n = 800\,\text{rad/s}$), pero sin superar el ancho de banda del lazo interno de corriente ($p_c = -5000\,\text{rad/s}$) para no amplificar el ruido del encoder. 
+
+Se propone una asignación de dos polos reales e iguales en $s_{1,2} = -3200\,\text{rad/s}$. El polinomio característico deseado adopta la forma:
+\begin{equation*}
+    (s + 3200)^2 = s^2 + 6400 s + 10240000 = 0
+\end{equation*}
+
+Igualando los coeficientes de este desarrollo con la Ecuación~\eqref{eq:polinomio_observador}, se obtienen las ganancias óptimas del observador:
+\begin{align*}
+    K_{e\theta} &= 6400\,\text{rad/s} \\
+    K_{e\omega} &= 1.024 \times 10^7\,\text{rad/s}^2
+\end{align*}
+
+\subsubsection*{3.c) Dinámica del Error e Implementación}
+
+El éxito de la estimación se evalúa definiendo el vector de error de observación como $\mathbf{e}(t) = \mathbf{x}(t) - \tilde{\mathbf{x}}(t)$. Derivando esta expresión y asumiendo la presencia de perturbaciones mecánicas residuales no modeladas $d(t)$ aplicadas a través de un vector de distribución $B_d$, la dinámica evolutiva del error resulta:
+\begin{equation*}
+    \dot{\mathbf{e}}(t) = \left[ A - \mathbf{K}_e C \right] \mathbf{e}(t) - B_d \cdot d(t)
+\end{equation*}
+
+Al ubicar los autovalores de $[A - \mathbf{K}_e C]$ fuertemente en el semiplano izquierdo ($s = -3200$), se asegura que el sistema es asintóticamente estable y que cualquier error inicial de estimación $\mathbf{e}(t_0)$ decaerá exponencialmente hacia cero en menos de $\approx 1.5\,\text{ms}$, proveyendo a los lazos de control una lectura de velocidad limpia y altamente confiable. La arquitectura computacional final del observador se detalla en la Figura~\ref{fig:diagrama_observador}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/diagrama\_observador\_de\_estado\_reducido.pdf}
+  	\caption{Diagrama de bloques del Observador de Estado Cinemático de orden reducido implementado en Simulink.}
+	\label{fig:diagrama_observador}
+\end{figure}
+
+\subsection{4.4 Simulación en tiempo continuo con modelo completo No Lineal}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/diagrama\_sistema\_completo\_con\_observador\_de\_estado.pdf}
+  	\caption{Diagrama Sistema de Control completo.}
+	\label{fig:diagrama_sistema_control_completo}
+\end{figure}
+
+
+
+% ---------------------------------------------------------
 % CONCLUSIONES
 % ---------------------------------------------------------
 \section{Conclusiones}
