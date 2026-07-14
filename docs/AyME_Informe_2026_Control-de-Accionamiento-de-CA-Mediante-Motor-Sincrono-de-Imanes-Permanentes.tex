@@ -4556,6 +4556,126 @@ Dado que el propósito fundamental del observador es proveer información veraz 
 \end{figure}
 
 
+\subsubsection*{5.d Modelado en Espacio de Estados}
+
+A lo largo de las etapas previas de síntesis analítica, se asumió implícitamente una dinámica de medición ideal para todas las variables de realimentación ($G(s) \equiv 1$). Esta simplificación teórica supone que los transductores físicos y su electrónica de acondicionamiento asociada (amplificadores operacionales, filtros antialiasing, conversores ADC) poseen un ancho de banda infinito y un retardo de fase nulo. 
+
+En un marco de ingeniería mecatrónica realista, todo sensor exhibe una inercia dinámica. Modelar esta respuesta no ideal resulta crítico, dado que el retardo introducido por los sensores degrada el margen de fase de los lazos de control y, si sus frecuencias de corte se acercan a las frecuencias de cruce del sistema, pueden provocar interacciones destructivas con el observador de estado o inestabilizar la planta.
+
+Para evaluar rigurosamente la robustez de la arquitectura diseñada, se degradan los modelos de medición sustituyendo las ganancias unitarias por \textbf{filtros pasa-bajos (LP)} equivalentes, implementados íntegramente en el \textbf{Espacio de Estados (SS)}. Las especificaciones nominales de degradación son las siguientes:
+\begin{itemize}
+    \item \textbf{Sensores de corriente} $i_{as}(t), i_{bs}(t), i_{cs}(t)$: Modelo LP de 2° orden críticamente amortiguado ($\xi = 1$), con $\omega_n = 6000\,\text{rad/s}$.
+    \item \textbf{Sensor de posición angular} $\theta_m(t)$: Modelo LP de 2° orden críticamente amortiguado ($\xi = 1$), con $\omega_n = 2000\,\text{rad/s}$.
+    \item \textbf{Sensor de temperatura} $T_s^\circ(t)$: Modelo LP termodinámico de 1° orden, con constante de tiempo $\tau = 20\,\text{s}$.
+\end{itemize}
+
+\subsubsection*{5.d.i Modelado en Espacio de Estados: Sensores de 2° Orden}
+
+La función de transferencia canónica para un filtro pasa-bajos de segundo orden se define como:
+\begin{equation}
+    G(s) = \frac{\omega_n^2}{s^2 + 2\xi\omega_n s + \omega_n^2}
+    \label{eq:transferencia_filtro_2do_orden}
+\end{equation}
+
+Para la implementación de este filtro en el entorno de simulación sin utilizar bloques basados en derivadas o funciones de transferencia de Laplace explícitas, se recurre a su representación equivalente en el Espacio de Estados. Por definición, la relación entrada-salida de un sistema LTI en el dominio de la frecuencia está dada por:
+\begin{equation}
+    G(s) = C(s\mathbf{I} - A)^{-1}B + D
+    \label{eq:resolvente_estado}
+\end{equation}
+
+Se propone la siguiente matriz dinámica $A$ para estructurar el filtro de manera canónica:
+\begin{equation}
+    A = \begin{bmatrix} 0 & -1 \\ \omega_n^2 & -2\xi\omega_n \end{bmatrix}
+\end{equation}
+
+Desarrollando analíticamente la Ecuación~\eqref{eq:resolvente_estado} mediante la inversa de la matriz $(s\mathbf{I} - A)$:
+\begin{align*}
+    (s\mathbf{I} - A)^{-1} &= \begin{bmatrix} s & 1 \\ -\omega_n^2 & s + 2\xi\omega_n \end{bmatrix}^{-1} = \frac{1}{s^2 + 2\xi\omega_n s + \omega_n^2} \begin{bmatrix} s + 2\xi\omega_n & -1 \\ \omega_n^2 & s \end{bmatrix}
+\end{align*}
+
+Definiendo los vectores de entrada y salida como $B = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$, $C = \begin{bmatrix} 0 & 1 \end{bmatrix}$ y transmisión directa nula $D = 0$, se comprueba que el producto matricial reconstruye la transferencia deseada:
+\begin{align}
+    G(s) &= \begin{bmatrix} 0 & 1 \end{bmatrix} \frac{1}{s^2 + 2\xi\omega_n s + \omega_n^2} \begin{bmatrix} s + 2\xi\omega_n & -1 \\ \omega_n^2 & s \end{bmatrix} \begin{bmatrix} 1 \\ 0 \end{bmatrix} \nonumber \\
+    G(s) &= \frac{\omega_n^2}{s^2 + 2\xi\omega_n s + \omega_n^2}
+\end{align}
+
+Sustituyendo los parámetros nominales requeridos, los modelos de degradación en Espacio de Estados quedan unívocamente definidos. Para los \textbf{sensores de corriente de fase} ($\omega_n = 6000$, $\xi = 1$):
+\begin{equation}
+    A_{iabc} = \begin{bmatrix} 0 & -1 \\ 36 \times 10^6 & -12000 \end{bmatrix}, \quad B_{iabc} = \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \quad C_{iabc} = \begin{bmatrix} 0 & 1 \end{bmatrix}, \quad D_{iabc} = 0
+\end{equation}
+
+Para el \textbf{sensor de posición angular} ($\omega_n = 2000$, $\xi = 1$):
+\begin{equation}
+    A_{pos} = \begin{bmatrix} 0 & -1 \\ 4 \times 10^6 & -4000 \end{bmatrix}, \quad B_{pos} = \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \quad C_{pos} = \begin{bmatrix} 0 & 1 \end{bmatrix}, \quad D_{pos} = 0
+\end{equation}
+
+\subsubsection*{5.d.ii. Modelado en Espacio de Estados: Sensor de 1° Orden (Temperatura)}
+
+La dinámica de medición termodinámica presenta una inercia considerablemente mayor, modelada típicamente como un sistema de primer orden:
+\begin{equation*}
+    G_T(s) = \frac{1}{1 + \tau s} = \frac{1/\tau}{s + 1/\tau}
+\end{equation*}
+
+Dada la constante de tiempo $\tau = 20\,\text{s}$, su representación en Espacio de Estados es escalar. Sustituyendo $1/\tau = 0.05$, el modelo de la termocupla resulta:
+\begin{equation}
+    A_T = [-0.05], \quad B_T = [1], \quad C_T = [0.05], \quad D_T = [0]
+\end{equation}
+
+\subsubsection*{5.d.iii. Calibración de Condiciones Iniciales e Implementación en Simulink}
+
+Un aspecto crítico al implementar dinámica de sensores mediante integradores es la correcta inicialización del estado interno ($\mathbf{x}_0$). Si el sistema físico inicia su operación en una condición de equilibrio distinta de cero (por ejemplo, una temperatura ambiente inicial de $T_0 = 25^\circ\text{C}$ o una posición angular de reposo arbitraria), forzar a los filtros a arrancar con variables de estado nulas provocará un error de seguimiento masivo en el instante $t=0^+$, induciendo un esfuerzo de control espurio por acción del término derivativo.
+
+Para evitar estos transitorios artificiales de medición, los vectores de estado de los filtros se inicializan imponiendo una condición de reposo derivativo ($\dot{\mathbf{x}} = 0$). La arquitectura de este subsistema degradado se plasma en el diagrama de bloques de la Figura~\ref{fig:diagrama_sensores_no_ideales}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\linewidth]
+	{img/diagrama\_sensores\_no\_ideales\_en\_SS.pdf}
+  	\caption{Diagrama de bloques implementado en Simulink para la degradación de los sensores. Cada bloque \textit{State-Space} se configura con las matrices de diseño y condiciones iniciales rigurosamente calculadas para asegurar un arranque sin transitorios.}
+	\label{fig:diagrama_sensores_no_ideales}
+\end{figure}
+
+El sistema así modelado permite no solo evaluar el impacto de las especificaciones nominales, sino realizar análisis de sensibilidad alterando sistemáticamente el ancho de banda del hardware de sensado ($\omega_n \rightarrow \omega_n \times 2 \rightarrow \omega_n \times 3$), con el fin de cuantificar su interacción destructiva con la sintonía del observador de estado y la transformación rápida de Park en los bucles internos.
+
+\subsubsection*{5.e. Modulador Trifásico de Tensión No Ideal: Efectos del Inversor Físico}
+
+Como última etapa en la aproximación hacia un modelo mecatrónico realista, resulta imperativo modelar las limitaciones físicas de la etapa de potencia. El modulador de tensión trifásica (inversor PWM) es el subsistema de hardware encargado de traducir las consignas de tensión ideales, emitidas por los lazos de control de corriente, en voltajes efectivos aplicados sobre los devanados del estator.
+
+Hasta este punto, el inversor fue modelado como una ganancia unitaria instantánea ($G(s) \equiv 1$). En la práctica industrial, esta suposición es inválida por dos motivos fundamentales:
+\begin{enumerate}
+    \item \textbf{Inercia Dinámica:} Los retardos introducidos por los tiempos muertos de conmutación (\textit{dead-times}) y la frecuencia de portadora finita del PWM restringen el ancho de banda efectivo del inversor.
+    \item \textbf{Restricción de Amplitud (Saturación):} La tensión máxima que el inversor puede sintetizar está estrictamente acotada por el nivel de tensión del bus de corriente continua (\textit{DC-Link}).
+\end{enumerate}
+
+\subsubsection*{5.e.i Restricciones Físicas: Saturación del Bus DC}
+De acuerdo a las especificaciones técnicas del hardware empleado, la tensión de línea máxima que el inversor puede entregar es $V_{sl\_max} = 48\,\text{V}_{\text{ca rms}}$. Para acoplar este límite a las consignas de tensión de fase instantáneas ($v_{as}^*, v_{bs}^*, v_{cs}^*$), se define el umbral de saturación en valores pico de fase:
+\begin{equation}
+    |v_{fase}(t)| \leq \sqrt{2} \cdot \frac{V_{sl\_max}}{\sqrt{3}} \quad \implies \quad |v_{fase}(t)| \leq \sqrt{2} \cdot \frac{48}{\sqrt{3}} \approx 39.19\,\text{V}_{\text{pico}}
+    \label{eq:saturacion_inversor}
+\end{equation}
+
+Esta restricción no lineal es crítica, ya que un comando de voltaje que exceda los $\pm 39.19\,\text{V}$ provocará el fenómeno de \textit{windup} en los integradores de corriente, degradando el control electromagnético.
+
+\subsubsection*{5.e.ii. Inercia Dinámica: Filtro Pasa-Bajo en Espacio de Estados}
+Análogamente a la degradación de los sensores (Sección 6), el retardo del inversor se modela como un filtro pasa-bajos de segundo orden críticamente amortiguado ($\xi = 1$). A fin de mantener la jerarquía espectral sin ahogar la dinámica de las corrientes, se establece un ancho de banda nominal de $\omega_n = 6000\,\text{rad/s}$.
+
+Empleando la misma estructura canónica demostrada en la Ecuación~\eqref{eq:resolvente_estado}, las matrices de Espacio de Estados ($A_v, B_v, C_v, D_v$) para las tres fases del modulador resultan:
+\begin{equation}
+    A_V = \begin{bmatrix} 0 & -1 \\ 36 \times 10^6 & -12000 \end{bmatrix}, \quad B_V = \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \quad C_V = \begin{bmatrix} 0 & 1 \end{bmatrix}, \quad D_V = [0]
+    \label{eq:matrices_inversor}
+\end{equation}
+
+La arquitectura final de la planta de potencia, integrando tanto la limitación del bus DC mediante un bloque de saturación analítica como la dinámica pasabajos de la Ecuación~\eqref{eq:matrices_inversor}, se observa en la Figura~\ref{fig:diagrama_inversor_no_ideal}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth, height=0.35\textheight, keepaspectratio]{img/diagrama_inversor_no_ideal_SS.pdf}
+    \caption{Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text{V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado.}
+    \label{fig:diagrama_inversor_no_ideal}
+\end{figure}
+
+Al igual que con los modelos de medición, esta parametrización permite realizar estudios comparativos multiplicando el ancho de banda del inversor ($\omega_n \rightarrow \omega_n \times 2 \dots$) para analizar su influencia sobre la estabilidad transitoria general del accionamiento.
+
 % ---------------------------------------------------------
 % CONCLUSIONES
 % ---------------------------------------------------------
