@@ -3656,24 +3656,30 @@ Esta arquitectura segmenta el problema en dos escalas de tiempo claramente difer
     \item \textbf{Lazo Externo (Lento):} Un Controlador de Movimiento (PI/PID) que evalúa el error de posición/velocidad y genera las consignas de torque electromagnético que el lazo interno deberá satisfacer.
 \end{enumerate}
 
+A modo de diagnóstico inicial, la Figura~\ref{fig:mapa_pz_nl_completo} presenta el mapa de polos y ceros del sistema no lineal global operando a lazo abierto de forma natural. Este diagrama refleja los acoplamientos y las limitadas prestaciones dinámicas de la planta original (analizadas en detalle en la Sección 3). A partir de este escenario base, el diseño en cascada procederá a desacoplar las no linealidades paso a paso, reubicando los polos hacia zonas de alto desempeño para finalmente someter la planta al control unificado del lazo PID externo.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/mapa_pz_sistema_no_lineal_completo.pdf}
+	\caption{Mapa de polos y ceros del sistema no lineal original a lazo abierto. Constituye el punto de partida previo al diseño de las estrategias de desacoplamiento y control en cascada.}
+	\label{fig:mapa_pz_nl_completo}
+\end{figure}
+
+
 \subsection*{1. Modulador de Torque y Desacoplamiento (Controlador interno vectorial)}
 
-El objetivo primario del lazo interno es transformar las consignas de tensión virtuales demandadas por los controladores en tensiones reales aplicadas a la máquina, 
-garantizando que el torque generado responda lineal y proporcionalmente a la orden de entrada.
+El objetivo primario de este bloque, denominado globalmente \textbf{Modulador de Torque}, es actuar como traductor entre el dominio mecánico y el eléctrico. Su entrada principal es la consigna de torque electromagnético ($T_m^*$) proveniente del controlador de movimiento externo. Mediante el algoritmo de control vectorial, esta orden se procesa y desacopla para generar a su salida las tensiones de comando virtuales en ejes rotantes ($v_{qs}^{r*}, v_{ds}^{r*}, v_{0s}^{r*}$). Finalmente, a través de la transformación inversa de Park, estas señales virtuales se convierten en los voltajes trifásicos reales ($v_{as}^*, v_{bs}^*, v_{cs}^*$) que el inversor PWM sintetizará físicamente en los bornes de la máquina.
 
-Se asume la disponibilidad de un inversor electrónico trifásico con un modulador PWM de alta frecuencia. 
-Desde el punto de vista del control de pequeña señal y asumiendo que no existen saturaciones por límite de bus de continua, 
-este hardware de potencia se modelará analíticamente como una etapa de ganancia unitaria y ancho de banda infinito. 
-En consecuencia, las tensiones de comando generadas por el algoritmo de control se asumen instantáneamente aplicadas a la planta:
+Se asume la disponibilidad de un inversor electrónico trifásico con un modulador PWM de alta frecuencia. Desde el punto de vista del control de pequeña señal y asumiendo que no existen saturaciones por límite de bus de continua, este hardware de potencia se modelará analíticamente como una etapa de ganancia unitaria y ancho de banda infinito. En consecuencia, las tensiones de comando generadas por el algoritmo de control se asumen instantáneamente aplicadas a la planta:
 
 \begin{equation}
-    v_{qd0s}^r(t) \approx v_{qd0s}^{r*}(t)
+		v_{qd0s}^r(t) \approx v_{qd0s}^{r*}(t)
 \end{equation}
 
 \subsubsection*{1.a) Compensación de realimentaciones físicas naturales}
 
-Retomando el modelo electromagnético no lineal en coordenadas sincrónicas (qd0) derivado en la Ecuación~\eqref{eq:dinamica_corrientes_qd0}, 
-se observan fuertes acoplamientos cruzados producidos por las fuerzas contraelectromotrices y las caídas óhmicas:
+Para diseñar el lazo de control, es mandatorio partir de la representación en el espacio de estados del subsistema electromagnético obtenida previamente ~\eqref{eq:dinamica_corrientes_qd0}. Aislando las derivadas temporales de las corrientes, se exponen las razones de cambio de los estados frente a las entradas y se evidencian los fuertes acoplamientos cruzados naturales de la máquina:
 
 \begin{equation}
 	\begin{aligned}
@@ -3688,32 +3694,31 @@ Para otorgarle al controlador de corriente autoridad total y aislada sobre cada 
 Para ello, se formula una ley de control por \textit{feedback linearization} (linealización por realimentación exacta) que define las tensiones de referencia $v_{qd0s}^{r*}(t)$ como la suma de una nueva señal de control auxiliar $\bar{v}_{qd0}(t)$ y términos de pre-compensación que replican, en sentido inverso, los acoplamientos medidos del motor:
 
 \begin{equation}
-    \left\{
-    \begin{aligned}
-        v_{qs}^{r*}(t) &= \bar{v}_q(t) + \hat{R}_s i_{qs}^r(t) + P_p \omega_m(t) \left[ L_d i_{ds}^r(t) + \lambda_m^{\prime r} \right] \\[2mm]
-        v_{ds}^{r*}(t) &= \bar{v}_d(t) + \hat{R}_s i_{ds}^r(t) - P_p \omega_m(t) L_q i_{qs}^r(t) \\[2mm]
-        v_{0s}^{r*}(t) &= \bar{v}_0(t) + \hat{R}_s i_{0s}^r(t)
-    \end{aligned}
-    \right.
-    \label{eq:ley_desacople_corriente}
+	\left\{
+	\begin{aligned}
+		v_{qs}^{r*}(t) &= \bar{v}_q(t) + \hat{R}_s i_{qs}^r(t) + P_p \omega_m(t) \left[ L_d i_{ds}^r(t) + \lambda_m^{\prime r} \right] \\[2mm]
+		v_{ds}^{r*}(t) &= \bar{v}_d(t) + \hat{R}_s i_{ds}^r(t) - P_p \omega_m(t) L_q i_{qs}^r(t) \\[2mm]
+		v_{0s}^{r*}(t) &= \bar{v}_0(t) + \hat{R}_s i_{0s}^r(t)
+	\end{aligned}
+	\right.
+	\label{eq:ley_desacople_corriente}
 \end{equation}
 
 Sustituyendo el vector de control \eqref{eq:ley_desacople_corriente} en la dinámica original de la planta \eqref{eq:dinamica_corrientes_qd0_2} y asumiendo un conocimiento perfecto de los parámetros estáticos (ej: $\hat{L}_{q,d} = L_{q,d}$), se fuerza la anulación de los acoplamientos, rindiendo un sistema puramente lineal, diagonal e integrador para las corrientes:
 
 \begin{equation}
-    \frac{di_{qs}^r(t)}{dt} = \frac{1}{L_q} \bar{v}_q(t), \qquad 
-    \frac{di_{ds}^r(t)}{dt} = \frac{1}{L_d} \bar{v}_d(t), \qquad 
-    \frac{di_{0s}^r(t)}{dt} = \frac{1}{L_{ls}} \bar{v}_0(t)
-    \label{eq:corrientes_desacopladas_integradores}
+	\frac{di_{qs}^r(t)}{dt} = \frac{1}{L_q} \bar{v}_q(t), \qquad 
+	\frac{di_{ds}^r(t)}{dt} = \frac{1}{L_d} \bar{v}_d(t), \qquad 
+	\frac{di_{0s}^r(t)}{dt} = \frac{1}{L_{ls}} \bar{v}_0(t)
+	\label{eq:corrientes_desacopladas_integradores}
 \end{equation}
 
 \paragraph{Impacto de la estimación térmica de la resistencia $\hat{R}_s(T_s^\circ(t))$:}
-Un factor crítico en la robustez de este esquema radica en el término de compensación de la caída óhmica ($\hat{R}_s i_{qs}^r$). 
-La resistencia estatórica real del motor $R_s(t)$ es fuertemente dependiente de la temperatura. 
+Un factor crítico en la robustez de este esquema radica en el término de compensación de la caída óhmica ($\hat{R}_s i_{qs}^r$). La resistencia estatórica real del motor $R_s(T_s^\circ(t))$ es fuertemente dependiente de la temperatura. 
 
-Si el controlador se programa empleando un valor nominal constante ($\hat{R}_s = R_{s,\mathrm{REF}}$) parametrizado a temperatura ambiente (ej. $20^\circ\text{C}$), a medida que la máquina alcance su temperatura máxima de diseño ($115^\circ\text{C}$), el término real $R_s(T)$ crecerá hasta un $30-40\%$. Esto provocará que la cancelación en la ecuación diferencial no sea perfecta, induciendo un error de seguimiento transitorio y acoplamientos parásitos residuales en el lazo de corriente.
+Si el controlador se programa empleando un valor "nominal" constante ($\hat{R}_s = R_{s,\mathrm{REF}}$) parametrizado a temperatura ambiente (ej. $20^\circ\text{C}$), a medida que la máquina alcance su temperatura máxima de diseño ($115^\circ\text{C}$), el término real $R_s(T)$ crecerá hasta un $30-40\%$. Esto provocará que la cancelación en la ecuación diferencial no sea perfecta, induciendo un error de seguimiento transitorio y acoplamientos parásitos residuales en el lazo de corriente.
 
-Por el contrario, si el algoritmo de control implementa un observador o estima activamente la dependencia $R_s(T_s^\circ(t))$ mediante la lectura del termopar estatórico, la ley de linealización por retroalimentación será topológicamente exacta. Esta técnica adaptativa suprime el error de modelado, asegurando que la dinámica de la Ecuación \eqref{eq:corrientes_desacopladas_integradores} permanezca invariante y perfectamente predecible bajo todo el espectro térmico operativo de la máquina.
+Por el contrario, si el algoritmo de control estima activamente la dependencia $R_s(T_s^\circ(t))$ mediante la lectura del termopar estatórico, la ley de linealización por retroalimentación será topológicamente exacta. Esta técnica adaptativa suprime el error de modelado, asegurando que la dinámica de la Ecuación~\eqref{eq:corrientes_desacopladas_integradores} permanezca invariante y perfectamente predecible bajo todo el espectro térmico operativo de la máquina.
 
 \subsubsection*{1.b) Diseño del lazo proporcional desacoplado de corrientes}
 
@@ -3775,7 +3780,27 @@ La consigna exige sintonizar este lazo interior con un polo fuertemente negativo
     R_0^\prime &= (5000)\cdot L_{ls} = 5000 \cdot (0.8 \times 10^{-3}) = 4.0\,\si{\ohm}
 \end{align*}
 
+Esta asignación de polos modifica profundamente la estructura modal de la planta. Tal como ilustra la Figura~\ref{fig:mapa_pz_control_corriente}, la aplicación conjunta de la linealización por retroalimentación y el control proporcional fuerza a que los tres polos electromagnéticos acoplados originales abandonen sus posiciones naturales y migren de manera exacta hacia la coordenada unificada de $-5000\,\text{rad/s}$ en el eje real.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/mapa\_pz\_sistema\_corriente\_controlada.pdf}
+  	\caption{Migración de los polos electromagnéticos tras el desacoplamiento de no linealidades y el cierre del lazo proporcional de corrientes (polos ubicados asintóticamente en $s = -5000$).}
+	\label{fig:mapa_pz_control_corriente}
+\end{figure}
+
 Bajo este ajuste, las corrientes del motor convergerán hacia sus referencias en un tiempo de asentamiento imperceptible ($\tau_c = 1/5000 = 0.2\,\text{ms}$, asentamiento al $99\%$ en $\approx 0.9\,\text{ms}$). 
+
+El contraste en el dominio del tiempo es contundente. La Figura~\ref{fig:rta_step_corriente} compara la evolución temporal de la corriente frente a un escalón normalizado unitario.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/fig\_rta\_step\_original\_vs\_control\_p\_corriente.pdf}
+  	\caption{Comparativa de la respuesta al escalón unitario de corriente: Sistema original a lazo abierto (oscilatorio y lento) vs. Sistema con lazo de control proporcional desacoplado (primer orden, ultra-rápido).}
+	\label{fig:rta_step_corriente}
+\end{figure}
 
 \paragraph{¿Es necesaria una acción Integral (PI) en el lazo de corriente?}
 Al comparar esta dinámica con la planta LTI analizada en la sección de estabilidad (donde el polo eléctrico natural de lazo abierto residía en $\approx -154\,\text{rad/s}$), el lazo cerrado ha inyectado un ancho de banda extraordinariamente más rápido. 
@@ -3809,7 +3834,17 @@ Por otro lado, recordando la dinámica de aceleración del subsistema mecánico 
     \dot{\omega}_m(t) = \frac{1}{J_{eq}} \left[ T_m(t) - b_{eq}\omega_m(t) - \frac{g k_l}{r} \sin\left(\frac{\theta_m(t)}{r}\right) - \frac{T_{ld}(t)}{r} \right],
 \end{equation*}
 
-se evidencia que el controlador PID externo, cuya acción bruta se define como $T_{m}^{*\prime}(t)$, debe lidiar con disipaciones no lineales. Para lograr que la planta responda idealmente como una inercia pura ($J_{eq}\dot{\omega}_m = T_{m}^{*\prime}$), el Modulador de Torque aplica \textit{feedback linearization}. Utilizando los estados mecánicos medidos por el encoder ($\theta_m$ y $\omega_m$), se anulan estas perturbaciones internas sumando términos de \textit{feedforward} a la orden del PID:
+se evidencia que el controlador PID externo, cuya acción bruta se define como $T_{m}^{*\prime}(t)$, debe lidiar con disipaciones no lineales y fuerzas restauradoras. En la Figura~\ref{fig:mapa_pz_mecanico_natural} se aprecia un detalle de los polos del sistema mecánico operando a bajas frecuencias de manera natural. La fricción viscosa y la rigidez gravitacional (que actúa como un resorte oscilatorio no lineal) desplazan estos polos, alejando a la planta de un comportamiento integrador ideal.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/mapa\_pz\_sistema\_natural\_polos\_baja\_frec.pdf}
+  	\caption{Detalle de los polos del sistema mecánico natural a baja frecuencia. La fricción viscosa y el torque gravitacional desvían la dinámica respecto a la de una inercia pura.}
+	\label{fig:mapa_pz_mecanico_natural}
+\end{figure}
+
+Para lograr que la planta responda idealmente como una inercia pura ($J_{eq}\dot{\omega}_m = T_{m}^{*\prime}$), el Modulador de Torque aplica \textit{feedback linearization}. Utilizando los estados mecánicos medidos por el encoder ($\theta_m$ y $\omega_m$), se anulan estas perturbaciones internas sumando términos de \textit{feedforward} a la orden del PID:
 
 \begin{itemize}
     \item \textbf{Fricción Viscosa:} Se compensa sumando $\hat{b}_{eq} \omega_m(t)$ usando el valor nominal estimado. El pequeño error residual por incertidumbre paramétrica en la carga será absorbido naturalmente por la acción Integral (I) del PID externo.
@@ -3825,10 +3860,162 @@ Igualando el requerimiento total de torque a la expresión compacta de la PMSM y
     \label{eq:modulador_torque_final}
 \end{equation}
 
+La efectividad de esta linealización por retroalimentación sobre la dinámica mecánica se evidencia radicalmente en la reubicación modal del sistema. Como ilustra la Figura~\ref{fig:mapa_pz_torque_compensado}, la inyección del par precalculado anula por completo las dinámicas disipativas y restauradoras de la planta física, forzando a los polos mecánicos a desplazarse exactamente hacia el origen del plano complejo ($s=0$), transformando la planta en un sistema integrador puro.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/mapa\_pz\_sistema\_con\_torque\_compensado.pdf}
+  	\caption{Mapa de polos mecánicos tras aplicar el Modulador de Torque con compensación de fricción y gravedad. Los polos convergen al origen, configurando una planta integradora ideal ($1/J_{eq}s$).}
+	\label{fig:mapa_pz_torque_compensado}
+\end{figure}
+
+El impacto de esta síntesis se comprueba nítidamente en el dominio del tiempo al evaluar la respuesta de la velocidad rotacional del eje ante un escalón de torque (Figura~\ref{fig:rta_step_torque_compensado}). En el sistema natural a lazo abierto, la velocidad oscila y decae hasta anularse, indicando que el accionamiento ha alcanzado una nueva posición de equilibrio estático donde el torque inyectado apenas iguala a la fuerza de gravedad opuesta. Por el contrario, al activar el Modulador de Torque con la compensación \textit{feedforward}, la gravedad se vuelve "invisible" para la dinámica: la velocidad crece de forma lineal, constante e indefinida en forma de rampa. Esto confirma empíricamente que el controlador externo goberna ahora una inercia pura libre de perturbaciones.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/fig\_rta\_step\_torque\_natural\_vs\_compensado.pdf}
+  	\caption{Comparativa de la respuesta de velocidad ante un escalón de torque: el sistema natural oscila hasta detenerse contrarrestando la gravedad, mientras que el sistema compensado responde como una inercia ideal (rampa de velocidad continua).}
+	\label{fig:rta_step_torque_compensado}
+\end{figure}
+
 La Ecuación~\eqref{eq:modulador_torque_final} define estructuralmente al bloque \textbf{Modulador de Torque}. Sus \textbf{entradas} son la acción del lazo PID ($T_m^{*\prime}$) y los estados sensados ($\omega_m$, $\theta_m$, $i_{ds}^r$), mientras que su \textbf{salida} es la referencia de corriente comandada $i_{qs}^{r*}$.
 
 \paragraph{Impacto de la estrategia de magnetización ($i_{ds}^{r*}(t)$):}
 La Ecuación~\eqref{eq:modulador_torque_final} expone cómo el estado de la corriente del eje directo ($i_{ds}^{r}$) altera la ganancia efectiva de torque. Operar a \textbf{Campo Orientado} ($i_{ds}^{r*} = 0$) anula la reluctancia en el denominador y maximiza la eficiencia nominal. Por el contrario, aplicar \textbf{Debilitamiento de Campo} ($i_{ds}^{r*} < 0$) reduce el denominador (dado que $L_d > L_q$), demandando mayor corriente de cuadratura para generar el mismo torque, lo cual permite alcanzar mayores velocidades a expensas de sacrificar la eficiencia energética.
+
+\subsection*{2. Controlador Externo de Movimiento (Posición/Velocidad)}
+
+Una vez diseñado el Modulador de Torque que anula las dinámicas no lineales intrínsecas, la planta física percibida por el lazo de control externo se ha simplificado a un sistema puramente inercial. En el dominio de Laplace, la relación entre el torque de comando bruto $T_m^{*\prime}(s)$ y la posición angular del eje del motor $\Theta_m(s)$ se modela como un doble integrador:
+
+\begin{equation}
+    J_{eq} s^2 \Theta_m(s) = T_m^{*\prime}(s)
+    \label{eq:planta_doble_integrador}
+\end{equation}
+
+Para garantizar un seguimiento sin error en estado estacionario y otorgar un rechazo robusto ante posibles perturbaciones no modeladas, se propone el diseño de un Controlador Proporcional-Integral-Derivativo (PID) en el lazo externo. 
+
+Se define el error de seguimiento posicional como $E_\theta(s) = \Theta_m^*(s) - \Theta_m(s)$. La ley de control PID que computa el esfuerzo de torque bruto adquiere la siguiente estructura:
+\begin{equation}
+    T_m^{*\prime}(s) = \left( b_a s + K_{sa} + \frac{K_{sia}}{s} \right) E_\theta(s)
+    \label{eq:ley_control_pid}
+\end{equation}
+donde $b_a$ representa la ganancia derivativa (amortiguamiento inyectado o control de velocidad), $K_{sa}$ es la ganancia proporcional (rigidez del lazo de posición), y $K_{sia}$ es la ganancia de la acción integral pura.
+
+Sustituyendo la ley de control~\eqref{eq:ley_control_pid} en la dinámica de la planta~\eqref{eq:planta_doble_integrador}, la función de transferencia de lazo cerrado para el seguimiento de posición resulta:
+\begin{equation}
+    G_{cl,\theta}(s) = \frac{\Theta_m(s)}{\Theta_m^*(s)} = \frac{b_a s^2 + K_{sa} s + K_{sia}}{J_{eq} s^3 + b_a s^2 + K_{sa} s + K_{sia}}
+    \label{eq:transferencia_lazo_cerrado_pid}
+\end{equation}
+
+\subsubsection*{2.a) Sintonía Serie del Controlador PID}
+
+Para determinar las ganancias del controlador, se emplea el método de sintonía para filtros tipo Butterworth de tercer orden, el cual garantiza una distribución geométrica balanceada de los polos. El polinomio característico deseado $\Delta_{des}(s)$ impone que las raíces se sitúen a una misma distancia radial $\omega_n$ del origen:
+\begin{equation*}
+    \Delta_{des}(s) = J_{eq} (s + \omega_n)\left[s^2 + 2\zeta \omega_n s + \omega_n^2\right]
+\end{equation*}
+
+Definiendo la relación del factor de amortiguamiento como $\zeta = \frac{n-1}{2}$, el polinomio se reescribe como:
+\begin{equation}
+    \Delta_{des}(s) = J_{eq} \left[ s^3 + n \omega_n s^2 + n \omega_n^2 s + \omega_n^3 \right]
+    \label{eq:polinomio_deseado_pid}
+\end{equation}
+
+Igualando los coeficientes del denominador de la Ecuación~\eqref{eq:transferencia_lazo_cerrado_pid} con los del polinomio deseado~\eqref{eq:polinomio_deseado_pid}, se obtienen directamente las ecuaciones de síntesis analítica para las ganancias:
+\begin{equation}
+    b_a = J_{eq} \cdot n \cdot \omega_n, \qquad K_{sa} = J_{eq} \cdot n \cdot \omega_n^2, \qquad K_{sia} = J_{eq} \cdot \omega_n^3
+    \label{eq:ganancias_pid}
+\end{equation}
+
+De acuerdo con las especificaciones del diseño, se impone un factor de amortiguamiento $\zeta = 0.75$ (lo que arroja $n = 2.5$) y una frecuencia natural para el lazo de posición $\omega_n = 800\,\text{rad/s}$. Evaluando las Ecuaciones~\eqref{eq:ganancias_pid} con la inercia equivalente nominal a temperatura ambiente ($J_{eq} \approx 1.978 \times 10^{-5}\,\si{\kilogram\meter\squared}$), se obtienen las siguientes ganancias numéricas:
+\begin{align*}
+    b_a &= 0.0396\, N.m/(rad/s) \\
+    K_{sa} &= 31.6556\, N.m/rad \\
+    K_{sia} &= 10129.78\, N.m/(rad.s)
+\end{align*}
+
+\paragraph{Implementación en Simulink sin derivador puro.}
+Si bien la formulación matemática de la Ecuación~\eqref{eq:ley_control_pid} plantea un bloque derivador ($s$), su implementación directa en la práctica es indeseable ya que amplificaría el ruido de alta frecuencia proveniente de los sensores. 
+
+Para evitar este inconveniente y garantizar una operación estable, la arquitectura de control se reestructura matemáticamente aprovechando que la velocidad rotacional $\omega_m(t)$ ya es una variable de estado medida. Como se observa en el esquema de la Figura~\ref{fig:diagrama_controlador_pid}, el controlador PID se implementa dividiendo la acción mediante el uso de dos bloques integradores puros dispuestos en cascada. La primera etapa procesa el error posicional generando una consigna de velocidad intermedia, y esta, al ser contrastada con la velocidad real, permite que el lazo secundario compute de forma robusta la orden de torque final $T_m^{*\prime}$.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/diagrama\_controlador\_pid.pdf}
+  	\caption{Implementación del controlador PID de movimiento en Simulink. La estructura utiliza integradores en cascada y una consigna de velocidad intermedia para evitar el uso de derivadores puros.}
+	\label{fig:diagrama_controlador_pid}
+\end{figure}
+
+A fin de validar empíricamente la dinámica interna de este controlador previo a su acoplamiento con la trayectoria espacial, se analiza su respuesta transitoria frente a una consigna en escalón puramente de velocidad. Tal como lo evidencia la Figura~\ref{fig:respuesta_escalon_vel}, el núcleo del controlador gobierna de manera eficaz la inercia del sistema, logrando un seguimiento ágil, con un nivel de amortiguamiento óptimo y un tiempo de establecimiento mínimo que revalida las asunciones teóricas de la sintonía.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/respuesta\_escalon\_velocidad\_pid.pdf}
+    \caption{Respuesta del lazo de control frente a una entrada en escalón de velocidad.}
+	\label{fig:respuesta_escalon_vel}
+\end{figure}
+
+\subsubsection*{2.b) Jerarquía Espectral y Separación de Lazos}
+
+El éxito de la arquitectura de Control en Cascada reside en mantener una separación rigurosa de las escalas dinámicas (jerarquía espectral) para evitar la interacción destructiva entre los bucles. La Figura~\ref{fig:jerarquia_polos_global} expone el mapa de polos unificado que valida esta arquitectura.
+
+El Modulador de Corrientes (lazo interno) ubica de forma aislada la dinámica eléctrica rápida en la coordenada $s = -5000\,\text{rad/s}$. Por su parte, la sintonía del controlador PID impuso la dinámica mecánica dominante (lazo externo) en las cercanías de la coordenada $s \approx -800\,\text{rad/s}$. Esta separación asegura que el lazo interno es más de $6$ veces más veloz que el externo, cumpliendo matemáticamente con la premisa fundacional del diseño: el controlador de posición puede operar asumiendo que sus comandos de torque se ejecutan con retardo nulo.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/jerarquia\_polos\_global.pdf}
+  	\caption{Jerarquía espectral de la arquitectura en cascada. Se observa la clara separación entre la dinámica dominante impuesta por el PID ($\omega_n=800$) y el lazo ultrarrápido de corriente ($p_c=-5000$).}
+	\label{fig:jerarquia_polos_global}
+\end{figure}
+
+\subsubsection*{2.c) Análisis de Robustez Paramétrica y Respuesta Temporal}
+
+Debido a que el controlador PID fue sintonizado asumiendo la inercia nominal ($J_{eq}$), es crítico evaluar la migración de los polos de lazo cerrado frente a variaciones extremas en la masa de la carga útil ($m_l$). La Figura~\ref{fig:migracion_pid_robustez} ilustra el desplazamiento de las raíces del polinomio característico al transitar desde el estado de carga vacía hasta la carga máxima de diseño. 
+
+Si bien el incremento de masa rotacional reduce el amortiguamiento relativo del sistema y desplaza los polos conjugados levemente hacia el eje imaginario, se verifica que la totalidad de los polos permanece fuertemente anclada en el semiplano izquierdo ($\sigma < -400\,\text{rad/s}$ en el peor caso). Esta contención espectral certifica que \textbf{la estabilidad asintótica del lazo cerrado está plenamente garantizada} frente a toda la envolvente de incertidumbre paramétrica.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/migracion\_pid\_robustez.pdf}
+  	\caption{Migración de los polos dominantes del lazo PID ante variaciones de la inercia equivalente de carga ($J_{eq}$). La estabilidad asintótica se conserva en todos los escenarios.}
+	\label{fig:migracion_pid_robustez}
+\end{figure}
+
+\subsubsection*{2.d) Interfaz de Referencia (Set-Point) en Coordenadas Articulares}
+
+Finalmente, para completar la arquitectura del sistema de control y habilitar su utilidad práctica, es mandatorio establecer la interfaz de entrada o \textit{set-point}. Dado que el objetivo macro de la aplicación mecatrónica es gobernar el movimiento del efector final del brazo robótico (la articulación), resulta imperativo que los comandos provenientes del usuario o de los algoritmos de planificación de trayectorias (Cinemática Directa/Inversa) se expresen de manera nativa en \textbf{coordenadas articulares} ($q_1^*(t)$).
+
+No obstante, el Controlador PID de movimiento ha sido diseñado y sintonizado matemáticamente para operar sobre las variables referidas al eje rápido del motor ($\theta_m, \omega_m$). Por consiguiente, se incorpora un bloque de ganancia en el puerto de entrada del sistema de control que escala la referencia articular demandada mediante la relación de transmisión constante del engranaje reductor planetario ($r$):
+
+\begin{equation}
+    \theta_m^*(t) = r \cdot q_1^*(t)
+    \label{eq:setpoint_transformacion}
+\end{equation}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/set\_point.pdf}
+  	\caption{Implementacion en Simulink de bloque set point.}
+	\label{fig:set_point}
+\end{figure}
+
+Este bloque de adaptación permite que el marco de referencia superior trabaje exclusivamente en el dominio físico real de la carga útil (grados o radianes efectivos del brazo articulado), delegando al esquema en cascada la gestión transparente e interna de las amplificadas excursiones angulares desarrolladas por el rotor de la máquina síncrona.
+
+La eficiencia final del diseño se consolida al evaluar el seguimiento de trayectoria posicional. La Figura~\ref{fig:respuesta_escalon_pid_posicion} exhibe la respuesta temporal del sistema frente a un comando en escalón normalizado ($\theta_m^* = 1$). El accionamiento logra un tiempo de establecimiento extraordinariamente veloz, acompañado de un sobreimpulso contenido que respeta las especificaciones del diseño. Incluso ante las máximas variaciones de inercia, la acción Integral erradica cualquier error de estado estacionario, confirmando que el Modulador de Torque y el Controlador PID operan en perfecta sinergia.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]
+	{img/respuesta\_escalon\_posicion\_pid.pdf}
+    \caption{Respuesta del lazo de control frente a una entrada en escalón de posicion.}
+	\label{fig:respuesta_escalon_pid_posicion}
+\end{figure}
 
 % ---------------------------------------------------------
 % CONCLUSIONES
