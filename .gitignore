@@ -8,3 +8,5 @@ slprj/
 # Caché de carpetas de Windows
 Thumbs.db
 ehthumbs.db
+# Resultados pesados generados por simulaciones
+docs/img/resultados/**/*.mat

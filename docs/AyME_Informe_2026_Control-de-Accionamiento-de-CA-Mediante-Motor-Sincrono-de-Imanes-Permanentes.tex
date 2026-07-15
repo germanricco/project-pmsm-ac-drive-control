@@ -178,9 +178,7 @@
 
 En este informe se desarrolla el modelado, análisis, simulación y posterior diseño de control de un accionamiento electromecánico de corriente alterna basado en un motor sincrónico de imanes permanentes. El sistema bajo estudio está compuesto por una máquina PMSM trifásica alimentada por un inversor, acoplada mediante una transmisión planetaria a una carga mecánica equivalente de un grado de libertad. El objetivo general del proyecto es obtener un modelo dinámico del sistema físico, analizar su comportamiento a lazo abierto y diseñar posteriormente una estrategia de control de movimiento en cascada con control vectorial.
 
-En esta etapa se presenta la definición del sistema y se desarrolla el modelo matemático equivalente del subsistema mecánico completo, compuesto por el rotor del motor, la transmisión rígida y la carga. Luego se incorpora el subsistema electromagnético de la PMSM en coordenadas \(qd0\), junto con el modelo térmico del bobinado de estator. Se obtiene el modelo dinámico global no lineal, su linealización Jacobiana en un punto genérico de operación y un modelo LTI equivalente aumentado mediante linealización por retroalimentación, imponiendo la condición de campo orientado \(i_{ds}^{r}(t)\equiv0\). Este desarrollo constituye la base para los análisis posteriores de estabilidad, controlabilidad, observabilidad y diseño del controlador de movimiento.
 
-\textit{Nota: este resumen debe actualizarse al finalizar el informe completo, incorporando los resultados de simulación, control y conclusiones finales.}
 
 % ---------------------------------------------------------
 % INTRODUCCIÓN
@@ -189,7 +187,6 @@ En esta etapa se presenta la definición del sistema y se desarrolla el modelo m
 
 El presente Proyecto Global Integrador tiene como objetivo aplicar los contenidos de Automática y Máquinas Eléctricas al modelado y control de un sistema mecatrónico simplificado. El sistema estudiado corresponde a un accionamiento de corriente alterna de cuatro cuadrantes, basado en un motor sincrónico de imanes permanentes (PMSM) alimentado por un inversor trifásico y acoplado a una carga mecánica mediante una caja reductora planetaria. La variable principal a controlar será la posición angular de la carga, considerando además los efectos de fricción, gravedad, perturbaciones externas, dinámica eléctrica y calentamiento del bobinado.
 
-El trabajo se organiza siguiendo la guía del Proyecto Global Integrador \cite{guia_trabajo}. En primer lugar se obtiene el modelo mecánico equivalente del actuador, la transmisión y la carga, referido al eje del motor. Luego se incorpora el modelo electromagnético de la PMSM, las transformaciones de Park, el modelo térmico, la linealización del sistema y el modelo LTI equivalente para análisis. En las secciones posteriores se desarrollarán el análisis de estabilidad, controlabilidad y observabilidad, el diseño del control vectorial y del controlador de movimiento, la implementación discreta y la verificación mediante simulaciones. La estructura y el formato general del presente informe siguen los lineamientos indicados por la cátedra para la presentación del Informe Técnico \cite{guia_informe}.
 
 % ---------------------------------------------------------
 % DESARROLLO
@@ -2780,9 +2777,6 @@ Por lo tanto, la temperatura del motor no puede ser estabilizada a un estado arb
 Aunque el sistema de orden 5 no es completamente controlable desde una única tensión, el subsistema electromecánico de posicionamiento (orden 3) sí lo es, cumpliendo el objetivo principal del diseño. Los estados incontrolables remanentes ($i_{ds}^r(t)$ y $T_s^\circ(t)$) poseen autovalores en el semiplano izquierdo, por lo que decaen y se estabilizan naturalmente. En rigor analítico, el accionamiento se clasifica como un sistema \textbf{estabilizable}, lo que permite proceder con el diseño del controlador de movimiento a lazo cerrado con total garantía de viabilidad física y matemática.
 
 
-============== AGREGAR PUNTO 6 A CONTINUACION ================
-
-
 \subsection{Respuesta dinámica en el dominio temporal}
 
 En esta sección se analiza la respuesta dinámica del sistema en el dominio temporal, comparando el modelo no lineal completo desacoplado mediante ley de control no lineal con el modelo LTI equivalente aumentado. Para ello se aplican consignas de tensión en el eje $q$ y perturbaciones de torque de carga, evaluando la evolución de las variables internas del sistema y la coherencia entre ambos modelos.
@@ -3732,7 +3726,6 @@ constituyendo una limitación de la aproximación lineal frente al modelo no
 lineal.
 
 
-======== HASTA ACA. SIGO CON LA SECCION DE DISEÑO ==========
 
 \section{Diseño, Análisis, Simulación e Implementación de CONTROLADOR de Movimiento en Cascada con Modulador de Torque}
 
@@ -4424,7 +4417,7 @@ Al ubicar los autovalores de $[A - \mathbf{K}_e C]$ fuertemente en el semiplano 
 	\label{fig:diagrama_observador}
 \end{figure}
 
-=============== COMPLETAR ================
+
 \subsection{4. Simulación en tiempo continuo con modelo completo No Lineal}
 
 \begin{figure}[H]
@@ -4435,8 +4428,313 @@ Al ubicar los autovalores de $[A - \mathbf{K}_e C]$ fuertemente en el semiplano 
 	\label{fig:diagrama_sistema_control_completo}
 \end{figure}
 
+\subsubsection{Seguimiento de consignas de movimiento}
+Se evaluó el seguimiento de una consigna de posición articular
+$q^{*}(t)$ con perfil trapezoidal. La articulación parte del reposo,
+realiza una revolución completa durante los primeros $5\,\mathrm{s}$,
+permanece en $2\pi\,\mathrm{rad}$ hasta $t=10\,\mathrm{s}$ y retorna a
+la posición inicial durante los últimos $5\,\mathrm{s}$. El perfil
+utilizado puede expresarse como
 
-// ============= CONTINUO ===============
+\begin{equation}
+	q^{*}(t)=
+	\begin{cases}
+		\dfrac{2\pi}{5}\,t,
+		& 0 \leq t < 5, \\[2mm]
+		2\pi,
+		& 5 \leq t < 10, \\[2mm]
+		2\pi-\dfrac{2\pi}{5}(t-10),
+		& 10 \leq t \leq 15.
+	\end{cases}
+\end{equation}
+
+En la Figura~\ref{fig:seguimiento_pos_vel} se presentan las respuestas
+de posición y velocidad. La posición real y la estimada por el
+observador se superponen prácticamente con la referencia durante toda
+la simulación. En velocidad se obtiene el perfil rectangular, con valores aproximadamente
+constantes durante las rampas y velocidad nula durante el intervalo de
+permanencia.
+
+\begin{figure}[!htbp]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_original/figuras_pdf/01_posicion_real_estimada.pdf}
+		\caption{Posición articular real, estimada y de referencia.}
+		\label{fig:posicion_4a}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_original/figuras_pdf/02_velocidad_real_estimada.pdf}
+		\caption{Velocidad real, estimada y de referencia.}
+		\label{fig:velocidad_4a}
+	\end{subfigure}
+	
+	\caption{Seguimiento de la consigna de movimiento.}
+	\label{fig:seguimiento_pos_vel}
+\end{figure}
+
+Los errores mostrados en la Figura~\ref{fig:errores_4a} permanecen
+prácticamente nulos en régimen. El error de seguimiento de posición
+presenta valores máximos del orden de $5\times10^{-4}\,\mathrm{rad}$,
+concentrados en los instantes en los que cambia la pendiente de la
+consigna. De forma similar, el error de estimación de velocidad sólo
+presenta transitorios breves en $t=0$, $5$, $10$ y $15\,\mathrm{s}$,
+convergiendo rápidamente a cero.
+
+\begin{figure}[!htbp]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_original/figuras_pdf/03_errores_observador.pdf}
+		\caption{Errores del observador reducido.}
+		\label{fig:errores_observador_4a}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_original/figuras_pdf/04_error_seguimiento.pdf}
+		\caption{Error de seguimiento de posición.}
+		\label{fig:error_posicion_4a}
+	\end{subfigure}
+	
+	\caption{Errores de estimación y seguimiento obtenidos durante la
+		simulación.}
+	\label{fig:errores_4a}
+\end{figure}
+
+Como consecuencia de los cambios instantáneos de la consigna de
+velocidad, se solicitan aceleraciones elevadas en los instantes de
+transición. Esto produce los picos de torque observados en la
+Figura~\ref{fig:torques_4a}. Aunque durante los tramos de velocidad
+constante los torques permanecen reducidos, el torque calculado en la
+salida de la caja reductora alcanza valores cercanos a
+$\pm130\,\mathrm{N\,m}$, superando transitoriamente el límite pico de
+$\pm45\,\mathrm{N\,m}$.
+
+\begin{figure}[!htbp]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_original/figuras_pdf/05a_torque_motor.pdf}
+		\caption{Torque electromagnético del motor.}
+		\label{fig:torque_motor_4a}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_original/figuras_pdf/05b_torque_salida.pdf}
+		\caption{Torque calculado en la salida de la caja reductora.}
+		\label{fig:torque_salida_4a}
+	\end{subfigure}
+	
+	\caption{Torques requeridos para cumplir la consigna de movimiento.}
+	\label{fig:torques_4a}
+\end{figure}
+
+El mismo comportamiento se refleja en las corrientes mostradas en la
+Figura~\ref{fig:variables_electricas_termicas_4a}. La componente $i_q$,
+responsable de la generación del torque electromagnético, concentra los
+principales transitorios, mientras que $i_d$ e $i_0$ se mantienen próximas
+a cero. Esto resulta consistente con la estrategia de control de campo
+orientado y con la operación equilibrada de la máquina. En coordenadas
+trifásicas, las corrientes presentan un comportamiento balanceado, aunque
+con picos elevados en los cambios de velocidad.
+
+Finalmente, las tensiones trifásicas solicitadas también presentan picos
+en los instantes de cambio de velocidad. La temperatura del estator
+permanece aproximadamente entre $45\,^{\circ}\mathrm{C}$ y
+$56\,^{\circ}\mathrm{C}$ durante el intervalo analizado. Debido a la corta
+duración de la simulación, este resultado permite observar la tendencia
+térmica inicial, pero no representa todavía la condición de equilibrio
+térmico del accionamiento.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_original/figuras_pdf/06_corrientes_qd0.pdf}
+		\caption{Corrientes en coordenadas $qd0$.}
+		\label{fig:corrientes_qd0_4a}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_original/figuras_pdf/07_corrientes_abc.pdf}
+		\caption{Corrientes trifásicas del estator.}
+		\label{fig:corrientes_abc_4a}
+	\end{subfigure}
+	
+	\vspace{0.35cm}
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_original/figuras_pdf/08_tensiones_abc.pdf}
+		\caption{Tensiones trifásicas solicitadas.}
+		\label{fig:tensiones_abc_4a}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_original/figuras_pdf/09_temperatura.pdf}
+		\caption{Temperatura del estator.}
+		\label{fig:temperatura_4a}
+	\end{subfigure}
+	
+	\caption{Corrientes, tensiones solicitadas y evolución de la
+		temperatura del estator durante el seguimiento de la consigna.}
+	\label{fig:variables_electricas_termicas_4a}
+\end{figure}
+
+Entonces, el sistema presenta un seguimiento preciso de la posición
+y una adecuada convergencia del observador. Sin embargo, las
+discontinuidades de la consigna de velocidad producen picos elevados de
+torque, corriente y tensión. Por lo tanto, aunque el comportamiento del
+lazo de control es estable, será necesario limitar la aceleración o
+suavizar la trayectoria para respetar los límites físicos del
+accionamiento.
+
+\FloatBarrier
+\subsubsection{Rechazo a perturbaciones}
+\label{sec:rechazo_perturbaciones}
+
+Para evaluar la capacidad de rechazo a perturbaciones se mantuvo una
+referencia de posición nula, $q^{*}(t)=0$, y se aplicó un escalón de torque
+de contacto de $T_{ld}=5~\mathrm{N\,m}$ en $t=6.5~\mathrm{s}$. La simulación
+se realizó para el caso nominal y para las combinaciones extremas de carga
+útil y fricción viscosa, manteniendo el controlador ajustado con los
+parámetros nominales.
+
+La Figura~\ref{fig:p4b_posicion_casos} muestra la desviación de la posición
+de la carga ante la perturbación. Las respuestas correspondientes a los
+distintos casos resultan prácticamente coincidentes, lo que indica que las
+variaciones de masa y fricción consideradas no modifican significativamente
+el comportamiento del sistema. Al producirse el escalón aparece una
+desviación transitoria del orden de $10^{-5}~\mathrm{rad}$ y, posteriormente,
+la posición se estabiliza con un pequeño error residual del orden de
+$10^{-6}~\mathrm{rad}$.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\linewidth]
+	{img/resultados/punto_4b_perturbacion/figuras_pdf/01_posicion_real_casos.pdf}
+	\caption{Desviación de la posición de la carga ante la perturbación para
+		los distintos valores de carga útil y fricción viscosa.}
+	\label{fig:p4b_posicion_casos}
+\end{figure}
+
+En la Figura~\ref{fig:p4b_velocidad_casos} se observa la velocidad de la
+carga. La aplicación de la perturbación produce un transitorio breve, cuya
+amplitud cambia ligeramente con los parámetros mecánicos. Sin embargo, en
+todos los casos la velocidad converge nuevamente a cero, por lo que la
+perturbación no genera un movimiento permanente de la carga.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\linewidth]
+	{img/resultados/punto_4b_perturbacion/figuras_pdf/03_velocidad_real_casos.pdf}
+	\caption{Velocidad de la carga ante la perturbación para los distintos
+		casos considerados.}
+	\label{fig:p4b_velocidad_casos}
+\end{figure}
+
+Para analizar con mayor detalle el comportamiento del sistema y del
+observador se presentan, en la Figura~\ref{fig:p4b_detalle_posicion}, la
+posición del eje del motor y su correspondiente error de estimación. Al
+aplicarse el escalón, la posición real y la estimada presentan un transitorio
+rápido. No obstante, mientras la posición estimada retorna aproximadamente
+a la referencia, la posición real permanece desplazada.
+
+Como consecuencia, el error de posición del observador converge a un valor
+aproximado de $-2.1\times10^{-4}~\mathrm{rad}$ referido al eje del motor.
+Este desplazamiento equivale, al considerar la relación de reducción, al
+pequeño error residual observado en la posición de la carga.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4b_perturbacion/figuras_pdf/08_nominal_posicion_motor_zoom.pdf}
+		\caption{Posición real, estimada y de referencia del motor.}
+		\label{fig:p4b_posicion_motor_zoom}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4b_perturbacion/figuras_pdf/09_nominal_error_posicion_observador_zoom.pdf}
+		\caption{Error de estimación de posición.}
+		\label{fig:p4b_error_posicion_zoom}
+	\end{subfigure}
+	
+	\caption{Detalle de la respuesta de posición del motor y del error del
+		observador ante la perturbación de carga.}
+	\label{fig:p4b_detalle_posicion}
+\end{figure}
+
+La respuesta de velocidad se presenta en la
+Figura~\ref{fig:p4b_detalle_velocidad}. La velocidad real y la estimada
+siguen trayectorias muy próximas y ambas retornan rápidamente a cero luego
+del transitorio. El error de velocidad presenta inicialmente una variación
+de mayor amplitud, pero se atenúa completamente en aproximadamente
+$10~\mathrm{ms}$.
+
+Por lo tanto, el observador reproduce adecuadamente la velocidad del motor
+en régimen permanente, aunque no elimina el error estacionario en la
+estimación de posición.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4b_perturbacion/figuras_pdf/10_nominal_velocidad_motor_zoom.pdf}
+		\caption{Velocidad real, estimada y de referencia del motor.}
+		\label{fig:p4b_velocidad_motor_zoom}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4b_perturbacion/figuras_pdf/11_nominal_error_velocidad_observador_zoom.pdf}
+		\caption{Error de estimación de velocidad.}
+		\label{fig:p4b_error_velocidad_zoom}
+	\end{subfigure}
+	
+	\caption{Detalle de la respuesta de velocidad del motor y del error del
+		observador ante la perturbación de carga.}
+	\label{fig:p4b_detalle_velocidad}
+\end{figure}
+
+Por lo tanto, el sistema permanece estable y rechaza rápidamente el efecto
+dinámico de la perturbación para todas las combinaciones de carga y fricción
+consideradas. La velocidad retorna a cero, pero se conserva una pequeña
+desviación de posición debido al error estacionario del observador. Este
+resultado motiva la incorporación posterior de una acción integral en el
+observador, con el objetivo de eliminar el error de estimación ante
+perturbaciones constantes.
+
+\FloatBarrier
+
+
 \subsection*{5. Verificación de Desempeño y Mejoras}
 \subsubsection*{5.a Verificación de Limites de Operación}
 
@@ -4681,9 +4979,6 @@ Al igual que con los modelos de medición, esta parametrización permite realiza
 % ---------------------------------------------------------
 \section{Conclusiones}
 
-Hasta esta etapa se obtuvo el modelo mecánico equivalente referido al eje del motor y se incorporaron los subsistemas electromagnético y térmico de la PMSM. El modelo global no lineal permite representar el acoplamiento entre tensiones, corrientes, torque electromagnético, movimiento mecánico y temperatura del estator. Además, se obtuvo un modelo LPV mediante linealización Jacobiana y un modelo LTI equivalente aumentado aplicando una estrategia de campo orientado con \(i_{ds}^{r}(t)\equiv0\) y leyes de desacoplamiento en los ejes \(d\) y \(q\). Este modelo LTI será utilizado como base para el análisis a lazo abierto y el posterior diseño de control.
-
-\textit{Nota: esta sección debe actualizarse al finalizar el proyecto completo, incorporando conclusiones sobre control, observador, discretización y resultados de simulación.}
 
 % ---------------------------------------------------------
 % REFERENCIAS

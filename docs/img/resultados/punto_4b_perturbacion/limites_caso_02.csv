@@ -1,0 +1,12 @@
+Variable,Valor,Limite,Margen,Unidad,Cumple
+Error máximo de seguimiento de posición de carga,1.7191079909879e-06,NaN,NaN,rad,Sin límite directo
+Velocidad máxima de carga,1.88594857777304e-06,6.28,6.27999811405142,rad/s,Sí
+Velocidad máxima del motor,0.000226313829332765,691.15,691.149773686171,rad/s,Sí
+Torque de salida RMS,3.76386252464143,17,13.2361374753586,N*m rms,Sí
+Torque de salida pico,5.00011736509973,45,39.9998826349003,N*m pico,Sí
+Corriente de fase RMS global máxima,0.48800531434646,0.4,-0.0880053143464597,A rms,NO
+Corriente de fase RMS móvil máxima (ventana 20 ms),0.578703541507483,2,1.42129645849252,A rms (20 ms),Sí
+Corriente instantánea pico,0.578751516930025,NaN,NaN,A pico,Sin límite directo
+Tensión línea-línea RMS máxima (nominal),0.815634074940779,30,29.1843659250592,V rms,Sí
+Tensión línea-línea RMS máxima (absoluta),0.815634074940779,48,47.1843659250592,V rms,Sí
+Temperatura máxima del estator,46.974943986716,115,68.025056013284,degC,Sí
