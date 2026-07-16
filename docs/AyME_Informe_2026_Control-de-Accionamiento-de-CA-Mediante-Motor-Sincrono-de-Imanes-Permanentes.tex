@@ -4974,6 +4974,151 @@ La arquitectura final de la planta de potencia, integrando tanto la limitación 
 
 Al igual que con los modelos de medición, esta parametrización permite realizar estudios comparativos multiplicando el ancho de banda del inversor ($\omega_n \rightarrow \omega_n \times 2 \dots$) para analizar su influencia sobre la estabilidad transitoria general del accionamiento.
 
+\section*{6. Implementación Digital (Discretización del Controlador)}
+
+Hasta este punto, el modelado, análisis y diseño de la arquitectura de control en cascada se han concebido y validado matemáticamente en el dominio del tiempo continuo ideal ($t \in \mathbb{R}$). No obstante, la arquitectura mecatrónica final demanda que los algoritmos de control (Lazos de Corriente, Controlador PID y Observador de Estado) se ejecuten en una plataforma de hardware digital (como un DSP o un microcontrolador).
+
+En esta sección, se procede a discretizar el controlador completo. Este proceso implica la transición de ecuaciones diferenciales continuas a ecuaciones en diferencias finitas, evaluadas en instantes de muestreo discretos $t_k \equiv k \cdot T_s$, con $k \in \mathbb{Z}$. El objetivo principal es garantizar que la estabilidad y el rendimiento obtenidos en la teoría continua se preserven en la implementación de software real.
+
+\subsection*{6.1. Selección del Período de Muestreo y Retenedor de Orden Cero}
+
+El primer paso crítico en la digitalización es determinar la tasa a la cual el microcontrolador leerá los sensores y actualizará las señales de mando. Para evitar la pérdida de información y el fenómeno de solapamiento espectral (\textit{aliasing}), se recurre al criterio teórico de Nyquist-Shannon. 
+
+En la práctica de servoaccionamientos, este criterio exige que la frecuencia de muestreo ($f_s = 1/T_s$) sea al menos 10 veces mayor que la frecuencia de la dinámica dominante más rápida del sistema continuo ($\omega_{max}$). Analíticamente, esto se expresa como:
+
+\begin{equation}
+    f_s \ge 10 \cdot f_{max} \quad \implies \quad \frac{1}{T_s} \ge 10 \cdot \frac{\omega_{max}}{2\pi} \quad \implies \quad T_s \le \frac{2\pi}{10 \cdot \omega_{max}}
+    \label{eq:criterio_nyquist}
+\end{equation}
+
+Revisando la jerarquía espectral diseñada en la Sección 5.2, la dinámica más veloz impuesta al sistema corresponde al lazo proporcional interno de corrientes, cuyo polo se ubicó intencionalmente en $p_c = -5000\,\text{rad/s}$. En consecuencia, la máxima frecuencia analógica que el controlador digital debe gobernar es $\omega_{max} = 5000\,\text{rad/s}$.
+
+Sustituyendo este valor en la inecuación de diseño~\eqref{eq:criterio_nyquist}, se obtiene el límite superior teórico para el período de muestreo:
+
+\begin{equation}
+    T_s \le \frac{2\pi}{10 \cdot 5000} \approx 0.0001256\,\text{s} \quad (125.6\,\mu\text{s})
+\end{equation}
+
+A fin de asegurar un margen de robustez operativo adecuado, minimizar el retardo de fase inducido por la digitalización e incrementar la fidelidad del seguimiento temporal, se adopta un período de muestreo por debajo de la cota teórica. El valor seleccionado para todo el ecosistema digital es:
+
+\begin{equation}
+    \boxed{ T_s = 0.0001\,\text{s} \quad \implies \quad f_s = 10\,\text{kHz} }
+    \label{eq:ts_adoptado}
+\end{equation}
+
+Para vincular el mundo continuo de la planta con el dominio discreto del controlador, es imperativo modelar la interfaz del actuador. Para ello, se incorpora a la salida del controlador un \textbf{Retenedor de Orden Cero (ZOH - Zero-Order Hold)}. Este bloque matemático garantiza que la señal de tensión calculada por el procesador se mantenga constante e inalterada durante toda la extensión del intervalo $T_s$, hasta la irrupción de la siguiente muestra computada.
+
+\subsection*{6.2. Discretización del Controlador PID}
+
+Para transponer la dinámica del controlador PID al entorno digital de manera precisa, se utilizará el \textbf{Método de Tustin} (también conocido como aproximación bilineal o integración numérica por trapecios). Este método destaca por mapear de forma estable y biyectiva el semiplano izquierdo del dominio de Laplace ($s$) hacia el interior del círculo unitario del dominio discreto ($z$).
+
+La transformación de Tustin obedece a la siguiente sustitución algebraica:
+
+\begin{equation}
+    s = \frac{2}{T_s} \frac{z-1}{z+1}
+    \label{eq:tustin_sustitucion}
+\end{equation}
+
+Tal como se expuso en la Sección 5.2, el controlador PID se implementó en Simulink segmentando su acción mediante integradores en cascada para evadir el uso de bloques derivadores puros (los cuales amplificarían el ruido de cuantización de los sensores de posición). Por consiguiente, la conversión de toda la arquitectura se reduce a la discretización estricta del bloque integrador fundamental. 
+
+Aplicando la transformación~\eqref{eq:tustin_sustitucion} a la función de transferencia de un integrador continuo $G_{int}(s) = 1/s$, se obtiene su equivalente exacto en el dominio digital:
+
+\begin{equation}
+    G_{int}(z) = \frac{1}{\left( \dfrac{2}{T_s} \dfrac{z-1}{z+1} \right)} = \frac{T_s}{2} \frac{z+1}{z-1}
+    \label{eq:integrador_tustin}
+\end{equation}
+
+Reemplazando los integradores continuos del diseño original por bloques discretos definidos por la Ecuación~\eqref{eq:integrador_tustin}, e incorporando el período de muestreo nominal $T_s = 0.0001\,\text{s}$, el algoritmo del PID queda listo para su compilación y ejecución recursiva.
+
+\begin{figure}[H]
+  \centering
+  \framebox{\parbox{0.8\textwidth}{\centering
+    \vspace{2.5cm}
+    \textbf{Image Placeholder} \\
+    \small\textit{img/diagrama\_pid\_discreto.pdf}
+    \vspace{2.5cm}
+  }}
+  \caption{Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text{s}$.}
+  \label{fig:diagrama_pid_discreto}
+\end{figure}
+
+\subsection*{6.3. Discretización del Observador Reducido de Estado}
+
+De manera idéntica al tratamiento del controlador, el Observador de Estado Extendido (Luenberger) diseñado para estimar la velocidad y la perturbación integral requiere ser traspasado al dominio $z$. 
+
+El primer paso consiste en muestrear formalmente sus señales de entrada (la posición medida por el encoder $\theta_m$ y la consigna de torque bruto $T_m^{*\prime}$) a través de módulos ZOH sincronizados al período $T_s$. Posteriormente, la dinámica interna de predicción y corrección del observador, la cual se basa en la acumulación de los errores de estimación, se digitaliza sustituyendo sus acumuladores analógicos por los integradores de Tustin derivados en la Ecuación~\eqref{eq:integrador_tustin}.
+
+Al unificar los subsistemas discretos del PID, el Modulador de Torque y el Observador, se obtiene el controlador global realista.
+
+\begin{figure}[H]
+  \centering
+  \framebox{\parbox{0.8\textwidth}{\centering
+    \vspace{2.5cm}
+    \textbf{Image Placeholder} \\
+    \small\textit{img/diagrama\_observador\_discreto.pdf}
+    \vspace{2.5cm}
+  }}
+  \caption{Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal.}
+  \label{fig:diagrama_observador_discreto}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \framebox{\parbox{0.8\textwidth}{\centering
+    \vspace{3cm}
+    \textbf{Image Placeholder} \\
+    \small\textit{img/controlador\_completo\_discretizado.pdf}
+    \vspace{3cm}
+  }}
+  \caption{Planta de control completa discretizada (real) interactuando con la planta física continua (ideal).}
+  \label{fig:controlador_completo_discretizado}
+\end{figure}
+
+\subsection*{6.4. Análisis de Desempeño: Controlador Continuo (Ideal) vs. Discreto (Real)}
+
+Para auditar el impacto del proceso de digitalización sobre las prestaciones del accionamiento, se efectúa un análisis comparativo en el dominio del tiempo frente a una exigente consigna de referencia.
+
+Bajo la operación del \textbf{Controlador Continuo Ideal} (Figura~\ref{fig:error_controlador_continuo}), el observador de estado y los lazos de corriente disponen de información sensada y actuación analógica instantánea de resolución temporal infinita. En este régimen utópico, el error transitorio y en estado estacionario resulta matemáticamente despreciable, rindiendo un seguimiento cuasi perfecto de la trayectoria cinemática deseada.
+
+\begin{figure}[H]
+  \centering
+  \framebox{\parbox{0.8\textwidth}{\centering
+    \vspace{2.5cm}
+    \textbf{Image Placeholder} \\
+    \small\textit{img/error\_controlador\_continuo.pdf}
+    \vspace{2.5cm}
+  }}
+  \caption{Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal.}
+  \label{fig:error_controlador_continuo}
+\end{figure}
+
+Por el contrario, al evaluar el sistema comandado por el \textbf{Controlador Discreto Real} operando a $10\,\text{kHz}$ (Figura~\ref{fig:error_controlador_discreto}), emerge un patrón de error transitorio evidente, caracterizado por una morfología de sierra o trapecio.
+
+\begin{figure}[H]
+  \centering
+  \framebox{\parbox{0.8\textwidth}{\centering
+    \vspace{2.5cm}
+    \textbf{Image Placeholder} \\
+    \small\textit{img/error\_controlador\_discreto.pdf}
+    \vspace{2.5cm}
+  }}
+  \caption{Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text{s}$). Se aprecia el error inducido por la retención y la integración numérica.}
+  \label{fig:error_controlador_discreto}
+\end{figure}
+
+La aparición de este error residual está fundamentada por tres fenómenos intrínsecos de la digitalización:
+\begin{enumerate}
+    \item \textbf{Efecto de Retención (ZOH):} Las señales analógicas se bloquean en forma de "escalones" durante la duración del intervalo $T_s$. Esta naturaleza escalonada imposibilita la corrección instantánea en los instantes inter-muestreo, permitiendo que la planta física (que sigue evolucionando continuamente) se desvíe levemente hasta la lectura de la siguiente muestra.
+    \item \textbf{Aproximación Numérica de Tustin:} Si bien la integración trapezoidal es sumamente precisa, no deja de ser una aproximación lineal por tramos de una curva continua. En rampas pronunciadas o variaciones abruptas de aceleración, el área bajo la curva estimada por el procesador difiere fraccionalmente de la integración analítica real, acumulando un ínfimo error de fase.
+    \item \textbf{Retardo Algorítmico en el Observador:} Al operar con datos discretizados, la estimación del estado interno arrastra un retraso computacional mínimo de un ciclo de reloj. Esto provoca que el PID reaccione sobre información levemente atrasada respecto al tiempo absoluto de simulación.
+\end{enumerate}
+
+\paragraph{Conclusión del Análisis Digital.} 
+A pesar de la manifestación de este error de cuantización temporal, su amplitud absoluta resulta lo suficientemente pequeña como para considerarse asintóticamente despreciable en un escenario industrial real. La rigurosa selección de un $T_s = 100\,\mu\text{s}$, holgadamente por debajo de las restricciones del teorema de Nyquist-Shannon, logró que la penalización por la digitalización no comprometa la estabilidad ni induzca resonancias indeseadas (\textit{aliasing}). 
+
+La elección de una frecuencia de muestreo de $10\,\text{kHz}$ incrementará previsiblemente las demandas de capacidad de cómputo del microprocesador o DSP destinado para la implementación en hardware. Sin embargo, la balanza entre costo computacional y exactitud justifica plenamente la decisión, concluyendo que la arquitectura digitalizada es madura, robusta y completamente apta para su despliegue físico.
+
+
 % ---------------------------------------------------------
 % CONCLUSIONES
 % ---------------------------------------------------------

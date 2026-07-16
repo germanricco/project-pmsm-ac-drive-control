@@ -409,16 +409,31 @@
 \newlabel{eq:resolvente_estado}{{118}{96}{5.d.i Modelado en Espacio de Estados: Sensores de 2° Orden}{equation.118}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {79}{\ignorespaces Diagrama de bloques implementado en Simulink para la degradación de los sensores. Cada bloque \textit  {State-Space} se configura con las matrices de diseño y condiciones iniciales rigurosamente calculadas para asegurar un arranque sin transitorios.}}{98}{figure.caption.182}\protected@file@percent }
 \newlabel{fig:diagrama_sensores_no_ideales}{{79}{98}{Diagrama de bloques implementado en Simulink para la degradación de los sensores. Cada bloque \textit {State-Space} se configura con las matrices de diseño y condiciones iniciales rigurosamente calculadas para asegurar un arranque sin transitorios}{figure.caption.182}{}}
-\bibcite{guia_trabajo}{1}
-\bibcite{guia_informe}{2}
 \newlabel{eq:saturacion_inversor}{{124}{99}{5.e.i Restricciones Físicas: Saturación del Bus DC}{equation.124}{}}
 \newlabel{eq:matrices_inversor}{{125}{99}{5.e.ii. Inercia Dinámica: Filtro Pasa-Bajo en Espacio de Estados}{equation.125}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {80}{\ignorespaces Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text  {V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado.}}{99}{figure.caption.186}\protected@file@percent }
 \newlabel{fig:diagrama_inversor_no_ideal}{{80}{99}{Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text {V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado}{figure.caption.186}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones}{99}{section.5}\protected@file@percent }
+\newlabel{eq:criterio_nyquist}{{126}{100}{6.1. Selección del Período de Muestreo y Retenedor de Orden Cero}{equation.126}{}}
+\newlabel{eq:ts_adoptado}{{128}{100}{6.1. Selección del Período de Muestreo y Retenedor de Orden Cero}{equation.128}{}}
+\newlabel{eq:tustin_sustitucion}{{129}{100}{6.2. Discretización del Controlador PID}{equation.129}{}}
+\newlabel{eq:integrador_tustin}{{130}{101}{6.2. Discretización del Controlador PID}{equation.130}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {81}{\ignorespaces Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text  {s}$.}}{101}{figure.caption.190}\protected@file@percent }
+\newlabel{fig:diagrama_pid_discreto}{{81}{101}{Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text {s}$}{figure.caption.190}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {82}{\ignorespaces Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal.}}{102}{figure.caption.192}\protected@file@percent }
+\newlabel{fig:diagrama_observador_discreto}{{82}{102}{Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal}{figure.caption.192}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {83}{\ignorespaces Planta de control completa discretizada (real) interactuando con la planta física continua (ideal).}}{102}{figure.caption.193}\protected@file@percent }
+\newlabel{fig:controlador_completo_discretizado}{{83}{102}{Planta de control completa discretizada (real) interactuando con la planta física continua (ideal)}{figure.caption.193}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {84}{\ignorespaces Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal.}}{103}{figure.caption.195}\protected@file@percent }
+\newlabel{fig:error_controlador_continuo}{{84}{103}{Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal}{figure.caption.195}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {85}{\ignorespaces Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text  {s}$). Se aprecia el error inducido por la retención y la integración numérica.}}{103}{figure.caption.196}\protected@file@percent }
+\newlabel{fig:error_controlador_discreto}{{85}{103}{Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text {s}$). Se aprecia el error inducido por la retención y la integración numérica}{figure.caption.196}{}}
+\bibcite{guia_trabajo}{1}
+\bibcite{guia_informe}{2}
 \bibcite{krause}{3}
 \bibcite{astrom}{4}
-\newlabel{LastPage}{{5}{100}{Conclusiones}{page.100}{}}
-\gdef\lastpage@lastpage{100}
-\gdef\lastpage@lastpageHy{100}
-\gdef \@abspage@last{101}
+\@writefile{toc}{\contentsline {paragraph}{Conclusión del Análisis Digital.}{104}{section*.197}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones}{104}{section.5}\protected@file@percent }
+\newlabel{LastPage}{{5}{104}{Conclusiones}{page.104}{}}
+\gdef\lastpage@lastpage{104}
+\gdef\lastpage@lastpageHy{104}
+\gdef \@abspage@last{105}
