@@ -5594,6 +5594,111 @@ comprometer la estabilidad ni la robustez del sistema.
 
 \FloatBarrier
 
+\subsubsection*{5.c Comportamiento térmico del motor}
+
+La consigna requiere verificar que la temperatura del bobinado estatórico se mantenga dentro del valor admisible para una operación continua repetitiva, una vez alcanzado el equilibrio térmico. Para ello, se repitió cíclicamente la consigna de movimiento basada en el perfil trapezoidal de velocidad, cuya duración es de \(T_c=15\,\mathrm{s}\).
+
+La constante de tiempo térmica del motor resulta:
+
+\[
+\tau_{\mathrm{th}}
+=
+R_{ts-\mathrm{amb}}C_{ts}
+=
+146.7\cdot0.818
+\approx120\,\mathrm{s}.
+\]
+
+Se adoptó una duración de simulación superior a cinco constantes de tiempo. La cantidad de ciclos se calculó como:
+
+\[
+N_c
+=
+\left\lceil
+\frac{5\tau_{\mathrm{th}}}{T_c}
+\right\rceil
+=
+41,
+\]
+
+por lo que el tiempo total simulado fue de \(615\,\mathrm{s}\). Se consideró una temperatura ambiente de \(40\,^\circ\mathrm{C}\), coincidente con la condición ambiental máxima especificada, y una temperatura inicial del bobinado igual a la temperatura ambiente.
+
+Se analizaron dos condiciones de funcionamiento: el ciclo nominal sin perturbación adicional y el mismo ciclo bajo la aplicación sostenida del torque máximo de perturbación \(T_{ld}=5\,\mathrm{N\,m}\). En ambos casos se utilizó la planta con sus parámetros nominales.
+
+\paragraph{Operación repetitiva sin perturbación}
+
+La evolución de la temperatura para el funcionamiento nominal se presenta en la Figura~\ref{fig:temperatura_sin_perturbacion}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.82\linewidth]
+	{img/resultados/punto_5c_termico_ciclico/01_temperatura_sin_perturbacion.pdf}
+	\caption{Temperatura del bobinado estatórico sin torque de perturbacion.}
+	\label{fig:temperatura_sin_perturbacion}
+\end{figure}
+
+Se observa un aumento inicial de temperatura desde los \(40\,^\circ\mathrm{C}\), seguido de una aproximación progresiva a un régimen térmico periódico. La pequeña oscilación presente en la respuesta se debe a la variación cíclica de las corrientes y, por consiguiente, de las pérdidas resistivas durante las etapas de aceleración, movimiento, espera y retorno.
+
+En los últimos ciclos, la temperatura máxima obtenida fue aproximadamente:
+
+\[
+T_{s,\max}^{\mathrm{eq}}
+\approx46.6\,^\circ\mathrm{C}.
+\]
+
+Por lo tanto, el motor cumple ampliamente con la especificación térmica para la operación continua repetitiva correspondiente al ciclo nominal.
+
+\paragraph{Operación repetitiva con torque de perturbación}
+
+La Figura~\ref{fig:temperatura_con_perturbacion} muestra la respuesta térmica al aplicar el torque máximo de perturbación durante la operación repetitiva.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.82\linewidth]
+	{img/resultados/punto_5c_termico_ciclico/01_temperatura_perturbacion.pdf}
+	\caption{Temperatura del bobinado estatórico con torque de perturbación sostenido.}
+	\label{fig:temperatura_con_perturbacion}
+\end{figure}
+
+En este caso, el controlador debe producir un torque electromagnético adicional para rechazar la perturbación y mantener el seguimiento de la consigna. Esto incrementa la corriente del eje \(q\) y, en consecuencia, las pérdidas resistivas del estator.
+
+La temperatura supera el límite de \(115\,^\circ\mathrm{C}\) aproximadamente durante la primera mitad de la simulación y continúa aumentando hasta alcanzar valores cercanos a:
+
+\[
+T_{s,\max}
+\approx165.1\,^\circ\mathrm{C}.
+\]
+
+Además, al finalizar la simulación todavía se observa una leve tendencia creciente entre ciclos, por lo que este valor no debe interpretarse como una temperatura definitiva de equilibrio. Sin embargo, no es necesario extender la simulación para determinar el cumplimiento, dado que el límite térmico ya fue ampliamente superado.
+
+\begin{table}[H]
+	\centering
+	\caption{Resultados de la verificación térmica.}
+	\label{tab:resultados_termicos}
+	\begin{tabular}{lccc}
+		\hline
+		\textbf{Condición} &
+		\(\boldsymbol{T_{s,\max}}\) &
+		\textbf{Margen térmico} &
+		\textbf{Cumple} \\
+		\hline
+		Sin perturbación &
+		\(46.6\,^\circ\mathrm{C}\) &
+		\(68.4\,^\circ\mathrm{C}\) &
+		Sí \\
+		
+		Perturbación sostenida &
+		\(165.1\,^\circ\mathrm{C}\) &
+		\(-50.1\,^\circ\mathrm{C}\) &
+		No \\
+		\hline
+	\end{tabular}
+\end{table}
+
+Los resultados demuestran que el accionamiento presenta un comportamiento térmico satisfactorio bajo la operación nominal repetitiva, manteniéndose con un amplio margen por debajo de la temperatura máxima permitida. En cambio, la aplicación continua del torque máximo de perturbación constituye una condición de operación térmicamente inadmisible. En consecuencia, dicha perturbación solo podría admitirse durante intervalos limitados, reduciendo su ciclo de trabajo o incorporando períodos de enfriamiento entre operaciones.
+
+La falta de cumplimiento en el segundo ensayo no invalida el diseño para su funcionamiento nominal, sino que permite establecer una restricción de operación ante perturbaciones máximas sostenidas.
+
 \subsubsection*{5.d Modelado en Espacio de Estados}
 
 A lo largo de las etapas previas de síntesis analítica, se asumió implícitamente una dinámica de medición ideal para todas las variables de realimentación ($G(s) \equiv 1$). Esta simplificación teórica supone que los transductores físicos y su electrónica de acondicionamiento asociada (amplificadores operacionales, filtros antialiasing, conversores ADC) poseen un ancho de banda infinito y un retardo de fase nulo. 
