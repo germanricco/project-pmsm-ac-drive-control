@@ -1,12 +1,12 @@
 Componente,Variable,Criterio,Valor,Limite,Margen,Uso_pct,DuracionExceso_s,Unidad,Cumple
-Caja reductora,Velocidad máxima de carga,Máximo absoluto en el ciclo,0.0179964789328723,6.28,6.26200352106713,0.286568135873763,0,rad/s,Sí
-Caja reductora,Torque de salida RMS del ciclo de operación,RMS temporal en el ciclo de operación,3.67772447583456,17,13.3222755241654,21.6336733872621,0,N*m RMS,Sí
-Caja reductora,Torque de salida pico absoluto,Máximo absoluto en el ciclo,5.5200238589448,45,39.4799761410552,12.266719686544,0,N*m pico,Sí
-Motor PMSM,Velocidad máxima del rotor,Máximo absoluto en el ciclo,2.15957747194468,691.15,688.990422528055,0.312461473188842,0,rad/s,Sí
-Motor PMSM,Corriente de fase RMS del ciclo de operación,Mayor RMS temporal entre las tres fases,0.304892979995268,0.4,0.095107020004732,76.223244998817,4.07279999999051,A RMS,Sí
-Motor PMSM,Corriente RMS equivalente máxima durante aceleraciones,Todo el ciclo (sin intervalos de aceleración),0.5552624685809,2,1.4447375314191,27.763123429045,0,A RMS equivalente,Sí
-Motor PMSM,Tensión línea-línea RMS equivalente máxima,Máximo de sqrt((Vab^2+Vbc^2+Vca^2)/3),4.20479341561923,30,25.7952065843808,14.0159780520641,0,V línea-línea RMS,Sí
-Motor PMSM,Temperatura máxima del estator,Máximo en el ciclo,45.3346755555262,115,69.6653244444738,39.4214570048054,0,degC,Sí
-Inversor,Módulo de tensión de línea RMS equivalente máximo,Máximo de la envolvente RMS de línea,4.20479341561923,48,43.7952065843808,8.75998628254006,0,V línea-línea RMS,Sí
-Inversor,Tensión de fase instantánea máxima solicitada,Máximo absoluto entre fases,3.43312042891829,39.1918358845309,35.7587154556126,8.75978466289034,0,V fase pico,Sí
+Caja reductora,Velocidad máxima de carga,Máximo absoluto en el ciclo,0.00955668571717832,6.28,6.27044331428282,0.15217652415889,0,rad/s,Sí
+Caja reductora,Torque de salida RMS del ciclo de operación,RMS temporal en el ciclo de operación,3.76387430008334,17,13.2361256999167,22.1404370593138,0,N*m RMS,Sí
+Caja reductora,Torque de salida pico absoluto,Máximo absoluto en el ciclo,5.81328293879426,45,39.1867170612057,12.9184065306539,0,N*m pico,Sí
+Motor PMSM,Velocidad máxima del rotor,Máximo absoluto en el ciclo,1.1468022860614,691.15,690.003197713939,0.165926685388324,0,rad/s,Sí
+Motor PMSM,Corriente de fase RMS del ciclo de operación,Mayor RMS temporal entre las tres fases,0.43565118074005,0.4,-0.0356511807400499,108.912795185012,8.49528850938942,A RMS,NO
+Motor PMSM,Corriente RMS equivalente máxima durante aceleraciones,Todo el ciclo (sin intervalos de aceleración),0.63799916346248,2,1.36200083653752,31.899958173124,0,A RMS equivalente,Sí
+Motor PMSM,Tensión línea-línea RMS equivalente máxima,Máximo de sqrt((Vab^2+Vbc^2+Vca^2)/3),7.31342058697883,30,22.6865794130212,24.3780686232628,0,V línea-línea RMS,Sí
+Motor PMSM,Temperatura máxima del estator,Máximo en el ciclo,45.5988461333801,115,69.4011538666199,39.6511705507653,0,degC,Sí
+Inversor,Módulo de tensión de línea RMS equivalente máximo,Máximo de la envolvente RMS de línea,7.31342058697883,48,40.6865794130212,15.2362928895392,0,V línea-línea RMS,Sí
+Inversor,Tensión de fase instantánea máxima solicitada,Máximo absoluto entre fases,5.97136390337337,39.1918358845309,33.2204719811575,15.2362444080612,0,V fase pico,Sí
 Inversor / PMSM,Frecuencia sincrónica máxima estimada,No evaluada: falta planta.Pp,NaN,330,NaN,NaN,0,Hz,No evaluado

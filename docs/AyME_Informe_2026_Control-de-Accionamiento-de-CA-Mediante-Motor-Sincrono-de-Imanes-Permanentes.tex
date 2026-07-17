@@ -4617,30 +4617,63 @@ suavizar la trayectoria para respetar los límites físicos del
 accionamiento.
 \FloatBarrier
 
-\FloatBarrier
 \subsubsection{Rechazo a perturbaciones}
 \label{sec:rechazo_perturbaciones}
 
-Para evaluar el rechazo frente a perturbaciones mecánicas se mantuvo una
-referencia de posición nula, $q^{*}(t)=0$, y se aplicó un escalón de torque
-de contacto de $T_{ld}=\SI{5}{\newton\metre}$ en
-$t=\SI{6.5}{\second}$. La simulación se realizó para el caso nominal y
-para las combinaciones extremas de carga útil y fricción viscosa,
-manteniendo tanto el controlador como el observador ajustados con los
-parámetros nominales.
+Para evaluar la capacidad de rechazo frente a perturbaciones mecánicas, se
+mantiene una referencia de posición nula, $q^{*}(t)=0$, y se aplica un
+escalón de torque de contacto de amplitud
+$T_{ld}=\SI{5}{\newton\metre}$ en el instante
+$t=\SI{6.5}{\second}$. La simulación se realiza tanto para el caso nominal
+como para distintas combinaciones extremas de carga útil y fricción
+viscosa, manteniendo fijos el controlador y el observador ajustados con
+los parámetros nominales.
+
+En esta etapa resulta importante distinguir entre dos señales diferentes
+asociadas al observador. Por un lado, el estado interno
+$\widetilde{\omega}_m(t)$ representa la estimación del estado físico de
+velocidad angular del motor. Por otro lado, la señal que efectivamente se
+realimenta al controlador no es $\widetilde{\omega}_m(t)$ de manera
+aislada, sino la \emph{derivada de la posición estimada}, definida a
+partir de la primera ecuación del observador como
+
+\begin{equation*}
+	\dot{\widetilde{\theta}}_m(t)
+	=
+	\widetilde{\omega}_m(t)
+	+
+	K_{e\theta}
+	\left[
+	\theta_m(t)-\widetilde{\theta}_m(t)
+	\right].
+	\label{eq:theta_est_dot_rechazo}
+\end{equation*}
+
+En consecuencia, la señal de realimentación utilizada en el controlador
+externo de movimiento es
+
+\begin{equation*}
+	\omega_{m,\mathrm{fb}}(t)
+	=
+	\dot{\widetilde{\theta}}_m(t),
+	\label{eq:omega_fb_rechazo}
+\end{equation*}
+
+y no simplemente el estado estimado $\widetilde{\omega}_m(t)$. Esta
+distinción es relevante porque el controlador ha sido construido para
+integrar un error de velocidad y, a partir de ello, reconstruir el error
+de posición estimado. Para que esa estructura sea consistente, la señal de
+velocidad realimentada debe coincidir con la derivada de la posición
+estimada.
 
 En la Figura~\ref{fig:p4b_respuesta_casos} se presentan la posición y la
-velocidad reales de la carga para las distintas condiciones mecánicas.
-En todos los casos, la aplicación del escalón provoca una velocidad
-negativa que no retorna a cero. Como consecuencia, la posición deja de
-permanecer regulada en la referencia y evoluciona aproximadamente como
-una rampa decreciente.
-
-Las variaciones de carga útil y fricción modifican ligeramente el
-transitorio y la pendiente final de la posición, pero no alteran el
-comportamiento cualitativo. Por lo tanto, con el observador reducido
-inicial, el sistema no logra rechazar una perturbación mecánica
-constante.
+velocidad reales de la carga para las distintas condiciones mecánicas
+evaluadas. En todos los casos, la aplicación del escalón de perturbación
+produce un transitorio breve de posición y velocidad. Las curvas
+correspondientes a las diferentes combinaciones de masa de carga y
+fricción viscosa permanecen prácticamente superpuestas, lo que indica que
+el sistema conserva un comportamiento robusto frente a las variaciones
+paramétricas consideradas.
 
 \begin{figure}[H]
 	\centering
@@ -4648,7 +4681,7 @@ constante.
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]
-		{img/resultados/punto_4b_perturbacion/figuras_pdf/01_posicion_real_casos.pdf}
+		{img/resultados/punto_4b_perturbacion/01_posicion_real_casos.pdf}
 		\caption{Posición real de la carga para las distintas condiciones mecánicas.}
 		\label{fig:p4b_posicion_casos}
 	\end{subfigure}
@@ -4656,30 +4689,34 @@ constante.
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]
-		{img/resultados/punto_4b_perturbacion/figuras_pdf/03_velocidad_real_casos.pdf}
+		{img/resultados/punto_4b_perturbacion/03_velocidad_real_casos.pdf}
 		\caption{Velocidad real de la carga ante el escalón de torque.}
 		\label{fig:p4b_velocidad_casos}
 	\end{subfigure}
 	
-	\caption{Respuesta de la carga ante una perturbación escalón de
-		$T_{ld}=\SI{5}{\newton\metre}$, considerando los valores nominales
-		y las variaciones extremas de los parámetros mecánicos.}
+	\caption{Respuesta para parametros mecánicos nominales y 
+		extremos.}
 	\label{fig:p4b_respuesta_casos}
 \end{figure}
 
 La Figura~\ref{fig:p4b_nominal_carga} permite analizar con mayor detalle
-el caso nominal. La posición estimada acompaña estrechamente a la
-posición real; sin embargo, ambas se alejan progresivamente de la
-referencia nula. Al mismo tiempo, la velocidad real de la carga se
-estabiliza aproximadamente en
-$\omega_l\simeq\SI{-1.1e-2}{\radian\per\second}$, mientras que la
-velocidad estimada retorna prácticamente a cero.
+el caso nominal. En la respuesta de posición, la carga experimenta una
+desviación transitoria negativa y luego se estabiliza alrededor de
 
-La presencia de una velocidad real constante y negativa explica la
-evolución aproximadamente lineal de la posición. En consecuencia, el
-error de seguimiento de velocidad alcanza un valor constante, mientras
-que el error de seguimiento de posición continúa aumentando durante la
-simulación.
+\begin{equation*}
+	q_{\mathrm{ss}}
+	\simeq
+	-1.7\times10^{-6}\ \mathrm{rad}.
+	\label{eq:qss_rechazo}
+\end{equation*}
+
+La posición real $q(t)$ no coincide exactamente con la referencia
+$q^{*}(t)=0$, por lo que subsiste un pequeño error estacionario de
+seguimiento. La señal estimada de posición, en cambio, retorna
+prácticamente a la referencia. Por otra parte, la velocidad de la carga y
+la señal estimada empleada para la realimentación convergen ambas a cero
+después del transitorio. En consecuencia, el error permanente no se
+manifiesta en la velocidad, sino exclusivamente en la posición.
 
 \begin{figure}[H]
 	\centering
@@ -4687,7 +4724,7 @@ simulación.
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]
-		{img/resultados/punto_4b_perturbacion/figuras_pdf/06_nominal_posicion_carga_real_estimada.pdf}
+		{img/resultados/punto_4b_perturbacion/06_nominal_posicion_carga_real_estimada.pdf}
 		\caption{Posición real, estimada y de referencia de la carga.}
 		\label{fig:p4b_nominal_posicion_carga}
 	\end{subfigure}
@@ -4695,36 +4732,161 @@ simulación.
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]
-		{img/resultados/punto_4b_perturbacion/figuras_pdf/07_nominal_velocidad_carga_real_estimada.pdf}
-		\caption{Velocidad real, estimada y de referencia de la carga.}
+		{img/resultados/punto_4b_perturbacion/07_nominal_velocidad_carga_real_estimada.pdf}
+		\caption{Velocidad real, señal de realimentación y referencia de la carga.}
 		\label{fig:p4b_nominal_velocidad_carga}
 	\end{subfigure}
 	
-	\caption{Respuesta real y estimada de la carga para el caso nominal.
-		La velocidad real permanece distinta de cero y produce una deriva
-		sostenida de la posición.}
+	\caption{Respuesta del eje para caso nominal.}
 	\label{fig:p4b_nominal_carga}
 \end{figure}
 
-La respuesta referida al eje del motor se presenta en la
-Figura~\ref{fig:p4b_nominal_motor}. Después del transitorio, la velocidad
-real se estabiliza alrededor de
-$\omega_m\simeq\SI{-1.31}{\radian\per\second}$, mientras que el estado
-de velocidad estimado tiende a cero. Asimismo, las posiciones real y
-estimada evolucionan con pendientes similares, conservando entre sí un
-pequeño desplazamiento.
+Este comportamiento puede justificarse analíticamente a partir de la
+dinámica del error del observador. Definiendo
 
-Los errores obtenidos en simulación concuerdan con los valores previstos
-por la dinámica del error desarrollada en el apartado de diseño del
-observador. Para el caso nominal se obtiene aproximadamente
+\begin{equation*}
+	e_{\theta}(t)
+	=
+	\theta_m(t)-\widetilde{\theta}_m(t),
+	\qquad
+	e_{\omega}(t)
+	=
+	\omega_m(t)-\widetilde{\omega}_m(t),
+	\label{eq:def_errores_obs_rechazo}
+\end{equation*}
 
-\[
-\theta_m-\tilde{\theta}_m
-\simeq -2.06\times10^{-4}\ \mathrm{rad},
-\qquad
-\omega_m-\tilde{\omega}_m
-\simeq -1.31\ \mathrm{rad/s}.
-\]
+y representando el efecto de la perturbación de carga, referido al eje del
+motor, mediante
+
+\begin{equation*}
+	d_0
+	=
+	-\frac{T_{ld}}{J_{eq}r},
+	\label{eq:d0_rechazo}
+\end{equation*}
+
+la dinámica del error del observador reducido convencional puede
+expresarse como
+
+\begin{equation*}
+	\begin{aligned}
+		\dot e_{\theta}(t)
+		&=
+		e_{\omega}(t)-K_{e\theta}e_{\theta}(t),\\
+		\dot e_{\omega}(t)
+		&=
+		d_0-K_{e\omega}e_{\theta}(t).
+	\end{aligned}
+	\label{eq:dinamica_error_obs_rechazo}
+\end{equation*}
+
+En régimen permanente, imponiendo
+$\dot e_{\theta}(t)=0$ y $\dot e_{\omega}(t)=0$, se obtiene
+
+\begin{equation*}
+	e_{\theta,\mathrm{ss}}
+	=
+	\frac{d_0}{K_{e\omega}}
+	=
+	-\frac{T_{ld}}{J_{eq}rK_{e\omega}},
+	\label{eq:e_theta_ss_rechazo}
+\end{equation*}
+
+y
+
+\begin{equation*}
+	e_{\omega,\mathrm{ss}}
+	=
+	K_{e\theta}e_{\theta,\mathrm{ss}}.
+	\label{eq:e_omega_ss_rechazo}
+\end{equation*}
+
+La Ecuación~\eqref{eq:e_omega_ss_rechazo} corresponde al error asociado al
+estado interno $\widetilde{\omega}_m(t)$ considerado de manera aislada.
+Sin embargo, la señal efectivamente utilizada en la realimentación del
+controlador es la derivada de la posición estimada,
+$\dot{\widetilde{\theta}}_m(t)$, cuya diferencia respecto de la velocidad
+real resulta
+
+\begin{align*}
+	e_{\dot{\widetilde{\theta}}}(t)
+	&=
+	\omega_m(t)-\dot{\widetilde{\theta}}_m(t)
+	\nonumber\\
+	&=
+	\omega_m(t)-\widetilde{\omega}_m(t)
+	-
+	K_{e\theta}
+	\left[
+	\theta_m(t)-\widetilde{\theta}_m(t)
+	\right]
+	\nonumber\\
+	&=
+	e_{\omega}(t)-K_{e\theta}e_{\theta}(t)
+	\nonumber\\
+	&=
+	\dot e_{\theta}(t).
+	\label{eq:error_derivada_theta_est}
+\end{align*}
+
+Por lo tanto, cuando el error de posición del observador alcanza un valor
+constante en régimen permanente, se cumple que
+
+\begin{equation*}
+	\dot e_{\theta}(t)\rightarrow 0,
+\end{equation*}
+
+y en consecuencia
+
+\begin{equation*}
+	\boxed{
+		e_{\dot{\widetilde{\theta}},\mathrm{ss}}
+		=
+		0
+	}.
+	\label{eq:error_velocidad_fb_ss}
+\end{equation*}
+
+Esto explica por qué la velocidad real y la señal de realimentación
+basada en la derivada de la posición estimada convergen al mismo valor,
+aunque el observador convencional conserve un sesgo en posición. En otras
+palabras, puede existir un error estacionario entre
+$\theta_m(t)$ y $\widetilde{\theta}_m(t)$, pero no necesariamente entre
+$\omega_m(t)$ y la señal $\dot{\widetilde{\theta}}_m(t)$ que se utiliza en
+el lazo de control.
+
+Para el caso nominal, utilizando los parámetros del sistema y la ganancia
+del observador, la Ecuación~\eqref{eq:e_theta_ss_rechazo} predice un error
+estacionario de posición en el eje del motor aproximadamente igual a
+
+\begin{equation*}
+	e_{\theta,\mathrm{ss}}
+	\simeq
+	-2.06\times10^{-4}\ \mathrm{rad}.
+	\label{eq:e_theta_ss_num_rechazo}
+\end{equation*}
+
+Referido al eje de la carga, dicho valor resulta
+
+\begin{equation*}
+	e_{q,\mathrm{ss}}
+	=
+	\frac{e_{\theta,\mathrm{ss}}}{r}
+	\simeq
+	-1.72\times10^{-6}\ \mathrm{rad},
+	\label{eq:eq_ss_num_rechazo}
+\end{equation*}
+
+lo cual coincide con el valor final observado en la simulación de la
+Figura~\ref{fig:p4b_nominal_posicion_carga}.
+
+La respuesta temporal referida al eje del motor se presenta en la
+Figura~\ref{fig:p4b_nominal_motor}. Allí puede observarse con claridad que
+la posición del motor experimenta un transitorio oscilatorio breve y luego
+se estabiliza en un pequeño valor negativo, mientras que la derivada de la
+posición estimada converge a cero junto con la velocidad real del motor.
+La diferencia entre la posición real y la estimada persiste en régimen
+permanente, pero la correspondiente diferencia en velocidad desaparece.
 
 \begin{figure}[H]
 	\centering
@@ -4732,7 +4894,7 @@ observador. Para el caso nominal se obtiene aproximadamente
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]
-		{img/resultados/punto_4b_perturbacion/figuras_pdf/08_nominal_posicion_motor_zoom.pdf}
+		{img/resultados/punto_4b_perturbacion/08_nominal_posicion_motor_zoom.pdf}
 		\caption{Detalle de la posición real y estimada del motor.}
 		\label{fig:p4b_nominal_posicion_motor}
 	\end{subfigure}
@@ -4740,28 +4902,27 @@ observador. Para el caso nominal se obtiene aproximadamente
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]
-		{img/resultados/punto_4b_perturbacion/figuras_pdf/10_nominal_velocidad_motor_zoom.pdf}
-		\caption{Detalle de la velocidad real y estimada del motor.}
+		{img/resultados/punto_4b_perturbacion/10_nominal_velocidad_motor_zoom.pdf}
+		\caption{Detalle de la velocidad real y de la derivada de la posición estimada.}
 		\label{fig:p4b_nominal_velocidad_motor}
 	\end{subfigure}
 	
 	\caption{Detalle de la respuesta del motor en el instante de
-		aplicación de la perturbación para el caso nominal.}
+		aplicación de la perturbación para el caso nominal. La velocidad
+		retorna a cero, mientras que la posición conserva una pequeña
+		desviación estacionaria.}
 	\label{fig:p4b_nominal_motor}
 \end{figure}
 
-En consecuencia, la dinámica del error del observador alcanza un régimen
-permanente, pero lo hace con errores de estimación distintos de cero.
-El sistema físico no alcanza un equilibrio de posición: luego del
-transitorio permanece una velocidad negativa aproximadamente constante,
-por lo que la posición continúa alejándose de la referencia.
-
-Este resultado evidencia que el observador reducido convencional no
-puede compensar una entrada de torque constante desconocida. El sesgo de
-la velocidad estimada impide que el controlador detecte correctamente el
-movimiento residual de la carga y justifica la mejora posterior del
-observador mediante la incorporación de un estado integral destinado al
-rechazo de perturbaciones constantes.
+En síntesis, frente a una perturbación escalón de torque constante, el
+sistema presenta un comportamiento robusto y recupera el reposo luego del
+transitorio. No se observa error estacionario en velocidad cuando la
+realimentación se realiza mediante la derivada de la posición estimada.
+No obstante, permanece un pequeño error estacionario de posición. Este
+resultado justifica la mejora posterior del observador mediante la
+incorporación de una acción integral, cuyo objetivo es forzar
+$e_{\theta,\mathrm{ss}}\rightarrow 0$ y, con ello, eliminar también la
+desviación permanente de seguimiento en posición.
 
 \FloatBarrier
 
@@ -5312,20 +5473,126 @@ La Figura~\ref{fig:comparativa_global_observadores} consolida la evolución del 
 
 Una vez validada la solidez matemática del observador aislado, se procede a integrar la arquitectura computacional completa (Planta Física, Modulador de Torque, Controlador PID y Observador Extendido). 
 
-Dado que el propósito fundamental del observador es proveer información veraz al lazo externo de posición $\theta_m$, la efectividad última del esquema se verifica evaluando el comportamiento del eje del motor frente a perturbaciones dinámicas en régimen permanente. La Figura~\ref{fig:perfil_posicion_simulink} exhibe el perfil de posición real medido frente al perfil estimado por el observador cuando se inyecta un escalón de torque de carga externo. Se observa cómo el estado integrador del estimador asimila la perturbación, permitiendo que el PID retorne el efector a su consigna original sin desviación estacionaria.
+Dado que el propósito fundamental del observador es proveer información veraz al lazo externo de posición $\theta_m$, la efectividad última del esquema se verifica evaluando el comportamiento del eje del motor frente a perturbaciones dinámicas en régimen permanente. 
+
+\paragraph{Simulacino de la mejora en el observador de estado}
+\label{sec:mejora_observador}
+
+En la simulación previa se verificó que permanecía una pequeña
+diferencia entre la posición real y la estimada. Para compensar este
+comportamiento se incorporó una acción integral al observador.
+
+Para verificar la mejora se repitió la simulación con referencia de
+posición nula y un escalón de perturbación de
+$T_{ld}=\SI{5}{\newton\metre}$ aplicado en
+$t=\SI{6.5}{\second}$. Además del caso nominal, se evaluaron las
+combinaciones extremas de masa de carga y fricción viscosa, manteniendo
+el observador y el controlador ajustados con los parámetros nominales.
 
 \begin{figure}[H]
-  \centering
-  \framebox{\parbox{0.8\textwidth}{\centering
-    \vspace{2.5cm}
-    \textbf{Image Placeholder} \\
-    \small\textit{img/perfil\_posicion\_observador\_simulink.pdf} % Aquí irá la captura de Simulink
-    \vspace{2.5cm}
-  }}
-  \caption{Perfil de posición del sistema en lazo cerrado completo (Simulink). La inclusión de la acción integral en el observador permite mantener la trayectoria inalterada ante la aparición súbita de torques no modelados.}
-  \label{fig:perfil_posicion_simulink}
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_5b_obs_ampliado/01_posicion_real_casos.pdf}
+		\caption{Posición de la carga para las distintas condiciones mecánicas.}
+		\label{fig:p5b_posicion_casos}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_5b_obs_ampliado/03_velocidad_real_casos.pdf}
+		\caption{Velocidad de la carga ante la perturbación.}
+		\label{fig:p5b_velocidad_casos}
+	\end{subfigure}
+	
+	\caption{Respuesta del sistema con el observador ampliado ante una
+		perturbación constante y variaciones de los parámetros mecánicos.}
+	\label{fig:p5b_respuesta_casos}
 \end{figure}
 
+Como se observa en la Figura~\ref{fig:p5b_respuesta_casos}, la
+perturbación produce únicamente un transitorio breve. La posición y la
+velocidad retornan posteriormente a sus referencias nulas para todas las
+condiciones mecánicas consideradas. Las curvas correspondientes a las
+diferentes combinaciones de carga y fricción permanecen prácticamente
+superpuestas, por lo que la mejora conserva un comportamiento robusto
+frente a las incertidumbres de la planta.
+
+En la Figura~\ref{fig:p5b_nominal_estimacion} se comparan las variables
+reales, estimadas y de referencia para el caso nominal. La posición
+estimada acompaña a la posición real durante el transitorio y ambas
+convergen nuevamente a cero. De manera análoga, la velocidad real y la
+derivada de la posición estimada presentan solamente una pequeña
+diferencia transitoria y luego coinciden con la referencia nula.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_5b_obs_ampliado/06_nominal_posicion_carga_real_estimada.pdf}
+		\caption{Posición real, estimada y de referencia de la carga.}
+		\label{fig:p5b_posicion_nominal}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_5b_obs_ampliado/07_nominal_velocidad_carga_real_estimada.pdf}
+		\caption{Velocidad real, derivada de la posición estimada y referencia.}
+		\label{fig:p5b_velocidad_nominal}
+	\end{subfigure}
+	
+	\caption{Comparación entre las variables reales y estimadas para el
+		caso nominal con el observador ampliado.}
+	\label{fig:p5b_nominal_estimacion}
+\end{figure}
+
+El detalle referido al eje del motor se presenta en la
+Figura~\ref{fig:p5b_motor_zoom}. La reducción de la rapidez de los polos
+disminuye la diferencia máxima entre las señales durante los primeros
+milisegundos y evita una respuesta excesivamente agresiva. A pesar de
+esta reducción del ancho de banda, el observador converge rápidamente y
+no deja errores estacionarios apreciables.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_5b_obs_ampliado/08_nominal_posicion_motor_zoom.pdf}
+		\caption{Detalle de la posición real y estimada del motor.}
+		\label{fig:p5b_posicion_motor_zoom}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_5b_obs_ampliado/10_nominal_velocidad_motor_zoom.pdf}
+		\caption{Detalle de la velocidad real y de la derivada de la posición estimada.}
+		\label{fig:p5b_velocidad_motor_zoom}
+	\end{subfigure}
+	
+	\caption{Detalle del transitorio producido por la perturbación en el
+		eje del motor con el observador ampliado.}
+	\label{fig:p5b_motor_zoom}
+\end{figure}
+
+En síntesis, la incorporación de la acción integral elimina el error
+estacionario de estimación que presentaba el observador convencional
+frente a una perturbación constante. Tanto la posición como la velocidad
+convergen nuevamente a sus referencias, mientras que la ubicación del
+polo triple en $-1800\ \mathrm{rad/s}$ reduce el \emph{peaking} y produce
+una estimación más suave. De esta manera se satisface el requisito de
+llevar a cero el error de estimación de régimen permanente sin
+comprometer la estabilidad ni la robustez del sistema.
+
+\FloatBarrier
 
 \subsubsection*{5.d Modelado en Espacio de Estados}
 
