@@ -26,7 +26,14 @@
 \usepackage{hyperref}
 \usepackage{enumitem}
 
+\usepackage{tabularx}
+\sisetup{output-decimal-marker={,}, per-mode=symbol}
+
+
 \usetikzlibrary{positioning,arrows.meta}
+
+
+
 
 % ---------------------------------------------------------
 % CONFIGURACIÓN GENERAL
@@ -4608,135 +4615,601 @@ torque, corriente y tensión. Por lo tanto, aunque el comportamiento del
 lazo de control es estable, será necesario limitar la aceleración o
 suavizar la trayectoria para respetar los límites físicos del
 accionamiento.
+\FloatBarrier
 
 \FloatBarrier
 \subsubsection{Rechazo a perturbaciones}
 \label{sec:rechazo_perturbaciones}
 
-Para evaluar la capacidad de rechazo a perturbaciones se mantuvo una
+Para evaluar el rechazo frente a perturbaciones mecánicas se mantuvo una
 referencia de posición nula, $q^{*}(t)=0$, y se aplicó un escalón de torque
-de contacto de $T_{ld}=5~\mathrm{N\,m}$ en $t=6.5~\mathrm{s}$. La simulación
-se realizó para el caso nominal y para las combinaciones extremas de carga
-útil y fricción viscosa, manteniendo el controlador ajustado con los
+de contacto de $T_{ld}=\SI{5}{\newton\metre}$ en
+$t=\SI{6.5}{\second}$. La simulación se realizó para el caso nominal y
+para las combinaciones extremas de carga útil y fricción viscosa,
+manteniendo tanto el controlador como el observador ajustados con los
 parámetros nominales.
 
-La Figura~\ref{fig:p4b_posicion_casos} muestra la desviación de la posición
-de la carga ante la perturbación. Las respuestas correspondientes a los
-distintos casos resultan prácticamente coincidentes, lo que indica que las
-variaciones de masa y fricción consideradas no modifican significativamente
-el comportamiento del sistema. Al producirse el escalón aparece una
-desviación transitoria del orden de $10^{-5}~\mathrm{rad}$ y, posteriormente,
-la posición se estabiliza con un pequeño error residual del orden de
-$10^{-6}~\mathrm{rad}$.
+En la Figura~\ref{fig:p4b_respuesta_casos} se presentan la posición y la
+velocidad reales de la carga para las distintas condiciones mecánicas.
+En todos los casos, la aplicación del escalón provoca una velocidad
+negativa que no retorna a cero. Como consecuencia, la posición deja de
+permanecer regulada en la referencia y evoluciona aproximadamente como
+una rampa decreciente.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.75\linewidth]
-	{img/resultados/punto_4b_perturbacion/figuras_pdf/01_posicion_real_casos.pdf}
-	\caption{Desviación de la posición de la carga ante la perturbación para
-		los distintos valores de carga útil y fricción viscosa.}
-	\label{fig:p4b_posicion_casos}
-\end{figure}
-
-En la Figura~\ref{fig:p4b_velocidad_casos} se observa la velocidad de la
-carga. La aplicación de la perturbación produce un transitorio breve, cuya
-amplitud cambia ligeramente con los parámetros mecánicos. Sin embargo, en
-todos los casos la velocidad converge nuevamente a cero, por lo que la
-perturbación no genera un movimiento permanente de la carga.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.75\linewidth]
-	{img/resultados/punto_4b_perturbacion/figuras_pdf/03_velocidad_real_casos.pdf}
-	\caption{Velocidad de la carga ante la perturbación para los distintos
-		casos considerados.}
-	\label{fig:p4b_velocidad_casos}
-\end{figure}
-
-Para analizar con mayor detalle el comportamiento del sistema y del
-observador se presentan, en la Figura~\ref{fig:p4b_detalle_posicion}, la
-posición del eje del motor y su correspondiente error de estimación. Al
-aplicarse el escalón, la posición real y la estimada presentan un transitorio
-rápido. No obstante, mientras la posición estimada retorna aproximadamente
-a la referencia, la posición real permanece desplazada.
-
-Como consecuencia, el error de posición del observador converge a un valor
-aproximado de $-2.1\times10^{-4}~\mathrm{rad}$ referido al eje del motor.
-Este desplazamiento equivale, al considerar la relación de reducción, al
-pequeño error residual observado en la posición de la carga.
+Las variaciones de carga útil y fricción modifican ligeramente el
+transitorio y la pendiente final de la posición, pero no alteran el
+comportamiento cualitativo. Por lo tanto, con el observador reducido
+inicial, el sistema no logra rechazar una perturbación mecánica
+constante.
 
 \begin{figure}[H]
 	\centering
 	
-	\begin{subfigure}[t]{0.48\linewidth}
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4b_perturbacion/figuras_pdf/01_posicion_real_casos.pdf}
+		\caption{Posición real de la carga para las distintas condiciones mecánicas.}
+		\label{fig:p4b_posicion_casos}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4b_perturbacion/figuras_pdf/03_velocidad_real_casos.pdf}
+		\caption{Velocidad real de la carga ante el escalón de torque.}
+		\label{fig:p4b_velocidad_casos}
+	\end{subfigure}
+	
+	\caption{Respuesta de la carga ante una perturbación escalón de
+		$T_{ld}=\SI{5}{\newton\metre}$, considerando los valores nominales
+		y las variaciones extremas de los parámetros mecánicos.}
+	\label{fig:p4b_respuesta_casos}
+\end{figure}
+
+La Figura~\ref{fig:p4b_nominal_carga} permite analizar con mayor detalle
+el caso nominal. La posición estimada acompaña estrechamente a la
+posición real; sin embargo, ambas se alejan progresivamente de la
+referencia nula. Al mismo tiempo, la velocidad real de la carga se
+estabiliza aproximadamente en
+$\omega_l\simeq\SI{-1.1e-2}{\radian\per\second}$, mientras que la
+velocidad estimada retorna prácticamente a cero.
+
+La presencia de una velocidad real constante y negativa explica la
+evolución aproximadamente lineal de la posición. En consecuencia, el
+error de seguimiento de velocidad alcanza un valor constante, mientras
+que el error de seguimiento de posición continúa aumentando durante la
+simulación.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4b_perturbacion/figuras_pdf/06_nominal_posicion_carga_real_estimada.pdf}
+		\caption{Posición real, estimada y de referencia de la carga.}
+		\label{fig:p4b_nominal_posicion_carga}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4b_perturbacion/figuras_pdf/07_nominal_velocidad_carga_real_estimada.pdf}
+		\caption{Velocidad real, estimada y de referencia de la carga.}
+		\label{fig:p4b_nominal_velocidad_carga}
+	\end{subfigure}
+	
+	\caption{Respuesta real y estimada de la carga para el caso nominal.
+		La velocidad real permanece distinta de cero y produce una deriva
+		sostenida de la posición.}
+	\label{fig:p4b_nominal_carga}
+\end{figure}
+
+La respuesta referida al eje del motor se presenta en la
+Figura~\ref{fig:p4b_nominal_motor}. Después del transitorio, la velocidad
+real se estabiliza alrededor de
+$\omega_m\simeq\SI{-1.31}{\radian\per\second}$, mientras que el estado
+de velocidad estimado tiende a cero. Asimismo, las posiciones real y
+estimada evolucionan con pendientes similares, conservando entre sí un
+pequeño desplazamiento.
+
+Los errores obtenidos en simulación concuerdan con los valores previstos
+por la dinámica del error desarrollada en el apartado de diseño del
+observador. Para el caso nominal se obtiene aproximadamente
+
+\[
+\theta_m-\tilde{\theta}_m
+\simeq -2.06\times10^{-4}\ \mathrm{rad},
+\qquad
+\omega_m-\tilde{\omega}_m
+\simeq -1.31\ \mathrm{rad/s}.
+\]
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]
 		{img/resultados/punto_4b_perturbacion/figuras_pdf/08_nominal_posicion_motor_zoom.pdf}
-		\caption{Posición real, estimada y de referencia del motor.}
-		\label{fig:p4b_posicion_motor_zoom}
+		\caption{Detalle de la posición real y estimada del motor.}
+		\label{fig:p4b_nominal_posicion_motor}
 	\end{subfigure}
 	\hfill
-	\begin{subfigure}[t]{0.48\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]
-		{img/resultados/punto_4b_perturbacion/figuras_pdf/09_nominal_error_posicion_observador_zoom.pdf}
-		\caption{Error de estimación de posición.}
-		\label{fig:p4b_error_posicion_zoom}
-	\end{subfigure}
-	
-	\caption{Detalle de la respuesta de posición del motor y del error del
-		observador ante la perturbación de carga.}
-	\label{fig:p4b_detalle_posicion}
-\end{figure}
-
-La respuesta de velocidad se presenta en la
-Figura~\ref{fig:p4b_detalle_velocidad}. La velocidad real y la estimada
-siguen trayectorias muy próximas y ambas retornan rápidamente a cero luego
-del transitorio. El error de velocidad presenta inicialmente una variación
-de mayor amplitud, pero se atenúa completamente en aproximadamente
-$10~\mathrm{ms}$.
-
-Por lo tanto, el observador reproduce adecuadamente la velocidad del motor
-en régimen permanente, aunque no elimina el error estacionario en la
-estimación de posición.
-
-\begin{figure}[H]
-	\centering
-	
-	\begin{subfigure}[t]{0.48\linewidth}
+	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]
 		{img/resultados/punto_4b_perturbacion/figuras_pdf/10_nominal_velocidad_motor_zoom.pdf}
-		\caption{Velocidad real, estimada y de referencia del motor.}
-		\label{fig:p4b_velocidad_motor_zoom}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[t]{0.48\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]
-		{img/resultados/punto_4b_perturbacion/figuras_pdf/11_nominal_error_velocidad_observador_zoom.pdf}
-		\caption{Error de estimación de velocidad.}
-		\label{fig:p4b_error_velocidad_zoom}
+		\caption{Detalle de la velocidad real y estimada del motor.}
+		\label{fig:p4b_nominal_velocidad_motor}
 	\end{subfigure}
 	
-	\caption{Detalle de la respuesta de velocidad del motor y del error del
-		observador ante la perturbación de carga.}
-	\label{fig:p4b_detalle_velocidad}
+	\caption{Detalle de la respuesta del motor en el instante de
+		aplicación de la perturbación para el caso nominal.}
+	\label{fig:p4b_nominal_motor}
 \end{figure}
 
-Por lo tanto, el sistema permanece estable y rechaza rápidamente el efecto
-dinámico de la perturbación para todas las combinaciones de carga y fricción
-consideradas. La velocidad retorna a cero, pero se conserva una pequeña
-desviación de posición debido al error estacionario del observador. Este
-resultado motiva la incorporación posterior de una acción integral en el
-observador, con el objetivo de eliminar el error de estimación ante
-perturbaciones constantes.
+En consecuencia, la dinámica del error del observador alcanza un régimen
+permanente, pero lo hace con errores de estimación distintos de cero.
+El sistema físico no alcanza un equilibrio de posición: luego del
+transitorio permanece una velocidad negativa aproximadamente constante,
+por lo que la posición continúa alejándose de la referencia.
+
+Este resultado evidencia que el observador reducido convencional no
+puede compensar una entrada de torque constante desconocida. El sesgo de
+la velocidad estimada impide que el controlador detecte correctamente el
+movimiento residual de la carga y justifica la mejora posterior del
+observador mediante la incorporación de un estado integral destinado al
+rechazo de perturbaciones constantes.
 
 \FloatBarrier
 
 
 \subsection*{5. Verificación de Desempeño y Mejoras}
+
 \subsubsection*{5.a Verificación de Limites de Operación}
+
+\label{sec:verificacion_especificaciones_operacion}
+
+La evaluación se realizó sobre la simulación de seguimiento de consigna del punto 4.a,
+utilizando el modelo no lineal completo y el perfil de movimiento original. Para cada
+magnitud se comparó el valor obtenido con la correspondiente especificación de
+operación. En la Tabla~\ref{tab:limites_operacion_4a}, un margen positivo indica que
+la variable permanece dentro del límite, mientras que un margen negativo representa
+un sobrepaso.
+
+\begin{table*}[htbp]
+	\centering
+	\caption{Comparación entre las especificaciones de operación y los valores obtenidos en la simulación del punto 4.a.}
+	\label{tab:limites_operacion_4a}
+	\scriptsize
+	\setlength{\tabcolsep}{3.5pt}
+	\begin{tabularx}{\textwidth}{@{}lXrrrrl@{}}
+		\toprule
+		\textbf{Componente} & \textbf{Magnitud evaluada} &
+		\textbf{Límite} & \textbf{Simulación} &
+		\textbf{Uso} & \textbf{Margen} & \textbf{Resultado} \\
+		\midrule
+		Caja reductora & Velocidad máxima de la carga [\si{\radian\per\second}] &
+		6,280 & 1,762 & 28,1\% & +4,518 & Cumple \\
+		
+		Caja reductora & Torque de salida RMS del ciclo [\si{\newton\metre}] &
+		17,000 & 2,219 & 13,1\% & +14,781 & Cumple \\
+		
+		Caja reductora & Torque de salida pico absoluto [\si{\newton\metre}] &
+		45,000 & 113,962 & 253,2\% & $-68,962$ & \textbf{No cumple} \\
+		
+		Motor PMSM & Velocidad máxima del rotor [\si{\radian\per\second}] &
+		691,150 & 211,432 & 30,6\% & +479,718 & Cumple \\
+		
+		Motor PMSM & Corriente de fase RMS del ciclo [\si{\ampere}] &
+		0,400 & 0,668 & 167,1\% & $-0,268$ & \textbf{No cumple} \\
+		
+		Motor PMSM & Corriente RMS equivalente máxima durante las aceleraciones [\si{\ampere}] &
+		2,000 & 32,604 & 1630,2\% & $-30,604$ & \textbf{No cumple} \\
+		
+		Motor PMSM & Tensión línea--línea RMS equivalente máxima [\si{\volt}] &
+		30,000 & 409,942 & 1366,5\% & $-379,942$ & \textbf{No cumple} \\
+		
+		Inversor & Módulo de tensión de línea RMS equivalente máximo [\si{\volt}] &
+		48,000 & 409,942 & 854,0\% & $-361,942$ & \textbf{No cumple} \\
+		
+		Inversor & Tensión de fase instantánea máxima solicitada [\si{\volt}] &
+		39,192 & 334,648 & 853,9\% & $-295,457$ & \textbf{No cumple} \\
+		
+		Inversor/PMSM & Frecuencia sincrónica máxima estimada [\si{\hertz}] &
+		330,000 & 100,951 & 30,6\% & +229,049 & Cumple \\
+		\bottomrule
+	\end{tabularx}
+\end{table*}
+
+Los resultados muestran que las velocidades mecánicas y la frecuencia sincrónica se
+mantienen ampliamente por debajo de sus respectivos límites. Por lo tanto, los sobrepasos no se originan en una velocidad de operación excesiva.
+
+El torque RMS de salida es de \SI{2.219}{\newton\metre}, equivalente al
+\SI{13.1}{\percent} del límite continuo de \SI{17}{\newton\metre}. Sin embargo, el
+torque pico alcanza \SI{113.962}{\newton\metre}, superando el límite durante aproximadamente
+\SI{4.94}{\milli\second}. La diferencia entre el bajo valor RMS y el elevado valor
+pico indica que el problema no corresponde a una sobrecarga mecánica sostenida, sino
+a solicitaciones transitorias de muy corta duración.
+
+En el subsistema eléctrico, aa corriente RMS de
+fase durante el ciclo completo alcanza \SI{0.668}{\ampere}, frente a un límite continuo
+de \SI{0.4}{\ampere}. Además, la corriente RMS equivalente durante los intervalos de
+aceleración presenta un máximo de \SI{32.604}{\ampere}, muy superior al límite establecido para aceleraciones de corta duración. El valor instantáneo
+máximo de corriente fue de \SI{45.838}{\ampere}.
+
+La tensión de línea  medida entre dos fases del motor, durante la simulación, alcanza un valor máximo equivalente de \SI{409.942}{V}, muy superior tanto a los \SI{30}{V} nominales del motor como a los \SI{48}{V} máximos que puede entregar el inversor. También se obtiene una tensión instantánea de fase de \SI{334.648}{V}, frente a un máximo admisible de \SI{39.192}{V}. Estos sobrepasos aparecen entre \SI{13.2}{ms} y \SI{17.2}{ms}, durante el cambio brusco de velocidad de la consigna. Como el inversor del modelo es ideal y no posee saturación, permite solicitar tensiones que un inversor real no podría entregar.
+
+A pesar de estas exigencias, el error máximo de seguimiento de la posición de carga es
+de solamente \SI{5.76e-4}{\radian}, con un error RMS de
+\SI{1.10e-5}{\radian}. Por lo tanto, el buen seguimiento de la referencia se obtiene a
+costa de acciones de control físicamente inviables. Este resultado demuestra que no es
+suficiente evaluar únicamente el error de posición: también deben verificarse las
+restricciones de los actuadores y de los componentes físicos.
+
+\paragraph{Análisis de las posibles causas de los sobrepasos}
+\label{sec:causas_sobrepasos_4a}
+
+Los sobrepasos de torque, corriente y tensión se deben principalmente al perfil de consigna utilizado. La velocidad cambia en intervalos muy cortos, lo que exige aceleraciones elevadas y, en consecuencia, grandes valores de torque y corriente. Para producir esos cambios rápidos de corriente, el controlador también solicita tensiones superiores a las que puede entregar el inversor. Por lo tanto, la causa principal de los sobrepasos es la forma de la consigna y no una exigencia elevada en régimen permanente.
+
+\paragraph{Alternativa de mejora: perfil trapezoidal de velocidad}
+\label{sec:trapecio_velocidad_4a}
+
+Para reducir las exigencias producidas por la consigna original, se mantuvieron el
+mismo desplazamiento, $\Delta q=2\pi~\mathrm{rad}$, y el mismo tiempo de movimiento,
+$T_{\mathrm{mov}}=\SI{5}{\second}$, pero se reemplazó el perfil de posición por una
+referencia trapezoidal de velocidad. Con un tiempo de aceleración y desaceleración de
+$t_a=\SI{1}{\second}$ se obtuvieron
+$\omega_{l,\max}^{*}=\SI{1.571}{\radian\per\second}$ y
+$\alpha_{l,\max}^{*}=\SI{1.571}{\radian\per\second\squared}$.
+De esta manera, la velocidad permanece continua y la aceleración queda limitada.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_trapecio_velocidad/01_posicion_real_estimada.pdf}
+		\caption{Posición real, estimada y de referencia de la carga.}
+		\label{fig:p4a_trap_posicion}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_trapecio_velocidad/02_velocidad_real_estimada.pdf}
+		\caption{Velocidad real, estimada y de referencia de la carga.}
+		\label{fig:p4a_trap_velocidad}
+	\end{subfigure}
+	
+	\caption{Seguimiento de posición y velocidad para la consigna trapezoidal de velocidad.}
+	\label{fig:p4a_trap_pos_vel}
+\end{figure}
+
+La Figura~\ref{fig:p4a_trap_pos_vel} muestra que las señales reales y estimadas
+siguen prácticamente de forma exacta a sus referencias. El error máximo de posición
+fue de $\SI{1.71e-6}{\radian}$ y el error RMS de
+$\SI{6.11e-7}{\radian}$. La Tabla~\ref{tab:limites_operacion_4a_trapecio}
+resume los valores obtenidos y confirma que no se produjeron sobrepasos.
+
+\begin{table*}[htbp]
+	\centering
+	\caption{Comparación entre las especificaciones de operación y los valores obtenidos con el perfil trapezoidal de velocidad.}
+	\label{tab:limites_operacion_4a_trapecio}
+	\scriptsize
+	\setlength{\tabcolsep}{3.5pt}
+	\begin{tabularx}{\textwidth}{@{}lXrrrrl@{}}
+		\toprule
+		\textbf{Componente} & \textbf{Magnitud evaluada} &
+		\textbf{Límite} & \textbf{Simulación} &
+		\textbf{Uso} & \textbf{Margen} & \textbf{Resultado} \\
+		\midrule
+		Caja reductora & Velocidad máxima de la carga [\si{\radian\per\second}] &
+		6,280 & 1,572 & 25,0\% & +4,708 & Cumple \\
+		
+		Caja reductora & Torque de salida RMS del ciclo [\si{\newton\metre}] &
+		17,000 & 1,301 & 7,7\% & +15,699 & Cumple \\
+		
+		Caja reductora & Torque de salida pico absoluto [\si{\newton\metre}] &
+		45,000 & 2,609 & 5,8\% & +42,391 & Cumple \\
+		
+		Motor PMSM & Velocidad máxima del rotor [\si{\radian\per\second}] &
+		691,150 & 188,588 & 27,3\% & +502,562 & Cumple \\
+		
+		Motor PMSM & Corriente de fase RMS del ciclo [\si{\ampere}] &
+		0,400 & 0,114 & 28,6\% & +0,286 & Cumple \\
+		
+		Motor PMSM & Corriente RMS equivalente máxima durante las aceleraciones [\si{\ampere}] &
+		2,000 & 0,219 & 11,0\% & +1,781 & Cumple \\
+		
+		Motor PMSM & Tensión línea--línea RMS equivalente máxima [\si{\volt}] &
+		30,000 & 11,623 & 38,7\% & +18,377 & Cumple \\
+		
+		Motor PMSM & Temperatura máxima del estator [$^\circ$C] &
+		115,000 & 40,743 & 35,4\% & +74,257 & Cumple \\
+		
+		Inversor & Módulo de tensión de línea RMS equivalente máximo [\si{\volt}] &
+		48,000 & 11,623 & 24,2\% & +36,377 & Cumple \\
+		
+		Inversor & Tensión de fase instantánea máxima solicitada [\si{\volt}] &
+		39,192 & 9,490 & 24,2\% & +29,702 & Cumple \\
+		
+		Inversor/PMSM & Frecuencia sincrónica máxima estimada [\si{\hertz}] &
+		330,000 & 90,044 & 27,3\% & +239,956 & Cumple \\
+		\bottomrule
+	\end{tabularx}
+\end{table*}
+
+Los resultados más relevantes fueron un torque de salida pico de
+$\SI{2.609}{\newton\metre}$, una corriente RMS máxima durante las aceleraciones
+de $\SI{0.219}{\ampere}$ y una tensión línea--línea RMS equivalente máxima de
+$\SI{11.623}{\volt}$. La temperatura alcanzó solamente
+$40.743\,^\circ\mathrm{C}$. En las figuras siguientes se observa que el torque,
+las corrientes y las tensiones evolucionan de forma suave y permanecen ampliamente
+dentro de los límites establecidos.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_trapecio_velocidad/05a_torque_motor.pdf}
+		\caption{Torque electromagnético desarrollado por el motor.}
+		\label{fig:p4a_trap_torque_motor}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_trapecio_velocidad/05b_torque_salida.pdf}
+		\caption{Torque calculado en la salida de la caja reductora.}
+		\label{fig:p4a_trap_torque_salida}
+	\end{subfigure}
+	
+	\caption{Torque electromagnético y torque de salida para la consigna trapezoidal de velocidad.}
+	\label{fig:p4a_trap_torques}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_trapecio_velocidad/06_corrientes_qd0.pdf}
+		\caption{Corrientes en coordenadas $qd0$.}
+		\label{fig:p4a_trap_corrientes_qd0}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_trapecio_velocidad/07_corrientes_abc.pdf}
+		\caption{Corrientes trifásicas del estator.}
+		\label{fig:p4a_trap_corrientes_abc}
+	\end{subfigure}
+	
+	\caption{Corrientes del motor para la consigna trapezoidal de velocidad.}
+	\label{fig:p4a_trap_corrientes}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_trapecio_velocidad/08_tensiones_abc.pdf}
+		\caption{Tensiones trifásicas solicitadas al inversor.}
+		\label{fig:p4a_trap_tensiones}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_trapecio_velocidad/09_temperatura.pdf}
+		\caption{Evolución de la temperatura del estator.}
+		\label{fig:p4a_trap_temperatura}
+	\end{subfigure}
+	
+	\caption{Tensiones solicitadas y respuesta térmica para la consigna trapezoidal de velocidad.}
+	\label{fig:p4a_trap_tension_temperatura}
+\end{figure}
+
+En comparación con la consigna original, el perfil trapezoidal de velocidad eliminó
+los sobrepasos sin modificar el controlador ni degradar el seguimiento. Esto confirma
+que la causa principal era la rapidez de los cambios exigidos por la referencia original.
+Como mejora adicional se evaluará un polinomio de quinto orden, que también suaviza
+la aceleración.
+
+\FloatBarrier
+
+\paragraph{Alternativa de mejora: perfil polinómico de quinto orden}
+\label{sec:polinomio_quintico_4a}
+
+Como segunda alternativa se implementó una trayectoria polinómica de quinto orden,
+manteniendo el desplazamiento $\Delta q=2\pi~\mathrm{rad}$ y el tiempo de movimiento
+$T_{\mathrm{mov}}=\SI{5}{\second}$. La referencia de posición se definió mediante
+
+\[
+q^{*}(t)=q_0+\Delta q\left(10s^3-15s^4+6s^5\right),
+\qquad
+s=\frac{t-t_0}{T_{\mathrm{mov}}}.
+\]
+
+Este perfil garantiza velocidad y aceleración nulas al comienzo y al final de cada
+movimiento. Para los parámetros utilizados se obtuvieron
+$\omega_{l,\max}^{*}=\SI{2.356}{\radian\per\second}$ y
+$\alpha_{l,\max}^{*}\approx\SI{1.451}{\radian\per\second\squared}$.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_quintico/01_posicion_real_estimada.pdf}
+		\caption{Posición real, estimada y de referencia de la carga.}
+		\label{fig:p4a_quintico_posicion}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_quintico/02_velocidad_real_estimada.pdf}
+		\caption{Velocidad real, estimada y de referencia de la carga.}
+		\label{fig:p4a_quintico_velocidad}
+	\end{subfigure}
+	
+	\caption{Seguimiento de posición y velocidad para el perfil polinómico de quinto orden.}
+	\label{fig:p4a_quintico_pos_vel}
+\end{figure}
+
+La Figura~\ref{fig:p4a_quintico_pos_vel} muestra un seguimiento prácticamente
+exacto y transiciones suaves al iniciar y finalizar los movimientos. El error máximo
+de posición fue de $\SI{1.47e-6}{\radian}$ y el error RMS de
+$\SI{6.17e-7}{\radian}$. La Tabla~\ref{tab:limites_operacion_4a_quintico}
+confirma que no se produjeron sobrepasos.
+
+\begin{table*}[htbp]
+	\centering
+	\caption{Comparación entre las especificaciones de operación y los valores obtenidos con el perfil polinómico de quinto orden.}
+	\label{tab:limites_operacion_4a_quintico}
+	\scriptsize
+	\setlength{\tabcolsep}{3.5pt}
+	\begin{tabularx}{\textwidth}{@{}lXrrrrl@{}}
+		\toprule
+		\textbf{Componente} & \textbf{Magnitud evaluada} &
+		\textbf{Límite} & \textbf{Simulación} &
+		\textbf{Uso} & \textbf{Margen} & \textbf{Resultado} \\
+		\midrule
+		Caja reductora & Velocidad máxima de la carga [\si{\radian\per\second}] &
+		6,280 & 2,356 & 37,5\% & +3,924 & Cumple \\
+		
+		Caja reductora & Torque de salida RMS del ciclo [\si{\newton\metre}] &
+		17,000 & 1,225 & 7,2\% & +15,775 & Cumple \\
+		
+		Caja reductora & Torque de salida pico absoluto [\si{\newton\metre}] &
+		45,000 & 2,733 & 6,1\% & +42,267 & Cumple \\
+		
+		Motor PMSM & Velocidad máxima del rotor [\si{\radian\per\second}] &
+		691,150 & 282,744 & 40,9\% & +408,406 & Cumple \\
+		
+		Motor PMSM & Corriente de fase RMS del ciclo [\si{\ampere}] &
+		0,400 & 0,116 & 28,9\% & +0,284 & Cumple \\
+		
+		Motor PMSM & Corriente RMS equivalente máxima durante las aceleraciones [\si{\ampere}] &
+		2,000 & 0,275 & 13,8\% & +1,725 & Cumple \\
+		
+		Motor PMSM & Tensión línea--línea RMS equivalente máxima [\si{\volt}] &
+		30,000 & 16,803 & 56,0\% & +13,197 & Cumple \\
+		
+		Motor PMSM & Temperatura máxima del estator [$^\circ$C] &
+		115,000 & 40,762 & 35,4\% & +74,238 & Cumple \\
+		
+		Inversor & Módulo de tensión de línea RMS equivalente máximo [\si{\volt}] &
+		48,000 & 16,803 & 35,0\% & +31,197 & Cumple \\
+		
+		Inversor & Tensión de fase instantánea máxima solicitada [\si{\volt}] &
+		39,192 & 13,719 & 35,0\% & +25,473 & Cumple \\
+		
+		Inversor/PMSM & Frecuencia sincrónica máxima estimada [\si{\hertz}] &
+		330,000 & 135,000 & 40,9\% & +195,000 & Cumple \\
+		\bottomrule
+	\end{tabularx}
+\end{table*}
+
+Los valores más relevantes fueron un torque de salida pico de
+$\SI{2.733}{\newton\metre}$, una corriente RMS máxima durante las aceleraciones
+de $\SI{0.275}{\ampere}$ y una tensión línea--línea RMS equivalente máxima de
+$\SI{16.803}{\volt}$. La temperatura alcanzó
+$40.762\,^\circ\mathrm{C}$. Todas las magnitudes permanecieron dentro de los
+límites especificados y no se registró duración de exceso.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_quintico/05a_torque_motor.pdf}
+		\caption{Torque electromagnético desarrollado por el motor.}
+		\label{fig:p4a_quintico_torque_motor}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_quintico/05b_torque_salida.pdf}
+		\caption{Torque calculado en la salida de la caja reductora.}
+		\label{fig:p4a_quintico_torque_salida}
+	\end{subfigure}
+	
+	\caption{Torque electromagnético y torque de salida para el perfil polinómico de quinto orden.}
+	\label{fig:p4a_quintico_torques}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_quintico/06_corrientes_qd0.pdf}
+		\caption{Corrientes en coordenadas $qd0$.}
+		\label{fig:p4a_quintico_corrientes_qd0}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_quintico/07_corrientes_abc.pdf}
+		\caption{Corrientes trifásicas del estator.}
+		\label{fig:p4a_quintico_corrientes_abc}
+	\end{subfigure}
+	
+	\caption{Corrientes del motor para el perfil polinómico de quinto orden.}
+	\label{fig:p4a_quintico_corrientes}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_quintico/08_tensiones_abc.pdf}
+		\caption{Tensiones trifásicas solicitadas al inversor.}
+		\label{fig:p4a_quintico_tensiones}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/punto_4a_quintico/09_temperatura.pdf}
+		\caption{Evolución de la temperatura del estator.}
+		\label{fig:p4a_quintico_temperatura}
+	\end{subfigure}
+	
+	\caption{Tensiones solicitadas y respuesta térmica para el perfil polinómico de quinto orden.}
+	\label{fig:p4a_quintico_tension_temperatura}
+\end{figure}
+
+En comparación con el trapecio de velocidad, el perfil quíntico produce transiciones
+más suaves porque la aceleración comienza y termina en cero. Sin embargo, para completar
+el mismo desplazamiento en el mismo tiempo alcanza una velocidad máxima mayor, por lo
+que también aumentan ligeramente la corriente y la tensión máximas. Aun así, todos los
+valores permanecen ampliamente dentro de los límites. Por lo tanto, ambas alternativas
+son válidas: el trapecio de velocidad requiere una implementación más simple, mientras
+que el polinomio de quinto orden ofrece una trayectoria más suave. Una curva S permitiría
+limitar además el \textit{jerk}, aunque se deja como posible mejora futura debido a su
+mayor complejidad.
+
+\FloatBarrier
 
 \subsubsection*{5.b Mejora del Observador: Acción Integral para Rechazo de Perturbaciones}
 

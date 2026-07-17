@@ -378,62 +378,125 @@
 \newlabel{fig:variables_electricas_termicas_4a}{{69}{89}{Corrientes, tensiones solicitadas y evolución de la temperatura del estator durante el seguimiento de la consigna}{figure.caption.165}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Rechazo a perturbaciones}{89}{subsubsection.4.1.2}\protected@file@percent }
 \newlabel{sec:rechazo_perturbaciones}{{4.1.2}{89}{Rechazo a perturbaciones}{subsubsection.4.1.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {70}{\ignorespaces Desviación de la posición de la carga ante la perturbación para los distintos valores de carga útil y fricción viscosa.}}{90}{figure.caption.166}\protected@file@percent }
-\newlabel{fig:p4b_posicion_casos}{{70}{90}{Desviación de la posición de la carga ante la perturbación para los distintos valores de carga útil y fricción viscosa}{figure.caption.166}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {71}{\ignorespaces Velocidad de la carga ante la perturbación para los distintos casos considerados.}}{90}{figure.caption.167}\protected@file@percent }
-\newlabel{fig:p4b_velocidad_casos}{{71}{90}{Velocidad de la carga ante la perturbación para los distintos casos considerados}{figure.caption.167}{}}
-\newlabel{fig:p4b_posicion_motor_zoom}{{72a}{91}{Posición real, estimada y de referencia del motor}{figure.caption.168}{}}
-\newlabel{sub@fig:p4b_posicion_motor_zoom}{{a}{91}{Posición real, estimada y de referencia del motor}{figure.caption.168}{}}
-\newlabel{fig:p4b_error_posicion_zoom}{{72b}{91}{Error de estimación de posición}{figure.caption.168}{}}
-\newlabel{sub@fig:p4b_error_posicion_zoom}{{b}{91}{Error de estimación de posición}{figure.caption.168}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {72}{\ignorespaces Detalle de la respuesta de posición del motor y del error del observador ante la perturbación de carga.}}{91}{figure.caption.168}\protected@file@percent }
-\newlabel{fig:p4b_detalle_posicion}{{72}{91}{Detalle de la respuesta de posición del motor y del error del observador ante la perturbación de carga}{figure.caption.168}{}}
-\newlabel{fig:p4b_velocidad_motor_zoom}{{73a}{91}{Velocidad real, estimada y de referencia del motor}{figure.caption.169}{}}
-\newlabel{sub@fig:p4b_velocidad_motor_zoom}{{a}{91}{Velocidad real, estimada y de referencia del motor}{figure.caption.169}{}}
-\newlabel{fig:p4b_error_velocidad_zoom}{{73b}{91}{Error de estimación de velocidad}{figure.caption.169}{}}
-\newlabel{sub@fig:p4b_error_velocidad_zoom}{{b}{91}{Error de estimación de velocidad}{figure.caption.169}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {73}{\ignorespaces Detalle de la respuesta de velocidad del motor y del error del observador ante la perturbación de carga.}}{91}{figure.caption.169}\protected@file@percent }
-\newlabel{fig:p4b_detalle_velocidad}{{73}{91}{Detalle de la respuesta de velocidad del motor y del error del observador ante la perturbación de carga}{figure.caption.169}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {74}{\ignorespaces Dinámica del error de estimación del observador estándar de orden 2. Ante una perturbación de torque activa, el sistema presenta un error de velocidad residual.}}{92}{figure.caption.173}\protected@file@percent }
-\newlabel{fig:observador_estandar_error}{{74}{92}{Dinámica del error de estimación del observador estándar de orden 2. Ante una perturbación de torque activa, el sistema presenta un error de velocidad residual}{figure.caption.173}{}}
-\newlabel{eq:observador_extendido}{{113}{92}{5.b Mejora del Observador: Acción Integral para Rechazo de Perturbaciones}{equation.113}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {75}{\ignorespaces Diagrama de bloques del Observador de Estado Extendido en Simulink. La adición del estado integrador ($K_{ei}/s$) elimina el error de estimación estacionario ante torques de carga desconocidos.}}{93}{figure.caption.174}\protected@file@percent }
-\newlabel{fig:diagrama_observador_integral}{{75}{93}{Diagrama de bloques del Observador de Estado Extendido en Simulink. La adición del estado integrador ($K_{ei}/s$) elimina el error de estimación estacionario ante torques de carga desconocidos}{figure.caption.174}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {76}{\ignorespaces Efecto de la acción integral teórica. El observador extendido con polos en $-3200\,\text  {rad/s}$ anula el error estacionario, pero induce un fenómeno de \textit  {peaking} perjudicial durante el transitorio inicial.}}{94}{figure.caption.175}\protected@file@percent }
-\newlabel{fig:observador_extendido_peaking}{{76}{94}{Efecto de la acción integral teórica. El observador extendido con polos en $-3200\,\text {rad/s}$ anula el error estacionario, pero induce un fenómeno de \textit {peaking} perjudicial durante el transitorio inicial}{figure.caption.175}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {77}{\ignorespaces Comparativa global de la dinámica del error aislada. El diseño óptimo (suavizado a $-1800\,\text  {rad/s}$) encuentra el equilibrio ideal entre velocidad de convergencia, atenuación del peaking y error nulo.}}{95}{figure.caption.176}\protected@file@percent }
-\newlabel{fig:comparativa_global_observadores}{{77}{95}{Comparativa global de la dinámica del error aislada. El diseño óptimo (suavizado a $-1800\,\text {rad/s}$) encuentra el equilibrio ideal entre velocidad de convergencia, atenuación del peaking y error nulo}{figure.caption.176}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {78}{\ignorespaces Perfil de posición del sistema en lazo cerrado completo (Simulink). La inclusión de la acción integral en el observador permite mantener la trayectoria inalterada ante la aparición súbita de torques no modelados.}}{95}{figure.caption.177}\protected@file@percent }
-\newlabel{fig:perfil_posicion_simulink}{{78}{95}{Perfil de posición del sistema en lazo cerrado completo (Simulink). La inclusión de la acción integral en el observador permite mantener la trayectoria inalterada ante la aparición súbita de torques no modelados}{figure.caption.177}{}}
-\newlabel{eq:transferencia_filtro_2do_orden}{{117}{96}{5.d.i Modelado en Espacio de Estados: Sensores de 2° Orden}{equation.117}{}}
-\newlabel{eq:resolvente_estado}{{118}{96}{5.d.i Modelado en Espacio de Estados: Sensores de 2° Orden}{equation.118}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {79}{\ignorespaces Diagrama de bloques implementado en Simulink para la degradación de los sensores. Cada bloque \textit  {State-Space} se configura con las matrices de diseño y condiciones iniciales rigurosamente calculadas para asegurar un arranque sin transitorios.}}{98}{figure.caption.182}\protected@file@percent }
-\newlabel{fig:diagrama_sensores_no_ideales}{{79}{98}{Diagrama de bloques implementado en Simulink para la degradación de los sensores. Cada bloque \textit {State-Space} se configura con las matrices de diseño y condiciones iniciales rigurosamente calculadas para asegurar un arranque sin transitorios}{figure.caption.182}{}}
-\newlabel{eq:saturacion_inversor}{{124}{99}{5.e.i Restricciones Físicas: Saturación del Bus DC}{equation.124}{}}
-\newlabel{eq:matrices_inversor}{{125}{99}{5.e.ii. Inercia Dinámica: Filtro Pasa-Bajo en Espacio de Estados}{equation.125}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {80}{\ignorespaces Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text  {V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado.}}{99}{figure.caption.186}\protected@file@percent }
-\newlabel{fig:diagrama_inversor_no_ideal}{{80}{99}{Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text {V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado}{figure.caption.186}{}}
-\newlabel{eq:criterio_nyquist}{{126}{100}{6.1. Selección del Período de Muestreo y Retenedor de Orden Cero}{equation.126}{}}
-\newlabel{eq:ts_adoptado}{{128}{100}{6.1. Selección del Período de Muestreo y Retenedor de Orden Cero}{equation.128}{}}
-\newlabel{eq:tustin_sustitucion}{{129}{100}{6.2. Discretización del Controlador PID}{equation.129}{}}
-\newlabel{eq:integrador_tustin}{{130}{101}{6.2. Discretización del Controlador PID}{equation.130}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {81}{\ignorespaces Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text  {s}$.}}{101}{figure.caption.190}\protected@file@percent }
-\newlabel{fig:diagrama_pid_discreto}{{81}{101}{Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text {s}$}{figure.caption.190}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {82}{\ignorespaces Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal.}}{102}{figure.caption.192}\protected@file@percent }
-\newlabel{fig:diagrama_observador_discreto}{{82}{102}{Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal}{figure.caption.192}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {83}{\ignorespaces Planta de control completa discretizada (real) interactuando con la planta física continua (ideal).}}{102}{figure.caption.193}\protected@file@percent }
-\newlabel{fig:controlador_completo_discretizado}{{83}{102}{Planta de control completa discretizada (real) interactuando con la planta física continua (ideal)}{figure.caption.193}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {84}{\ignorespaces Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal.}}{103}{figure.caption.195}\protected@file@percent }
-\newlabel{fig:error_controlador_continuo}{{84}{103}{Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal}{figure.caption.195}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {85}{\ignorespaces Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text  {s}$). Se aprecia el error inducido por la retención y la integración numérica.}}{103}{figure.caption.196}\protected@file@percent }
-\newlabel{fig:error_controlador_discreto}{{85}{103}{Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text {s}$). Se aprecia el error inducido por la retención y la integración numérica}{figure.caption.196}{}}
+\newlabel{fig:p4b_posicion_casos}{{70a}{90}{Posición real de la carga para las distintas condiciones mecánicas}{figure.caption.166}{}}
+\newlabel{sub@fig:p4b_posicion_casos}{{a}{90}{Posición real de la carga para las distintas condiciones mecánicas}{figure.caption.166}{}}
+\newlabel{fig:p4b_velocidad_casos}{{70b}{90}{Velocidad real de la carga ante el escalón de torque}{figure.caption.166}{}}
+\newlabel{sub@fig:p4b_velocidad_casos}{{b}{90}{Velocidad real de la carga ante el escalón de torque}{figure.caption.166}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {70}{\ignorespaces Respuesta de la carga ante una perturbación escalón de $T_{ld}=\SI {5}{\newton \metre }$, considerando los valores nominales y las variaciones extremas de los parámetros mecánicos.}}{90}{figure.caption.166}\protected@file@percent }
+\newlabel{fig:p4b_respuesta_casos}{{70}{90}{Respuesta de la carga ante una perturbación escalón de $T_{ld}=\SI {5}{\newton \metre }$, considerando los valores nominales y las variaciones extremas de los parámetros mecánicos}{figure.caption.166}{}}
+\newlabel{fig:p4b_nominal_posicion_carga}{{71a}{90}{Posición real, estimada y de referencia de la carga}{figure.caption.167}{}}
+\newlabel{sub@fig:p4b_nominal_posicion_carga}{{a}{90}{Posición real, estimada y de referencia de la carga}{figure.caption.167}{}}
+\newlabel{fig:p4b_nominal_velocidad_carga}{{71b}{90}{Velocidad real, estimada y de referencia de la carga}{figure.caption.167}{}}
+\newlabel{sub@fig:p4b_nominal_velocidad_carga}{{b}{90}{Velocidad real, estimada y de referencia de la carga}{figure.caption.167}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {71}{\ignorespaces Respuesta real y estimada de la carga para el caso nominal. La velocidad real permanece distinta de cero y produce una deriva sostenida de la posición.}}{90}{figure.caption.167}\protected@file@percent }
+\newlabel{fig:p4b_nominal_carga}{{71}{90}{Respuesta real y estimada de la carga para el caso nominal. La velocidad real permanece distinta de cero y produce una deriva sostenida de la posición}{figure.caption.167}{}}
+\newlabel{fig:p4b_nominal_posicion_motor}{{72a}{91}{Detalle de la posición real y estimada del motor}{figure.caption.168}{}}
+\newlabel{sub@fig:p4b_nominal_posicion_motor}{{a}{91}{Detalle de la posición real y estimada del motor}{figure.caption.168}{}}
+\newlabel{fig:p4b_nominal_velocidad_motor}{{72b}{91}{Detalle de la velocidad real y estimada del motor}{figure.caption.168}{}}
+\newlabel{sub@fig:p4b_nominal_velocidad_motor}{{b}{91}{Detalle de la velocidad real y estimada del motor}{figure.caption.168}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {72}{\ignorespaces Detalle de la respuesta del motor en el instante de aplicación de la perturbación para el caso nominal.}}{91}{figure.caption.168}\protected@file@percent }
+\newlabel{fig:p4b_nominal_motor}{{72}{91}{Detalle de la respuesta del motor en el instante de aplicación de la perturbación para el caso nominal}{figure.caption.168}{}}
+\newlabel{sec:verificacion_especificaciones_operacion}{{4.1.2}{91}{5.a Verificación de Limites de Operación}{section*.170}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Comparación entre las especificaciones de operación y los valores obtenidos en la simulación del punto 4.a.}}{91}{table.caption.171}\protected@file@percent }
+\newlabel{tab:limites_operacion_4a}{{12}{91}{Comparación entre las especificaciones de operación y los valores obtenidos en la simulación del punto 4.a}{table.caption.171}{}}
+\newlabel{sec:causas_sobrepasos_4a}{{4.1.2}{92}{Análisis de las posibles causas de los sobrepasos}{section*.172}{}}
+\@writefile{toc}{\contentsline {paragraph}{Análisis de las posibles causas de los sobrepasos}{92}{section*.172}\protected@file@percent }
+\newlabel{sec:trapecio_velocidad_4a}{{4.1.2}{92}{Alternativa de mejora: perfil trapezoidal de velocidad}{section*.173}{}}
+\@writefile{toc}{\contentsline {paragraph}{Alternativa de mejora: perfil trapezoidal de velocidad}{92}{section*.173}\protected@file@percent }
+\newlabel{fig:p4a_trap_posicion}{{73a}{92}{Posición real, estimada y de referencia de la carga}{figure.caption.174}{}}
+\newlabel{sub@fig:p4a_trap_posicion}{{a}{92}{Posición real, estimada y de referencia de la carga}{figure.caption.174}{}}
+\newlabel{fig:p4a_trap_velocidad}{{73b}{92}{Velocidad real, estimada y de referencia de la carga}{figure.caption.174}{}}
+\newlabel{sub@fig:p4a_trap_velocidad}{{b}{92}{Velocidad real, estimada y de referencia de la carga}{figure.caption.174}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {73}{\ignorespaces Seguimiento de posición y velocidad para la consigna trapezoidal de velocidad.}}{92}{figure.caption.174}\protected@file@percent }
+\newlabel{fig:p4a_trap_pos_vel}{{73}{92}{Seguimiento de posición y velocidad para la consigna trapezoidal de velocidad}{figure.caption.174}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Comparación entre las especificaciones de operación y los valores obtenidos con el perfil trapezoidal de velocidad.}}{93}{table.caption.175}\protected@file@percent }
+\newlabel{tab:limites_operacion_4a_trapecio}{{13}{93}{Comparación entre las especificaciones de operación y los valores obtenidos con el perfil trapezoidal de velocidad}{table.caption.175}{}}
+\newlabel{fig:p4a_trap_torque_motor}{{74a}{93}{Torque electromagnético desarrollado por el motor}{figure.caption.176}{}}
+\newlabel{sub@fig:p4a_trap_torque_motor}{{a}{93}{Torque electromagnético desarrollado por el motor}{figure.caption.176}{}}
+\newlabel{fig:p4a_trap_torque_salida}{{74b}{93}{Torque calculado en la salida de la caja reductora}{figure.caption.176}{}}
+\newlabel{sub@fig:p4a_trap_torque_salida}{{b}{93}{Torque calculado en la salida de la caja reductora}{figure.caption.176}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {74}{\ignorespaces Torque electromagnético y torque de salida para la consigna trapezoidal de velocidad.}}{93}{figure.caption.176}\protected@file@percent }
+\newlabel{fig:p4a_trap_torques}{{74}{93}{Torque electromagnético y torque de salida para la consigna trapezoidal de velocidad}{figure.caption.176}{}}
+\newlabel{fig:p4a_trap_corrientes_qd0}{{75a}{93}{Corrientes en coordenadas $qd0$}{figure.caption.177}{}}
+\newlabel{sub@fig:p4a_trap_corrientes_qd0}{{a}{93}{Corrientes en coordenadas $qd0$}{figure.caption.177}{}}
+\newlabel{fig:p4a_trap_corrientes_abc}{{75b}{93}{Corrientes trifásicas del estator}{figure.caption.177}{}}
+\newlabel{sub@fig:p4a_trap_corrientes_abc}{{b}{93}{Corrientes trifásicas del estator}{figure.caption.177}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {75}{\ignorespaces Corrientes del motor para la consigna trapezoidal de velocidad.}}{93}{figure.caption.177}\protected@file@percent }
+\newlabel{fig:p4a_trap_corrientes}{{75}{93}{Corrientes del motor para la consigna trapezoidal de velocidad}{figure.caption.177}{}}
+\newlabel{fig:p4a_trap_tensiones}{{76a}{94}{Tensiones trifásicas solicitadas al inversor}{figure.caption.178}{}}
+\newlabel{sub@fig:p4a_trap_tensiones}{{a}{94}{Tensiones trifásicas solicitadas al inversor}{figure.caption.178}{}}
+\newlabel{fig:p4a_trap_temperatura}{{76b}{94}{Evolución de la temperatura del estator}{figure.caption.178}{}}
+\newlabel{sub@fig:p4a_trap_temperatura}{{b}{94}{Evolución de la temperatura del estator}{figure.caption.178}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {76}{\ignorespaces Tensiones solicitadas y respuesta térmica para la consigna trapezoidal de velocidad.}}{94}{figure.caption.178}\protected@file@percent }
+\newlabel{fig:p4a_trap_tension_temperatura}{{76}{94}{Tensiones solicitadas y respuesta térmica para la consigna trapezoidal de velocidad}{figure.caption.178}{}}
+\newlabel{sec:polinomio_quintico_4a}{{4.1.2}{94}{Alternativa de mejora: perfil polinómico de quinto orden}{section*.179}{}}
+\@writefile{toc}{\contentsline {paragraph}{Alternativa de mejora: perfil polinómico de quinto orden}{94}{section*.179}\protected@file@percent }
+\newlabel{fig:p4a_quintico_posicion}{{77a}{94}{Posición real, estimada y de referencia de la carga}{figure.caption.180}{}}
+\newlabel{sub@fig:p4a_quintico_posicion}{{a}{94}{Posición real, estimada y de referencia de la carga}{figure.caption.180}{}}
+\newlabel{fig:p4a_quintico_velocidad}{{77b}{94}{Velocidad real, estimada y de referencia de la carga}{figure.caption.180}{}}
+\newlabel{sub@fig:p4a_quintico_velocidad}{{b}{94}{Velocidad real, estimada y de referencia de la carga}{figure.caption.180}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {77}{\ignorespaces Seguimiento de posición y velocidad para el perfil polinómico de quinto orden.}}{94}{figure.caption.180}\protected@file@percent }
+\newlabel{fig:p4a_quintico_pos_vel}{{77}{94}{Seguimiento de posición y velocidad para el perfil polinómico de quinto orden}{figure.caption.180}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces Comparación entre las especificaciones de operación y los valores obtenidos con el perfil polinómico de quinto orden.}}{95}{table.caption.181}\protected@file@percent }
+\newlabel{tab:limites_operacion_4a_quintico}{{14}{95}{Comparación entre las especificaciones de operación y los valores obtenidos con el perfil polinómico de quinto orden}{table.caption.181}{}}
+\newlabel{fig:p4a_quintico_torque_motor}{{78a}{95}{Torque electromagnético desarrollado por el motor}{figure.caption.182}{}}
+\newlabel{sub@fig:p4a_quintico_torque_motor}{{a}{95}{Torque electromagnético desarrollado por el motor}{figure.caption.182}{}}
+\newlabel{fig:p4a_quintico_torque_salida}{{78b}{95}{Torque calculado en la salida de la caja reductora}{figure.caption.182}{}}
+\newlabel{sub@fig:p4a_quintico_torque_salida}{{b}{95}{Torque calculado en la salida de la caja reductora}{figure.caption.182}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {78}{\ignorespaces Torque electromagnético y torque de salida para el perfil polinómico de quinto orden.}}{95}{figure.caption.182}\protected@file@percent }
+\newlabel{fig:p4a_quintico_torques}{{78}{95}{Torque electromagnético y torque de salida para el perfil polinómico de quinto orden}{figure.caption.182}{}}
+\newlabel{fig:p4a_quintico_corrientes_qd0}{{79a}{95}{Corrientes en coordenadas $qd0$}{figure.caption.183}{}}
+\newlabel{sub@fig:p4a_quintico_corrientes_qd0}{{a}{95}{Corrientes en coordenadas $qd0$}{figure.caption.183}{}}
+\newlabel{fig:p4a_quintico_corrientes_abc}{{79b}{95}{Corrientes trifásicas del estator}{figure.caption.183}{}}
+\newlabel{sub@fig:p4a_quintico_corrientes_abc}{{b}{95}{Corrientes trifásicas del estator}{figure.caption.183}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {79}{\ignorespaces Corrientes del motor para el perfil polinómico de quinto orden.}}{95}{figure.caption.183}\protected@file@percent }
+\newlabel{fig:p4a_quintico_corrientes}{{79}{95}{Corrientes del motor para el perfil polinómico de quinto orden}{figure.caption.183}{}}
+\newlabel{fig:p4a_quintico_tensiones}{{80a}{96}{Tensiones trifásicas solicitadas al inversor}{figure.caption.184}{}}
+\newlabel{sub@fig:p4a_quintico_tensiones}{{a}{96}{Tensiones trifásicas solicitadas al inversor}{figure.caption.184}{}}
+\newlabel{fig:p4a_quintico_temperatura}{{80b}{96}{Evolución de la temperatura del estator}{figure.caption.184}{}}
+\newlabel{sub@fig:p4a_quintico_temperatura}{{b}{96}{Evolución de la temperatura del estator}{figure.caption.184}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {80}{\ignorespaces Tensiones solicitadas y respuesta térmica para el perfil polinómico de quinto orden.}}{96}{figure.caption.184}\protected@file@percent }
+\newlabel{fig:p4a_quintico_tension_temperatura}{{80}{96}{Tensiones solicitadas y respuesta térmica para el perfil polinómico de quinto orden}{figure.caption.184}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {81}{\ignorespaces Dinámica del error de estimación del observador estándar de orden 2. Ante una perturbación de torque activa, el sistema presenta un error de velocidad residual.}}{97}{figure.caption.186}\protected@file@percent }
+\newlabel{fig:observador_estandar_error}{{81}{97}{Dinámica del error de estimación del observador estándar de orden 2. Ante una perturbación de torque activa, el sistema presenta un error de velocidad residual}{figure.caption.186}{}}
+\newlabel{eq:observador_extendido}{{113}{97}{5.b Mejora del Observador: Acción Integral para Rechazo de Perturbaciones}{equation.113}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {82}{\ignorespaces Diagrama de bloques del Observador de Estado Extendido en Simulink. La adición del estado integrador ($K_{ei}/s$) elimina el error de estimación estacionario ante torques de carga desconocidos.}}{98}{figure.caption.187}\protected@file@percent }
+\newlabel{fig:diagrama_observador_integral}{{82}{98}{Diagrama de bloques del Observador de Estado Extendido en Simulink. La adición del estado integrador ($K_{ei}/s$) elimina el error de estimación estacionario ante torques de carga desconocidos}{figure.caption.187}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {83}{\ignorespaces Efecto de la acción integral teórica. El observador extendido con polos en $-3200\,\text  {rad/s}$ anula el error estacionario, pero induce un fenómeno de \textit  {peaking} perjudicial durante el transitorio inicial.}}{99}{figure.caption.188}\protected@file@percent }
+\newlabel{fig:observador_extendido_peaking}{{83}{99}{Efecto de la acción integral teórica. El observador extendido con polos en $-3200\,\text {rad/s}$ anula el error estacionario, pero induce un fenómeno de \textit {peaking} perjudicial durante el transitorio inicial}{figure.caption.188}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {84}{\ignorespaces Comparativa global de la dinámica del error aislada. El diseño óptimo (suavizado a $-1800\,\text  {rad/s}$) encuentra el equilibrio ideal entre velocidad de convergencia, atenuación del peaking y error nulo.}}{100}{figure.caption.189}\protected@file@percent }
+\newlabel{fig:comparativa_global_observadores}{{84}{100}{Comparativa global de la dinámica del error aislada. El diseño óptimo (suavizado a $-1800\,\text {rad/s}$) encuentra el equilibrio ideal entre velocidad de convergencia, atenuación del peaking y error nulo}{figure.caption.189}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {85}{\ignorespaces Perfil de posición del sistema en lazo cerrado completo (Simulink). La inclusión de la acción integral en el observador permite mantener la trayectoria inalterada ante la aparición súbita de torques no modelados.}}{100}{figure.caption.190}\protected@file@percent }
+\newlabel{fig:perfil_posicion_simulink}{{85}{100}{Perfil de posición del sistema en lazo cerrado completo (Simulink). La inclusión de la acción integral en el observador permite mantener la trayectoria inalterada ante la aparición súbita de torques no modelados}{figure.caption.190}{}}
+\newlabel{eq:transferencia_filtro_2do_orden}{{117}{101}{5.d.i Modelado en Espacio de Estados: Sensores de 2° Orden}{equation.117}{}}
+\newlabel{eq:resolvente_estado}{{118}{101}{5.d.i Modelado en Espacio de Estados: Sensores de 2° Orden}{equation.118}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {86}{\ignorespaces Diagrama de bloques implementado en Simulink para la degradación de los sensores. Cada bloque \textit  {State-Space} se configura con las matrices de diseño y condiciones iniciales rigurosamente calculadas para asegurar un arranque sin transitorios.}}{103}{figure.caption.195}\protected@file@percent }
+\newlabel{fig:diagrama_sensores_no_ideales}{{86}{103}{Diagrama de bloques implementado en Simulink para la degradación de los sensores. Cada bloque \textit {State-Space} se configura con las matrices de diseño y condiciones iniciales rigurosamente calculadas para asegurar un arranque sin transitorios}{figure.caption.195}{}}
+\newlabel{eq:saturacion_inversor}{{124}{104}{5.e.i Restricciones Físicas: Saturación del Bus DC}{equation.124}{}}
+\newlabel{eq:matrices_inversor}{{125}{104}{5.e.ii. Inercia Dinámica: Filtro Pasa-Bajo en Espacio de Estados}{equation.125}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {87}{\ignorespaces Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text  {V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado.}}{104}{figure.caption.199}\protected@file@percent }
+\newlabel{fig:diagrama_inversor_no_ideal}{{87}{104}{Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text {V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado}{figure.caption.199}{}}
+\newlabel{eq:criterio_nyquist}{{126}{105}{6.1. Selección del Período de Muestreo y Retenedor de Orden Cero}{equation.126}{}}
+\newlabel{eq:ts_adoptado}{{128}{105}{6.1. Selección del Período de Muestreo y Retenedor de Orden Cero}{equation.128}{}}
+\newlabel{eq:tustin_sustitucion}{{129}{105}{6.2. Discretización del Controlador PID}{equation.129}{}}
+\newlabel{eq:integrador_tustin}{{130}{106}{6.2. Discretización del Controlador PID}{equation.130}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {88}{\ignorespaces Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text  {s}$.}}{106}{figure.caption.203}\protected@file@percent }
+\newlabel{fig:diagrama_pid_discreto}{{88}{106}{Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text {s}$}{figure.caption.203}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {89}{\ignorespaces Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal.}}{107}{figure.caption.205}\protected@file@percent }
+\newlabel{fig:diagrama_observador_discreto}{{89}{107}{Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal}{figure.caption.205}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {90}{\ignorespaces Planta de control completa discretizada (real) interactuando con la planta física continua (ideal).}}{107}{figure.caption.206}\protected@file@percent }
+\newlabel{fig:controlador_completo_discretizado}{{90}{107}{Planta de control completa discretizada (real) interactuando con la planta física continua (ideal)}{figure.caption.206}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {91}{\ignorespaces Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal.}}{108}{figure.caption.208}\protected@file@percent }
+\newlabel{fig:error_controlador_continuo}{{91}{108}{Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal}{figure.caption.208}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {92}{\ignorespaces Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text  {s}$). Se aprecia el error inducido por la retención y la integración numérica.}}{108}{figure.caption.209}\protected@file@percent }
+\newlabel{fig:error_controlador_discreto}{{92}{108}{Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text {s}$). Se aprecia el error inducido por la retención y la integración numérica}{figure.caption.209}{}}
 \bibcite{guia_trabajo}{1}
 \bibcite{guia_informe}{2}
 \bibcite{krause}{3}
 \bibcite{astrom}{4}
-\@writefile{toc}{\contentsline {paragraph}{Conclusión del Análisis Digital.}{104}{section*.197}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones}{104}{section.5}\protected@file@percent }
-\newlabel{LastPage}{{5}{104}{Conclusiones}{page.104}{}}
-\gdef\lastpage@lastpage{104}
-\gdef\lastpage@lastpageHy{104}
-\gdef \@abspage@last{105}
+\@writefile{toc}{\contentsline {paragraph}{Conclusión del Análisis Digital.}{109}{section*.210}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones}{109}{section.5}\protected@file@percent }
+\newlabel{LastPage}{{5}{109}{Conclusiones}{page.109}{}}
+\gdef\lastpage@lastpage{109}
+\gdef\lastpage@lastpageHy{109}
+\gdef \@abspage@last{110}

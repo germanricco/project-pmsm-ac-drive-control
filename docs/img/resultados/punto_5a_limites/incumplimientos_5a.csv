@@ -1,4 +1,0 @@
-Variable,Valor,Limite,Margen,Unidad,Cumple
-Torque de salida pico,130.811834681443,45,-85.8118346814431,N*m pico,NO
-Corriente de fase RMS global máxima,0.719004182203981,0.4,-0.319004182203981,A rms,NO
-Corriente de fase RMS móvil máxima (ventana 20 ms),14.7633732382773,2,-12.7633732382773,A rms (20 ms),NO
