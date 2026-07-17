@@ -476,27 +476,33 @@
 \newlabel{eq:matrices_inversor}{{125}{104}{5.e.ii. Inercia Dinámica: Filtro Pasa-Bajo en Espacio de Estados}{equation.125}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {87}{\ignorespaces Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text  {V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado.}}{104}{figure.caption.199}\protected@file@percent }
 \newlabel{fig:diagrama_inversor_no_ideal}{{87}{104}{Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text {V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado}{figure.caption.199}{}}
-\newlabel{eq:criterio_nyquist}{{126}{105}{6.1. Selección del Período de Muestreo y Retenedor de Orden Cero}{equation.126}{}}
-\newlabel{eq:ts_adoptado}{{128}{105}{6.1. Selección del Período de Muestreo y Retenedor de Orden Cero}{equation.128}{}}
-\newlabel{eq:tustin_sustitucion}{{129}{105}{6.2. Discretización del Controlador PID}{equation.129}{}}
-\newlabel{eq:integrador_tustin}{{130}{106}{6.2. Discretización del Controlador PID}{equation.130}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {88}{\ignorespaces Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text  {s}$.}}{106}{figure.caption.203}\protected@file@percent }
-\newlabel{fig:diagrama_pid_discreto}{{88}{106}{Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text {s}$}{figure.caption.203}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {89}{\ignorespaces Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal.}}{107}{figure.caption.205}\protected@file@percent }
-\newlabel{fig:diagrama_observador_discreto}{{89}{107}{Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal}{figure.caption.205}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {90}{\ignorespaces Planta de control completa discretizada (real) interactuando con la planta física continua (ideal).}}{107}{figure.caption.206}\protected@file@percent }
-\newlabel{fig:controlador_completo_discretizado}{{90}{107}{Planta de control completa discretizada (real) interactuando con la planta física continua (ideal)}{figure.caption.206}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {91}{\ignorespaces Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal.}}{108}{figure.caption.208}\protected@file@percent }
-\newlabel{fig:error_controlador_continuo}{{91}{108}{Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal}{figure.caption.208}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {92}{\ignorespaces Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text  {s}$). Se aprecia el error inducido por la retención y la integración numérica.}}{108}{figure.caption.209}\protected@file@percent }
-\newlabel{fig:error_controlador_discreto}{{92}{108}{Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text {s}$). Se aprecia el error inducido por la retención y la integración numérica}{figure.caption.209}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Frontera Analógico-Digital: Interfaz mediante ADC y DAC}{105}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Método de Integración y Transformación de Tustin}{105}{subsection.4.3}\protected@file@percent }
+\newlabel{eq:tustin_sustitucion}{{128}{105}{Método de Integración y Transformación de Tustin}{equation.128}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {88}{\ignorespaces Conversores ADC implementados mediante retención de orden cero (ZOH).}}{106}{figure.caption.201}\protected@file@percent }
+\newlabel{fig:adc_zoh}{{88}{106}{Conversores ADC implementados mediante retención de orden cero (ZOH)}{figure.caption.201}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {89}{\ignorespaces Conversores DAC implementados mediante retención de primer orden (FOH).}}{106}{figure.caption.201}\protected@file@percent }
+\newlabel{fig:dac_foh}{{89}{106}{Conversores DAC implementados mediante retención de primer orden (FOH)}{figure.caption.201}{}}
+\newlabel{fig:conversores}{{\caption@xref {fig:conversores}{ on input line 5491}}{106}{Frontera Analógico-Digital: Interfaz mediante ADC y DAC}{figure.caption.201}{}}
+\newlabel{eq:integrador_tustin}{{129}{107}{Método de Integración y Transformación de Tustin}{equation.129}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Implementación Robusta en Lazo Cerrado: Uso de Integradores Discretos}{107}{subsection.4.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {90}{\ignorespaces Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text  {s}$.}}{107}{figure.caption.203}\protected@file@percent }
+\newlabel{fig:diagrama_pid_discreto}{{90}{107}{Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text {s}$}{figure.caption.203}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {91}{\ignorespaces Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal.}}{108}{figure.caption.204}\protected@file@percent }
+\newlabel{fig:diagrama_observador_discreto}{{91}{108}{Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal}{figure.caption.204}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {92}{\ignorespaces Arquitectura integral del controlador en cascada discretizado evidenciando los cuatro subsistemas modificados.}}{108}{figure.caption.205}\protected@file@percent }
+\newlabel{fig:diagrama_completo_discreto}{{92}{108}{Arquitectura integral del controlador en cascada discretizado evidenciando los cuatro subsistemas modificados}{figure.caption.205}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {93}{\ignorespaces Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal.}}{109}{figure.caption.207}\protected@file@percent }
+\newlabel{fig:error_controlador_continuo}{{93}{109}{Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal}{figure.caption.207}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {94}{\ignorespaces Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text  {s}$). Se aprecia el error inducido por la retención y la integración numérica.}}{109}{figure.caption.208}\protected@file@percent }
+\newlabel{fig:error_controlador_discreto}{{94}{109}{Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text {s}$). Se aprecia el error inducido por la retención y la integración numérica}{figure.caption.208}{}}
 \bibcite{guia_trabajo}{1}
 \bibcite{guia_informe}{2}
 \bibcite{krause}{3}
 \bibcite{astrom}{4}
-\@writefile{toc}{\contentsline {paragraph}{Conclusión del Análisis Digital.}{109}{section*.210}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones}{109}{section.5}\protected@file@percent }
-\newlabel{LastPage}{{5}{109}{Conclusiones}{page.109}{}}
-\gdef\lastpage@lastpage{109}
-\gdef\lastpage@lastpageHy{109}
-\gdef \@abspage@last{110}
+\@writefile{toc}{\contentsline {paragraph}{Conclusión del Análisis Digital.}{110}{section*.209}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones}{110}{section.5}\protected@file@percent }
+\newlabel{LastPage}{{5}{110}{Conclusiones}{page.110}{}}
+\gdef\lastpage@lastpage{110}
+\gdef\lastpage@lastpageHy{110}
+\gdef \@abspage@last{111}
