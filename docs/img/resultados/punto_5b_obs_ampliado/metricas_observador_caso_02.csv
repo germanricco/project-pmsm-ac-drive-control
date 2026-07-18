@@ -1,0 +1,9 @@
+Variable,Valor,Unidad
+Error máximo de posición estimada (motor),0.000228524676950801,rad
+Error RMS de posición estimada (motor),1.98384502528138e-06,rad RMS
+Error máximo de velocidad estimada (motor),0.315273725596285,rad/s
+Error RMS de velocidad estimada (motor),0.00247884215765056,rad/s RMS
+Error máximo de posición estimada (carga),1.90437230792334e-06,rad
+Error RMS de posición estimada (carga),1.65320418773448e-08,rad RMS
+Error máximo de velocidad estimada (carga),0.00262728104663571,rad/s
+Error RMS de velocidad estimada (carga),2.06570179804214e-05,rad/s RMS
