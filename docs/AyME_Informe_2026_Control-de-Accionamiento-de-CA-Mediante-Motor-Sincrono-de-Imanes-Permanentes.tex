@@ -5780,6 +5780,195 @@ Para evitar estos transitorios artificiales de medición, los vectores de estado
 
 El sistema así modelado permite no solo evaluar el impacto de las especificaciones nominales, sino realizar análisis de sensibilidad alterando sistemáticamente el ancho de banda del hardware de sensado ($\omega_n \rightarrow \omega_n \times 2 \rightarrow \omega_n \times 3$), con el fin de cuantificar su interacción destructiva con la sintonía del observador de estado y la transformación rápida de Park en los bucles internos.
 
+\subsubsection{Sensor no ideal de posición: caso nominal}
+
+Inicialmente se reemplazó el sensor ideal de posición por un filtro pasa bajos
+de segundo orden con ganancia unitaria, utilizando los valores nominales
+indicados en la consigna:
+
+\begin{equation}
+	\omega_{n,\theta}=2000\ \mathrm{rad/s},
+	\qquad
+	\zeta_{\theta}=1.
+\end{equation}
+
+La salida del sensor no ideal fue utilizada por el observador, la
+transformación de Park y el controlador. Con esta configuración se observa
+que la posición real y la posición observada comienzan a presentar
+oscilaciones de amplitud creciente, alejándose de la consigna, como se
+muestra en la Figura~\ref{fig:posicion_sensor_nominal}. :contentReference[oaicite:0]{index=0}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\linewidth]
+	{img/resultados/sensores_reales/posicion1_0.pdf}
+	\caption{Detalle de la respuesta de posición con el sensor nominal,
+		$\omega_{n,\theta}=2000\ \mathrm{rad/s}$.}
+	\label{fig:posicion_sensor_nominal}
+\end{figure}
+
+La pérdida de estabilidad también se refleja en las corrientes de fase,
+cuyas amplitudes crecen rápidamente hasta alcanzar valores no admisibles,
+según la Figura~\ref{fig:corrientes_sensor_nominal}. :contentReference[oaicite:1]{index=1}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\linewidth]
+	{img/resultados/sensores_reales/corrientes1_0.pdf}
+	\caption{Detalle de las corrientes trifásicas durante la divergencia
+		producida por el sensor de posición nominal.}
+	\label{fig:corrientes_sensor_nominal}
+\end{figure}
+
+Por lo tanto, el ancho de banda nominal del sensor de posición resulta
+insuficiente para su interacción con el observador y el sistema de control.
+En consecuencia, se procedió a aumentar progresivamente su frecuencia
+natural.
+
+\subsubsection{Ajuste del ancho de banda del sensor de posición}
+
+Posteriormente, se aumentó la frecuencia natural del sensor de posición a:
+
+\begin{equation}
+	\omega_{n,\theta}
+	=
+	2.5\,(2000)
+	=
+	5000\ \mathrm{rad/s}.
+\end{equation}
+
+Con este valor, la posición real y la posición observada presentan un buen
+seguimiento de la consigna, sin oscilaciones apreciables, como se observa en
+la Figura~\ref{fig:posicion_x25}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\linewidth]
+	{img/resultados/sensores_reales/posicion2_5.pdf}
+	\caption{Respuesta de posición para
+		$\omega_{n,\theta}=5000\ \mathrm{rad/s}$.}
+	\label{fig:posicion_x25}
+\end{figure}
+
+Sin embargo, las corrientes de fase todavía presentan oscilaciones de
+amplitud creciente, según la Figura~\ref{fig:corrientes_posicion_x25}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\linewidth]
+	{img/resultados/sensores_reales/corrientes2_5.pdf}
+	\caption{Corrientes trifásicas con el sensor de posición ajustado a
+		$\omega_{n,\theta}=5000\ \mathrm{rad/s}$.}
+	\label{fig:corrientes_posicion_x25}
+\end{figure}
+
+Por lo tanto, se adopta
+$\omega_{n,\theta}=5000\ \mathrm{rad/s}$ para el sensor de posición y se
+continúa con la calibración del ancho de banda de los sensores de corriente,
+con el objetivo de reducir las oscilaciones observadas.
+
+\subsubsection{Ajuste de los sensores de corriente}
+
+Manteniendo el sensor de posición en
+$\omega_{n,\theta}=5000\ \mathrm{rad/s}$, se aumentó la frecuencia natural
+de los sensores de corriente hasta:
+
+\begin{equation}
+	\omega_{n,i}=10000\ \mathrm{rad/s}.
+\end{equation}
+
+Con este ajuste, las oscilaciones iniciales se atenúan rápidamente y las
+corrientes de fase permanecen equilibradas y acotadas, sin presentar
+crecimiento inestable, como se observa en la
+Figura~\ref{fig:corrientes_ajustadas}. :contentReference[oaicite:0]{index=0}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\linewidth]
+	{img/resultados/sensores_reales/corrientes_ajustadas.pdf}
+	\caption{Corrientes trifásicas con
+		$\omega_{n,i}=10000\ \mathrm{rad/s}$.}
+	\label{fig:corrientes_ajustadas}
+\end{figure}
+
+Por lo tanto, se adopta
+$\omega_{n,i}=10000\ \mathrm{rad/s}$ para los sensores de corriente, ya que
+permite mantener estable el sistema y reduce la degradación introducida por
+su ancho de banda limitado.
+
+\subsubsection{Ajuste del sensor de temperatura}
+
+Se evaluó el sensor térmico de primer orden para
+$\tau_T=\{20,10,5,2,1,0.5\}\ \mathrm{s}$. Como se observa en la
+Figura~\ref{fig:ajuste_sensor_temperatura}, al disminuir la constante de
+tiempo se reduce el atraso entre la temperatura real y la medida.
+
+\begin{figure}[H]
+	\centering
+	
+	\begin{minipage}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/sensores_reales/temperatura20.pdf}
+		\small $\tau_T=20\ \mathrm{s}$
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/sensores_reales/temperatura10.pdf}
+		\small $\tau_T=10\ \mathrm{s}$
+	\end{minipage}
+	
+	\vspace{1mm}
+	
+	\begin{minipage}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/sensores_reales/temperatura5.pdf}
+		\small $\tau_T=5\ \mathrm{s}$
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/sensores_reales/temperatura2.pdf}
+		\small $\tau_T=2\ \mathrm{s}$
+	\end{minipage}
+	
+	\vspace{1mm}
+	
+	\begin{minipage}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/sensores_reales/temperatura1.pdf}
+		\small $\tau_T=1\ \mathrm{s}$
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/sensores_reales/temperatura05.pdf}
+		\small $\tau_T=0.5\ \mathrm{s}$
+	\end{minipage}
+	
+	\caption{Comparación entre temperatura real y medida para diferentes
+		constantes de tiempo del sensor térmico.}
+	\label{fig:ajuste_sensor_temperatura}
+\end{figure}
+
+Los valores elevados de $\tau_T$ producen un atraso importante entre la
+temperatura real y la medida. Para $\tau_T=1\ \mathrm{s}$ el seguimiento
+mejora notablemente, aunque todavía se observa una diferencia durante los
+transitorios. Con $\tau_T=0.5\ \mathrm{s}$ dicha diferencia se reduce y la
+medición reproduce con mayor fidelidad la evolución de la temperatura real.
+Por lo tanto, se adopta:
+
+\begin{equation}
+	\boxed{\tau_T=0.5\ \mathrm{s}}
+\end{equation}
+
+
 \subsubsection*{5.e. Modulador Trifásico de Tensión No Ideal: Efectos del Inversor Físico}
 
 Como última etapa en la aproximación hacia un modelo mecatrónico realista, resulta imperativo modelar las limitaciones físicas de la etapa de potencia. El modulador de tensión trifásica (inversor PWM) es el subsistema de hardware encargado de traducir las consignas de tensión ideales, emitidas por los lazos de control de corriente, en voltajes efectivos aplicados sobre los devanados del estator.
