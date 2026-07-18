@@ -5780,7 +5780,7 @@ Para evitar estos transitorios artificiales de medición, los vectores de estado
 
 El sistema así modelado permite no solo evaluar el impacto de las especificaciones nominales, sino realizar análisis de sensibilidad alterando sistemáticamente el ancho de banda del hardware de sensado ($\omega_n \rightarrow \omega_n \times 2 \rightarrow \omega_n \times 3$), con el fin de cuantificar su interacción destructiva con la sintonía del observador de estado y la transformación rápida de Park en los bucles internos.
 
-\subsubsection{Sensor no ideal de posición: caso nominal}
+\paragraph{Sensor no ideal de posición: caso nominal}
 
 Inicialmente se reemplazó el sensor ideal de posición por un filtro pasa bajos
 de segundo orden con ganancia unitaria, utilizando los valores nominales
@@ -5793,31 +5793,35 @@ indicados en la consigna:
 \end{equation}
 
 La salida del sensor no ideal fue utilizada por el observador, la
-transformación de Park y el controlador. Con esta configuración se observa
-que la posición real y la posición observada comienzan a presentar
-oscilaciones de amplitud creciente, alejándose de la consigna, como se
-muestra en la Figura~\ref{fig:posicion_sensor_nominal}. :contentReference[oaicite:0]{index=0}
+transformación de Park y el controlador. Con esta configuración, la posición
+real y la posición observada presentan oscilaciones de amplitud creciente y
+se alejan de la consigna. La pérdida de estabilidad también se refleja en las
+corrientes de fase, cuyas amplitudes crecen rápidamente hasta alcanzar valores
+no admisibles. Ambos resultados se comparan en la
+Figura~\ref{fig:sensor_posicion_nominal}.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.65\linewidth]
-	{img/resultados/sensores_reales/posicion1_0.pdf}
-	\caption{Detalle de la respuesta de posición con el sensor nominal,
-		$\omega_{n,\theta}=2000\ \mathrm{rad/s}$.}
-	\label{fig:posicion_sensor_nominal}
-\end{figure}
-
-La pérdida de estabilidad también se refleja en las corrientes de fase,
-cuyas amplitudes crecen rápidamente hasta alcanzar valores no admisibles,
-según la Figura~\ref{fig:corrientes_sensor_nominal}. :contentReference[oaicite:1]{index=1}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.65\linewidth]
-	{img/resultados/sensores_reales/corrientes1_0.pdf}
-	\caption{Detalle de las corrientes trifásicas durante la divergencia
-		producida por el sensor de posición nominal.}
-	\label{fig:corrientes_sensor_nominal}
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/sensores_reales/posicion1_0.pdf}
+		\caption{Respuesta de posición.}
+		\label{fig:posicion_sensor_nominal}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/sensores_reales/corrientes1_0.pdf}
+		\caption{Corrientes trifásicas.}
+		\label{fig:corrientes_sensor_nominal}
+	\end{subfigure}
+	\caption{Respuesta del sistema con el sensor de posición nominal,
+		$\omega_{n,\theta}=2000\ \mathrm{rad/s}$: (a) divergencia de la
+		posición real y observada; (b) crecimiento no admisible de las
+		corrientes de fase.}
+	\label{fig:sensor_posicion_nominal}
 \end{figure}
 
 Por lo tanto, el ancho de banda nominal del sensor de posición resulta
@@ -5825,7 +5829,7 @@ insuficiente para su interacción con el observador y el sistema de control.
 En consecuencia, se procedió a aumentar progresivamente su frecuencia
 natural.
 
-\subsubsection{Ajuste del ancho de banda del sensor de posición}
+\paragraph{Ajuste del ancho de banda del sensor de posición}
 
 Posteriormente, se aumentó la frecuencia natural del sensor de posición a:
 
@@ -5838,36 +5842,40 @@ Posteriormente, se aumentó la frecuencia natural del sensor de posición a:
 \end{equation}
 
 Con este valor, la posición real y la posición observada presentan un buen
-seguimiento de la consigna, sin oscilaciones apreciables, como se observa en
-la Figura~\ref{fig:posicion_x25}.
+seguimiento de la consigna, sin oscilaciones apreciables. Sin embargo, las
+corrientes de fase todavía muestran oscilaciones de amplitud creciente. Ambos
+resultados se presentan conjuntamente en la
+Figura~\ref{fig:ajuste_ancho_banda_posicion}.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.65\linewidth]
-	{img/resultados/sensores_reales/posicion2_5.pdf}
-	\caption{Respuesta de posición para
-		$\omega_{n,\theta}=5000\ \mathrm{rad/s}$.}
-	\label{fig:posicion_x25}
-\end{figure}
-
-Sin embargo, las corrientes de fase todavía presentan oscilaciones de
-amplitud creciente, según la Figura~\ref{fig:corrientes_posicion_x25}.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.65\linewidth]
-	{img/resultados/sensores_reales/corrientes2_5.pdf}
-	\caption{Corrientes trifásicas con el sensor de posición ajustado a
-		$\omega_{n,\theta}=5000\ \mathrm{rad/s}$.}
-	\label{fig:corrientes_posicion_x25}
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/sensores_reales/posicion2_5.pdf}
+		\caption{Respuesta de posición.}
+		\label{fig:posicion_x25}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/sensores_reales/corrientes2_5.pdf}
+		\caption{Corrientes trifásicas.}
+		\label{fig:corrientes_posicion_x25}
+	\end{subfigure}
+	\caption{Respuesta del sistema con el sensor de posición ajustado a
+		$\omega_{n,\theta}=5000\ \mathrm{rad/s}$: (a) seguimiento adecuado
+		de posición; (b) oscilaciones todavía presentes en las corrientes de
+		fase.}
+	\label{fig:ajuste_ancho_banda_posicion}
 \end{figure}
 
 Por lo tanto, se adopta
 $\omega_{n,\theta}=5000\ \mathrm{rad/s}$ para el sensor de posición y se
 continúa con la calibración del ancho de banda de los sensores de corriente,
 con el objetivo de reducir las oscilaciones observadas.
-
-\subsubsection{Ajuste de los sensores de corriente}
+\paragraph{Ajuste de los sensores de corriente}
 
 Manteniendo el sensor de posición en
 $\omega_{n,\theta}=5000\ \mathrm{rad/s}$, se aumentó la frecuencia natural
@@ -5896,7 +5904,7 @@ $\omega_{n,i}=10000\ \mathrm{rad/s}$ para los sensores de corriente, ya que
 permite mantener estable el sistema y reduce la degradación introducida por
 su ancho de banda limitado.
 
-\subsubsection{Ajuste del sensor de temperatura}
+\paragraph{Ajuste del sensor de temperatura}
 
 Se evaluó el sensor térmico de primer orden para
 $\tau_T=\{20,10,5,2,1,0.5\}\ \mathrm{s}$. Como se observa en la
