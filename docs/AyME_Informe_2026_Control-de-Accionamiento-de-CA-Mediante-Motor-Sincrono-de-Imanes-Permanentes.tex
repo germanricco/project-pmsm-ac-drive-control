@@ -6181,6 +6181,37 @@ A pesar de la manifestación de este error de cuantización temporal, su amplitu
 
 La elección de una frecuencia de muestreo de $10\,\text{kHz}$ incrementará previsiblemente las demandas de capacidad de cómputo del microprocesador o DSP destinado para la implementación en hardware. Sin embargo, la balanza entre costo computacional y exactitud justifica plenamente la decisión, concluyendo que la arquitectura digitalizada es madura, robusta y completamente apta para su despliegue físico.
 
+\subsection{Codificación de Software de Control: Implementación en Lenguaje Estructurado}
+
+Como culminación de la etapa de implementación digital, y con el objetivo de emular fielmente el proceso de desarrollo de \textit{firmware} para un microcontrolador o DSP físico, se procedió a reemplazar la arquitectura basada en bloques dinámicos de Simulink por código programado en lenguaje de texto estructurado.
+
+Para ello, se utilizó la herramienta \texttt{MATLAB Function}, la cual permite encapsular algoritmos en lenguaje MATLAB nativo, sentando las bases para una futura generación automática de código nativo en C/C++ (mediante \textit{Simulink Coder}). La transformación del modelo en bloques al software de control definitivo se rigió por las siguientes directrices profesionales de programación embebida:
+
+\begin{itemize}
+    \item \textbf{Uso de funciones escalares desagregadas:} Las operaciones vectoriales complejas y los lazos de control se descompusieron en ecuaciones escalares explícitas. Esto otorga control absoluto sobre el orden de ejecución algebraico, vital para evitar retardos computacionales o lazos algebraicos (\textit{Algebraic Loops}) en el microprocesador.
+    \item \textbf{Precálculo de constantes y asignación de parámetros:} Todas las variables físicas y ganancias de sintonización que no dependen del instante actual de tiempo ($T_s, K_p, K_i, L_d, L_q, r, b_{eq}$, etc.) fueron precálculadas en el \textit{script} de inicialización (\texttt{init\_workspace.m}). En las funciones de MATLAB, se configuraron con el alcance (\textit{Scope}) de \texttt{Parameter}, emulando la lectura de constantes desde la memoria Flash del procesador, evitando así recálculos redundantes en cada ciclo del reloj y liberando poder de cómputo.
+    \item \textbf{Memoria de estado (Variables Persistentes):} La discretización de las dinámicas integradoras y derivativas (Método de Tustin y Diferencia Hacia Atrás) en el Controlador PID, el Observador de Estado y el generador de Set-Point, exigió el uso de variables locales tipo \texttt{persistent}. Estas variables emulan el comportamiento de las variables \texttt{static} en lenguaje C, reteniendo el valor del estado calculado en el ciclo $k-1$ para ser utilizado en el ciclo $k$.
+\end{itemize}
+
+Los seis subsistemas críticos codificados bajo este estándar fueron:
+\begin{enumerate}
+    \item \textbf{Estimador Térmico de Resistencia:} Encargado de adaptar $R_s(T_s^\circ)$ utilizando la lectura digitalizada de temperatura.
+    \item \textbf{Interfaz de Referencia (Set-Point):} Digitalizando la cinemática de entrada.
+    \item \textbf{Controlador PID de Movimiento:} Implementando el lazo cinemático discreto.
+    \item \textbf{Observador Reducido Extendido:} Resolviendo el integrador numérico de las perturbaciones estimadas.
+    \item \textbf{Compensador Mecánico:} Ejecutando algebraicamente el \textit{Feedback Linearization} de la carga y la fricción.
+    \item \textbf{Controlador Vectorial de Corrientes:} Ecuaciones de pre-compensación eléctrica y control proporcional estricto.
+\end{enumerate}
+
+La validación comparativa del modelo demostró que esta topología basada en código rinde resultados de simulación exactamente idénticos al modelo puramente en bloques de la sección anterior, con la enorme ventaja de ser código portable. El diagrama de la arquitectura final y unificada, gobernada íntegramente por código estructurado, se ilustra en la Figura~\ref{fig:diagrama_software_matlab}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth, height=0.35\textheight, keepaspectratio]{img/diagrama_sistema_completo_discretizado_con_funciones.pdf}
+  	\caption{Arquitectura del controlador discreto programado mediante lenguaje de texto estructurado.}
+    \label{fig:diagrama_software_matlab}
+\end{figure}
+
 % ---------------------------------------------------------
 % CONCLUSIONES
 % ---------------------------------------------------------
