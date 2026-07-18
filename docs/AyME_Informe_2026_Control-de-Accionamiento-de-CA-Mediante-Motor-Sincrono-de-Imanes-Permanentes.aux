@@ -563,43 +563,58 @@
 \newlabel{eq:matrices_inversor}{{129}{113}{II) Inercia Dinámica: Filtro Pasa-Bajo en Espacio de Estados}{equation.129}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {95}{\ignorespaces Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text  {V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado.}}{114}{figure.caption.189}\protected@file@percent }
 \newlabel{fig:diagrama_inversor_no_ideal}{{95}{114}{Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text {V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado}{figure.caption.189}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Implementación Digital (Discretización del Controlador)}{114}{subsection.4.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.1}Frontera Analógico-Digital: Interfaz mediante ADC y DAC}{114}{subsubsection.4.6.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {96}{\ignorespaces Conversores ADC implementados mediante retención de orden cero (ZOH).}}{115}{figure.caption.190}\protected@file@percent }
-\newlabel{fig:adc_zoh}{{96}{115}{Conversores ADC implementados mediante retención de orden cero (ZOH)}{figure.caption.190}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {97}{\ignorespaces Conversores DAC implementados mediante retención de primer orden (FOH).}}{115}{figure.caption.190}\protected@file@percent }
-\newlabel{fig:dac_foh}{{97}{115}{Conversores DAC implementados mediante retención de primer orden (FOH)}{figure.caption.190}{}}
-\newlabel{fig:conversores}{{\caption@xref {fig:conversores}{ on input line 5970}}{115}{Frontera Analógico-Digital: Interfaz mediante ADC y DAC}{figure.caption.190}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.2}Selección del Período de Muestreo y Retenedor de Orden Cero}{115}{subsubsection.4.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{III)Evaluación del inversor trifásico no ideal}{114}{section*.190}\protected@file@percent }
+\newlabel{fig:pos_solo_saturacion}{{96a}{114}{Seguimiento de posición}{figure.caption.191}{}}
+\newlabel{sub@fig:pos_solo_saturacion}{{a}{114}{Seguimiento de posición}{figure.caption.191}{}}
+\newlabel{fig:v_solo_saturacion}{{96b}{114}{Tensiones de referencia y aplicadas}{figure.caption.191}{}}
+\newlabel{sub@fig:v_solo_saturacion}{{b}{114}{Tensiones de referencia y aplicadas}{figure.caption.191}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {96}{\ignorespaces Respuesta considerando únicamente la saturación del inversor.}}{114}{figure.caption.191}\protected@file@percent }
+\newlabel{fig:inv_saturacion}{{96}{114}{Respuesta considerando únicamente la saturación del inversor}{figure.caption.191}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {97}{\ignorespaces Divergencia obtenida con el ancho de banda nominal del inversor.}}{115}{figure.caption.192}\protected@file@percent }
+\newlabel{fig:inv_divergencia}{{97}{115}{Divergencia obtenida con el ancho de banda nominal del inversor}{figure.caption.192}{}}
+\newlabel{fig:pos_completo_45}{{98a}{115}{Seguimiento de posición}{figure.caption.193}{}}
+\newlabel{sub@fig:pos_completo_45}{{a}{115}{Seguimiento de posición}{figure.caption.193}{}}
+\newlabel{fig:v_completo_45}{{98b}{115}{Tensiones de referencia y aplicadas}{figure.caption.193}{}}
+\newlabel{sub@fig:v_completo_45}{{b}{115}{Tensiones de referencia y aplicadas}{figure.caption.193}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {98}{\ignorespaces Respuesta del inversor completo para $\omega _{n,v}=27000~\mathrm  {rad/s}$.}}{115}{figure.caption.193}\protected@file@percent }
+\newlabel{fig:inv_completo_45}{{98}{115}{Respuesta del inversor completo para $\omega _{n,v}=27000~\mathrm {rad/s}$}{figure.caption.193}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Implementación Digital (Discretización del Controlador)}{116}{subsection.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.1}Frontera Analógico-Digital: Interfaz mediante ADC y DAC}{116}{subsubsection.4.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.2}Selección del Período de Muestreo y Retenedor de Orden Cero}{116}{subsubsection.4.6.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.3}Métodos de Integración y Derivación Numérica}{116}{subsubsection.4.6.3}\protected@file@percent }
-\newlabel{eq:tustin_sustitucion}{{132}{116}{Métodos de Integración y Derivación Numérica}{equation.132}{}}
-\newlabel{eq:integrador_tustin}{{133}{116}{Métodos de Integración y Derivación Numérica}{equation.133}{}}
-\newlabel{eq:derivada_backward}{{134}{116}{Métodos de Integración y Derivación Numérica}{equation.134}{}}
-\newlabel{eq:derivada_diferencias}{{135}{116}{Métodos de Integración y Derivación Numérica}{equation.135}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.4}Implementación Robusta en Lazo Cerrado: Uso de Componentes Discretos}{116}{subsubsection.4.6.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {98}{\ignorespaces Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text  {s}$.}}{117}{figure.caption.191}\protected@file@percent }
-\newlabel{fig:diagrama_pid_discreto}{{98}{117}{Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text {s}$}{figure.caption.191}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {99}{\ignorespaces Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal.}}{117}{figure.caption.192}\protected@file@percent }
-\newlabel{fig:diagrama_observador_discreto}{{99}{117}{Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal}{figure.caption.192}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {100}{\ignorespaces Implementación en tiempo discreto de la Interfaz de Referencia (Set-Point).}}{118}{figure.caption.193}\protected@file@percent }
-\newlabel{fig:diagrama_setpoint_discreto}{{100}{118}{Implementación en tiempo discreto de la Interfaz de Referencia (Set-Point)}{figure.caption.193}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {101}{\ignorespaces Arquitectura integral del controlador en cascada discretizado.}}{118}{figure.caption.194}\protected@file@percent }
-\newlabel{fig:diagrama_completo_discreto}{{101}{118}{Arquitectura integral del controlador en cascada discretizado}{figure.caption.194}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.5}Análisis de Desempeño: Controlador Continuo (Ideal) vs. Discreto (Real)}{118}{subsubsection.4.6.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {102}{\ignorespaces Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal.}}{119}{figure.caption.195}\protected@file@percent }
-\newlabel{fig:error_controlador_continuo}{{102}{119}{Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal}{figure.caption.195}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {103}{\ignorespaces Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text  {s}$). Se aprecia el error inducido por la retención y la integración numérica.}}{119}{figure.caption.196}\protected@file@percent }
-\newlabel{fig:error_controlador_discreto}{{103}{119}{Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text {s}$). Se aprecia el error inducido por la retención y la integración numérica}{figure.caption.196}{}}
-\@writefile{toc}{\contentsline {paragraph}{Conclusión del Análisis Digital.}{120}{section*.197}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones y Recomendaciones Futuras}{120}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Conclusiones Generales y Análisis de Desempeño}{120}{subsection.5.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {99}{\ignorespaces Conversores ADC implementados mediante retención de orden cero (ZOH).}}{117}{figure.caption.194}\protected@file@percent }
+\newlabel{fig:adc_zoh}{{99}{117}{Conversores ADC implementados mediante retención de orden cero (ZOH)}{figure.caption.194}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {100}{\ignorespaces Conversores DAC implementados mediante retención de primer orden (FOH).}}{117}{figure.caption.194}\protected@file@percent }
+\newlabel{fig:dac_foh}{{100}{117}{Conversores DAC implementados mediante retención de primer orden (FOH)}{figure.caption.194}{}}
+\newlabel{fig:conversores}{{\caption@xref {fig:conversores}{ on input line 6049}}{117}{Frontera Analógico-Digital: Interfaz mediante ADC y DAC}{figure.caption.194}{}}
+\newlabel{eq:tustin_sustitucion}{{132}{118}{Métodos de Integración y Derivación Numérica}{equation.132}{}}
+\newlabel{eq:integrador_tustin}{{133}{118}{Métodos de Integración y Derivación Numérica}{equation.133}{}}
+\newlabel{eq:derivada_backward}{{134}{118}{Métodos de Integración y Derivación Numérica}{equation.134}{}}
+\newlabel{eq:derivada_diferencias}{{135}{118}{Métodos de Integración y Derivación Numérica}{equation.135}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.4}Implementación Robusta en Lazo Cerrado: Uso de Componentes Discretos}{118}{subsubsection.4.6.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {101}{\ignorespaces Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text  {s}$.}}{119}{figure.caption.195}\protected@file@percent }
+\newlabel{fig:diagrama_pid_discreto}{{101}{119}{Estructura del Controlador PID en dominio discreto, reemplazando los integradores continuos por equivalentes trapezoidales de Tustin con $T_s = 0.0001\,\text {s}$}{figure.caption.195}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {102}{\ignorespaces Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal.}}{119}{figure.caption.196}\protected@file@percent }
+\newlabel{fig:diagrama_observador_discreto}{{102}{119}{Topología discreta del Observador Reducido de Estado, forzando la digitalización de sus entradas y su dinámica interna mediante el método bilineal}{figure.caption.196}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {103}{\ignorespaces Implementación en tiempo discreto de la Interfaz de Referencia (Set-Point).}}{120}{figure.caption.197}\protected@file@percent }
+\newlabel{fig:diagrama_setpoint_discreto}{{103}{120}{Implementación en tiempo discreto de la Interfaz de Referencia (Set-Point)}{figure.caption.197}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {104}{\ignorespaces Arquitectura integral del controlador en cascada discretizado.}}{120}{figure.caption.198}\protected@file@percent }
+\newlabel{fig:diagrama_completo_discreto}{{104}{120}{Arquitectura integral del controlador en cascada discretizado}{figure.caption.198}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.5}Análisis de Desempeño: Controlador Continuo (Ideal) vs. Discreto (Real)}{120}{subsubsection.4.6.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {105}{\ignorespaces Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal.}}{121}{figure.caption.199}\protected@file@percent }
+\newlabel{fig:error_controlador_continuo}{{105}{121}{Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal}{figure.caption.199}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {106}{\ignorespaces Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text  {s}$). Se aprecia el error inducido por la retención y la integración numérica.}}{121}{figure.caption.200}\protected@file@percent }
+\newlabel{fig:error_controlador_discreto}{{106}{121}{Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text {s}$). Se aprecia el error inducido por la retención y la integración numérica}{figure.caption.200}{}}
+\@writefile{toc}{\contentsline {paragraph}{Conclusión del Análisis Digital.}{122}{section*.201}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones y Recomendaciones Futuras}{122}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Conclusiones Generales y Análisis de Desempeño}{122}{subsection.5.1}\protected@file@percent }
 \bibcite{guia_trabajo}{1}
 \bibcite{guia_informe}{2}
 \bibcite{krause}{3}
 \bibcite{astrom}{4}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Recomendaciones y Trabajos Futuros}{121}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Conclusión Final}{121}{subsection.5.3}\protected@file@percent }
-\newlabel{LastPage}{{5.3}{121}{Conclusión Final}{page.121}{}}
-\gdef\lastpage@lastpage{121}
-\gdef\lastpage@lastpageHy{121}
-\gdef \@abspage@last{122}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Recomendaciones y Trabajos Futuros}{123}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Conclusión Final}{123}{subsection.5.3}\protected@file@percent }
+\newlabel{LastPage}{{5.3}{123}{Conclusión Final}{page.123}{}}
+\gdef\lastpage@lastpage{123}
+\gdef\lastpage@lastpageHy{123}
+\gdef \@abspage@last{124}

@@ -5925,6 +5925,85 @@ La arquitectura final de la planta de potencia, integrando tanto la limitación 
 
 Al igual que con los modelos de medición, esta parametrización permite realizar estudios comparativos multiplicando el ancho de banda del inversor ($\omega_n \rightarrow \omega_n \times 2 \dots$) para analizar su influencia sobre la estabilidad transitoria general del accionamiento.
 
+\paragraph{III)Evaluación del inversor trifásico no ideal}
+
+Se evaluaron por separado los efectos de la saturación y del ancho de banda
+limitado del inversor, utilizando en todos los casos la misma consigna
+trapezoidal de velocidad.
+
+En primer lugar, se consideró únicamente la saturación de las tensiones de
+fase, con límites de $\pm 39.19~\mathrm{V}$. Como se observa en la
+Fig.~\ref{fig:inv_saturacion}, las tensiones solicitadas permanecen dentro
+del rango admisible, por lo que no se produce recorte ni una degradación
+apreciable en el seguimiento de posición.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{img/resultados/inversor_no_ideal/posicion_solo_saturacion.pdf}
+		\caption{Seguimiento de posición.}
+		\label{fig:pos_solo_saturacion}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{img/resultados/inversor_no_ideal/v_solo_saturacion.pdf}
+		\caption{Tensiones de referencia y aplicadas.}
+		\label{fig:v_solo_saturacion}
+	\end{subfigure}
+	\caption{Respuesta considerando únicamente la saturación del inversor.}
+	\label{fig:inv_saturacion}
+\end{figure}
+
+Al incorporar el filtro pasa bajos con el valor especificado
+$\omega_{n,v}=6000~\mathrm{rad/s}$ y $\xi_v=1$, el sistema presentó
+oscilaciones crecientes y la simulación se interrumpió aproximadamente en
+$t=0.012~\mathrm{s}$, evidenciando una pérdida de estabilidad
+(Fig.~\ref{fig:inv_divergencia}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.58\textwidth]{img/resultados/inversor_no_ideal/divergencia_parcial.pdf}
+	\caption{Divergencia obtenida con el ancho de banda nominal del inversor.}
+	\label{fig:inv_divergencia}
+\end{figure}
+
+Finalmente, se incrementó progresivamente la frecuencia natural del filtro.
+Para $\omega_{n,v}=27000~\mathrm{rad/s}$, equivalente a $4.5$ veces el valor
+inicial, el modelo completo con filtro y saturación logró finalizar la
+simulación. La posición real y estimada siguen correctamente la referencia,
+mientras que las tensiones aplicadas reproducen las solicitadas y permanecen
+dentro de los límites admisibles, como se muestra en la
+Fig.~\ref{fig:inv_completo_45}.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{img/resultados/inversor_no_ideal/pos_completox4_5.pdf}
+		\caption{Seguimiento de posición.}
+		\label{fig:pos_completo_45}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{img/resultados/inversor_no_ideal/v_completox4_5.pdf}
+		\caption{Tensiones de referencia y aplicadas.}
+		\label{fig:v_completo_45}
+	\end{subfigure}
+	\caption{Respuesta del inversor completo para
+		$\omega_{n,v}=27000~\mathrm{rad/s}$.}
+	\label{fig:inv_completo_45}
+\end{figure}
+
+Por lo tanto, $27000~\mathrm{rad/s}$ constituye una frecuencia suficiente
+verificada para la consigna analizada. El valor nominal de
+$6000~\mathrm{rad/s}$ representa una limitación del sistema y deberá
+considerarse en un eventual rediseño del controlador o en la selección del
+inversor.
+
+
 \subsection{Implementación Digital (Discretización del Controlador)}
 
 En esta etapa del proyecto, se abandona el dominio continuo e ideal (dominio de Laplace, $s$) para transponer la arquitectura de control desarrollada a un entorno digital de tiempo discreto (dominio $z$). Este paso es insoslayable para la implementación realista del algoritmo en un microcontrolador o Procesador Digital de Señales (DSP) físico, el cual opera mediante muestreo periódico de señales y cálculos algebraicos discretos.
