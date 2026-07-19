@@ -183,8 +183,14 @@
 \section{Resumen}
 \addcontentsline{toc}{section}{Resumen}
 
-En este informe se desarrolla el modelado, análisis, simulación y posterior diseño de control de un accionamiento electromecánico de corriente alterna basado en un motor sincrónico de imanes permanentes. El sistema bajo estudio está compuesto por una máquina PMSM trifásica alimentada por un inversor, acoplada mediante una transmisión planetaria a una carga mecánica equivalente de un grado de libertad. El objetivo general del proyecto es obtener un modelo dinámico del sistema físico, analizar su comportamiento a lazo abierto y diseñar posteriormente una estrategia de control de movimiento en cascada con control vectorial.
 
+El presente informe contiene el modelado, análisis, simulación y diseño de control de un accionamiento eléctrico de corriente alterna basado en un motor sincrónico de imanes permanentes. El sistema está destinado al control de posición de una carga mecánica de un grado de libertad e incluye una máquina PMSM trifásica, un inversor electrónico, una transmisión planetaria y los sensores necesarios para su realimentación.
+
+Se obtuvo un modelo dinámico integral que contempla los comportamientos mecánico, electromagnético y térmico del accionamiento. A partir de este modelo se analizaron las principales propiedades dinámicas del sistema y se diseñó una arquitectura de control en cascada basada en control vectorial, regulación de movimiento y estimación de variables internas.
+
+El desempeño del sistema se evaluó mediante simulaciones en MATLAB/Simulink, considerando el seguimiento de consignas, el rechazo de perturbaciones, las variaciones de los parámetros de la carga y las limitaciones de los componentes físicos. También se estudiaron los efectos introducidos por sensores e inversores no ideales y se realizó la discretización del sistema de control.
+
+Los resultados obtenidos permitieron verificar el funcionamiento general de la estrategia propuesta, identificar las condiciones necesarias para alcanzar un seguimiento adecuado y reconocer las principales limitaciones que deberían considerarse en una futura implementación física.
 
 
 % ---------------------------------------------------------
@@ -192,8 +198,13 @@ En este informe se desarrolla el modelado, análisis, simulación y posterior di
 % ---------------------------------------------------------
 \section{Introducción}
 
-El presente Proyecto Global Integrador tiene como objetivo aplicar los contenidos de Automática y Máquinas Eléctricas al modelado y control de un sistema mecatrónico simplificado. El sistema estudiado corresponde a un accionamiento de corriente alterna de cuatro cuadrantes, basado en un motor sincrónico de imanes permanentes (PMSM) alimentado por un inversor trifásico y acoplado a una carga mecánica mediante una caja reductora planetaria. La variable principal a controlar será la posición angular de la carga, considerando además los efectos de fricción, gravedad, perturbaciones externas, dinámica eléctrica y calentamiento del bobinado.
+En este trabajo se estudia un accionamiento de corriente alterna destinado al control de posición de una carga mecánica de un grado de libertad. El sistema está compuesto por un motor sincrónico de imanes permanentes alimentado mediante un inversor trifásico, una transmisión planetaria y sensores de posición, corriente y temperatura. La carga mecánica se encuentra sometida a los efectos de la gravedad, la fricción y perturbaciones externas.
 
+El objetivo general es desarrollar un modelo representativo del sistema físico y diseñar una estrategia de control que permita regular su movimiento, seguir las consignas establecidas y rechazar las perturbaciones que actúan sobre la carga. Para ello se emplean herramientas de modelado matemático, análisis de sistemas dinámicos, control vectorial y simulación computacional.
+
+El desarrollo comienza con la obtención de los modelos mecánico, electromagnético y térmico del accionamiento, los cuales se integran en una representación dinámica global. Posteriormente se estudian las propiedades del sistema a lazo abierto y se diseña una arquitectura de control en cascada compuesta por los lazos internos de corriente y torque, el controlador externo de movimiento y un observador de estado.
+
+Finalmente, el desempeño del sistema se evalúa mediante diferentes escenarios de simulación, incorporando progresivamente condiciones de operación y comportamientos no ideales. También se analiza la implementación del controlador en tiempo discreto, con el propósito de aproximar el modelo de simulación a una posible implementación sobre una plataforma de control digital.
 
 % ---------------------------------------------------------
 % DESARROLLO
