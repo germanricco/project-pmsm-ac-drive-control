@@ -600,24 +600,40 @@
 \newlabel{fig:diagrama_setpoint_discreto}{{103}{120}{Implementación en tiempo discreto de la Interfaz de Referencia (Set-Point)}{figure.caption.197}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {104}{\ignorespaces Arquitectura integral del controlador en cascada discretizado.}}{120}{figure.caption.198}\protected@file@percent }
 \newlabel{fig:diagrama_completo_discreto}{{104}{120}{Arquitectura integral del controlador en cascada discretizado}{figure.caption.198}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.5}Análisis de Desempeño: Controlador Continuo (Ideal) vs. Discreto (Real)}{120}{subsubsection.4.6.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {105}{\ignorespaces Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal.}}{121}{figure.caption.199}\protected@file@percent }
-\newlabel{fig:error_controlador_continuo}{{105}{121}{Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal}{figure.caption.199}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {106}{\ignorespaces Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text  {s}$). Se aprecia el error inducido por la retención y la integración numérica.}}{121}{figure.caption.200}\protected@file@percent }
-\newlabel{fig:error_controlador_discreto}{{106}{121}{Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text {s}$). Se aprecia el error inducido por la retención y la integración numérica}{figure.caption.200}{}}
-\@writefile{toc}{\contentsline {paragraph}{Conclusión del Análisis Digital.}{122}{section*.201}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}Codificación de Software de Control: Implementación en Lenguaje Estructurado}{122}{subsection.4.7}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {107}{\ignorespaces Arquitectura del controlador discreto programado mediante lenguaje de texto estructurado.}}{123}{figure.caption.202}\protected@file@percent }
-\newlabel{fig:diagrama_software_matlab}{{107}{123}{Arquitectura del controlador discreto programado mediante lenguaje de texto estructurado}{figure.caption.202}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones y Recomendaciones Futuras}{123}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Conclusiones Generales y Análisis de Desempeño}{123}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Recomendaciones y Trabajos Futuros}{124}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.5}Evaluación del controlador discreto}{120}{subsubsection.4.6.5}\protected@file@percent }
+\newlabel{sec:evaluacion_controlador_discreto}{{4.6.5}{120}{Evaluación del controlador discreto}{subsubsection.4.6.5}{}}
+\newlabel{fig:barrido_posicion_discreto}{{105a}{121}{Seguimiento de la posición}{figure.caption.199}{}}
+\newlabel{sub@fig:barrido_posicion_discreto}{{a}{121}{Seguimiento de la posición}{figure.caption.199}{}}
+\newlabel{fig:barrido_error_velocidad_discreto}{{105b}{121}{Error de seguimiento de velocidad}{figure.caption.199}{}}
+\newlabel{sub@fig:barrido_error_velocidad_discreto}{{b}{121}{Error de seguimiento de velocidad}{figure.caption.199}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {105}{\ignorespaces Comparación del desempeño para distintas frecuencias de muestreo.}}{121}{figure.caption.199}\protected@file@percent }
+\newlabel{fig:barrido_seguimiento_discreto}{{105}{121}{Comparación del desempeño para distintas frecuencias de muestreo}{figure.caption.199}{}}
+\newlabel{fig:posicion_discreta_5khz}{{106a}{121}{\(f_s=5~\text {kHz}\), \(T_s=200~\mu \text {s}\)}{figure.caption.200}{}}
+\newlabel{sub@fig:posicion_discreta_5khz}{{a}{121}{\(f_s=5~\text {kHz}\), \(T_s=200~\mu \text {s}\)}{figure.caption.200}{}}
+\newlabel{fig:posicion_discreta_10khz}{{106b}{121}{\(f_s=10~\text {kHz}\), \(T_s=100~\mu \text {s}\)}{figure.caption.200}{}}
+\newlabel{sub@fig:posicion_discreta_10khz}{{b}{121}{\(f_s=10~\text {kHz}\), \(T_s=100~\mu \text {s}\)}{figure.caption.200}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {106}{\ignorespaces Detalle del efecto de la frecuencia de muestreo sobre la respuesta en posición.}}{121}{figure.caption.200}\protected@file@percent }
+\newlabel{fig:detalle_posicion_discreta}{{106}{121}{Detalle del efecto de la frecuencia de muestreo sobre la respuesta en posición}{figure.caption.200}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces Resumen del barrido de la frecuencia de muestreo.}}{122}{table.caption.201}\protected@file@percent }
+\newlabel{tab:resumen_muestreo_discreto}{{16}{122}{Resumen del barrido de la frecuencia de muestreo}{table.caption.201}{}}
+\newlabel{fig:barrido_corriente_discreto}{{107a}{122}{Corriente equivalente instantánea}{figure.caption.202}{}}
+\newlabel{sub@fig:barrido_corriente_discreto}{{a}{122}{Corriente equivalente instantánea}{figure.caption.202}{}}
+\newlabel{fig:barrido_torque_discreto}{{107b}{122}{Torque en el eje de salida}{figure.caption.202}{}}
+\newlabel{sub@fig:barrido_torque_discreto}{{b}{122}{Torque en el eje de salida}{figure.caption.202}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {107}{\ignorespaces Esfuerzos de control para las frecuencias de muestreo evaluadas.}}{122}{figure.caption.202}\protected@file@percent }
+\newlabel{fig:barrido_esfuerzos_discreto}{{107}{122}{Esfuerzos de control para las frecuencias de muestreo evaluadas}{figure.caption.202}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}Codificación de Software de Control: Implementación en Lenguaje Estructurado}{123}{subsection.4.7}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {108}{\ignorespaces Arquitectura del controlador discreto programado mediante lenguaje de texto estructurado.}}{124}{figure.caption.203}\protected@file@percent }
+\newlabel{fig:diagrama_software_matlab}{{108}{124}{Arquitectura del controlador discreto programado mediante lenguaje de texto estructurado}{figure.caption.203}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusiones y Recomendaciones Futuras}{124}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Conclusiones Generales y Análisis de Desempeño}{124}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Recomendaciones y Trabajos Futuros}{125}{subsection.5.2}\protected@file@percent }
 \bibcite{guia_trabajo}{1}
 \bibcite{guia_informe}{2}
 \bibcite{krause}{3}
 \bibcite{astrom}{4}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Conclusión Final}{125}{subsection.5.3}\protected@file@percent }
-\newlabel{LastPage}{{5.3}{125}{Conclusión Final}{page.125}{}}
-\gdef\lastpage@lastpage{125}
-\gdef\lastpage@lastpageHy{125}
-\gdef \@abspage@last{126}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Conclusión Final}{126}{subsection.5.3}\protected@file@percent }
+\newlabel{LastPage}{{5.3}{126}{Conclusión Final}{page.126}{}}
+\gdef\lastpage@lastpage{126}
+\gdef\lastpage@lastpageHy{126}
+\gdef \@abspage@last{127}

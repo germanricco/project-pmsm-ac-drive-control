@@ -6137,49 +6137,177 @@ La consolidación de estas técnicas en el modelo rinde un controlador digital j
     \label{fig:diagrama_completo_discreto}
 \end{figure}
 
-\subsubsection{Análisis de Desempeño: Controlador Continuo (Ideal) vs. Discreto (Real)}
+\subsubsection{Evaluación del controlador discreto}
+\label{sec:evaluacion_controlador_discreto}
 
-Para auditar el impacto del proceso de digitalización sobre las prestaciones del accionamiento, se efectúa un análisis comparativo en el dominio del tiempo frente a una exigente consigna de referencia.
+Para evaluar la implementación discreta del controlador y del observador se
+realizó un barrido de la frecuencia de muestreo para \(f_s=20\), \(10\), \(5\)
+y \(2~\text{kHz}\), manteniendo sin cambios la consigna de movimiento, los
+parámetros del sistema y las condiciones de simulación.
 
-Bajo la operación del \textbf{Controlador Continuo Ideal} (Figura~\ref{fig:error_controlador_continuo}), el observador de estado y los lazos de corriente disponen de información sensada y actuación analógica instantánea de resolución temporal infinita. En este régimen utópico, el error transitorio y en estado estacionario resulta matemáticamente despreciable, rindiendo un seguimiento cuasi perfecto de la trayectoria cinemática deseada.
+Los resultados obtenidos para \(20\), \(10\) y \(5~\text{kHz}\) muestran un
+seguimiento global satisfactorio de la posición, como se observa en la
+Figura~\ref{fig:barrido_seguimiento_discreto}. Las respuestas correspondientes
+a \(20\) y \(10~\text{kHz}\) son prácticamente coincidentes, mientras que para
+\(5~\text{kHz}\) se presenta una mayor oscilación en la respuesta. Las
+diferencias aparecen principalmente durante los cambios de velocidad, aunque
+los errores permanecen reducidos para las frecuencias que completaron la
+simulación.
 
-\begin{figure}[H]
-  \centering
-  \framebox{\parbox{0.8\textwidth}{\centering
-    \vspace{2.5cm}
-    \textbf{Image Placeholder} \\
-    \small\textit{img/error\_controlador\_continuo.pdf}
-    \vspace{2.5cm}
-  }}
-  \caption{Error de seguimiento de trayectoria empleando el controlador analógico continuo ideal.}
-  \label{fig:error_controlador_continuo}
+\begin{figure}[htbp]
+	\centering
+	
+	\begin{subfigure}[t]{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{img/resultados/controlador_discreto/barrido_posicion.pdf}
+		\caption{Seguimiento de la posición.}
+		\label{fig:barrido_posicion_discreto}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{img/resultados/controlador_discreto/barrido_error_velocidad.pdf}
+		\caption{Error de seguimiento de velocidad.}
+		\label{fig:barrido_error_velocidad_discreto}
+	\end{subfigure}
+	
+	\caption{Comparación del desempeño para distintas frecuencias de muestreo.}
+	\label{fig:barrido_seguimiento_discreto}
 \end{figure}
 
-Por el contrario, al evaluar el sistema comandado por el \textbf{Controlador Discreto Real} operando a $10\,\text{kHz}$ (Figura~\ref{fig:error_controlador_discreto}), emerge un patrón de error transitorio evidente, caracterizado por una morfología de sierra o trapecio.
+Aunque las respuestas globales presentan un comportamiento similar, las
+simulaciones individuales permiten observar con mayor claridad el efecto de la
+implementación discreta. En la Figura~\ref{fig:detalle_posicion_discreta} se
+comparan las respuestas obtenidas para \(5\) y \(10~\text{kHz}\).
 
-\begin{figure}[H]
-  \centering
-  \framebox{\parbox{0.8\textwidth}{\centering
-    \vspace{2.5cm}
-    \textbf{Image Placeholder} \\
-    \small\textit{img/error\_controlador\_discreto.pdf}
-    \vspace{2.5cm}
-  }}
-  \caption{Error de seguimiento empleando el controlador discretizado real ($T_s = 0.0001\,\text{s}$). Se aprecia el error inducido por la retención y la integración numérica.}
-  \label{fig:error_controlador_discreto}
+Para \(f_s=5~\text{kHz}\) se aprecia un rizado visible en la posición,
+principalmente durante el intervalo en que la referencia permanece constante.
+Este efecto disminuye considerablemente para \(f_s=10~\text{kHz}\), caso en el
+cual las señales de posición real, estimada y digital permanecen prácticamente
+superpuestas. Por lo tanto, el aumento de la frecuencia de muestreo mejora la
+suavidad de la respuesta y reduce los efectos visibles de la discretización.
+
+\begin{figure}[htbp]
+	\centering
+	
+	\begin{subfigure}[t]{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{img/resultados/controlador_discreto/posicion_5000Hz.pdf}
+		\caption{\(f_s=5~\text{kHz}\), \(T_s=200~\mu\text{s}\).}
+		\label{fig:posicion_discreta_5khz}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{img/resultados/controlador_discreto/posicion_10000Hz.pdf}
+		\caption{\(f_s=10~\text{kHz}\), \(T_s=100~\mu\text{s}\).}
+		\label{fig:posicion_discreta_10khz}
+	\end{subfigure}
+	
+	\caption{Detalle del efecto de la frecuencia de muestreo sobre la respuesta
+		en posición.}
+	\label{fig:detalle_posicion_discreta}
 \end{figure}
 
-La aparición de este error residual está fundamentada por tres fenómenos intrínsecos de la digitalización:
+La Tabla~\ref{tab:resumen_muestreo_discreto} resume los principales resultados
+del barrido. Para \(10~\text{kHz}\), el error máximo de posición fue de
+\(6.30\times10^{-4}~\text{rad}\), mientras que el error máximo de velocidad fue
+de \(1.94\times10^{-3}~\text{rad/s}\). Estos valores son prácticamente iguales
+a los obtenidos para \(20~\text{kHz}\).
+
+Aunque \(5~\text{kHz}\) también permitió completar la simulación y cumplir los
+límites de operación, presentó un mayor rizado y una leve degradación del error
+de velocidad. Para \(2~\text{kHz}\), la simulación se detuvo en
+\(t\approx3.997~\text{s}\) debido a la falta de convergencia del lazo algebraico
+del observador, por lo que esta frecuencia no se considera admisible para la
+implementación actual.
+
+\begin{table}[htbp]
+	\centering
+	\caption{Resumen del barrido de la frecuencia de muestreo.}
+	\label{tab:resumen_muestreo_discreto}
+	\small
+	\begin{tabular}{ccccc}
+		\toprule
+		\(f_s\) &
+		\(T_s\) &
+		\(\max |e_q|\) &
+		\(\max |e_{\omega}|\) &
+		Resultado \\
+		\(\text{kHz}\) &
+		\(\mu\text{s}\) &
+		\(\text{rad}\) &
+		\(\text{rad/s}\) & \\
+		\midrule
+		20 & 50  & \(6.30\times10^{-4}\) & \(1.94\times10^{-3}\) & Cumple \\
+		10 & 100 & \(6.30\times10^{-4}\) & \(1.94\times10^{-3}\) & Cumple \\
+		5  & 200 & \(6.30\times10^{-4}\) & \(2.23\times10^{-3}\) & Cumple \\
+		2  & 500 & -- & -- & No completa \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+También se verificó que la discretización no produce incrementos significativos
+en los esfuerzos eléctricos y mecánicos. Para \(f_s=10~\text{kHz}\), el torque
+de salida presentó valores RMS y pico de \(1.30~\text{N\,m}\) y
+\(2.61~\text{N\,m}\), respectivamente, mientras que la corriente equivalente
+máxima fue de \(0.242~\text{A}\). Estos valores permanecen ampliamente por
+debajo de los límites admisibles del accionamiento.
+
+Como se observa en la Figura~\ref{fig:barrido_esfuerzos_discreto}, las
+respuestas de corriente y torque obtenidas para \(10~\text{kHz}\) son
+prácticamente equivalentes a las correspondientes a \(20~\text{kHz}\).
+Para \(5~\text{kHz}\) se observan mayores oscilaciones, aunque sin superar los
+límites de operación.
+
+\begin{figure}[htbp]
+	\centering
+	
+	\begin{subfigure}[t]{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/controlador_discreto/barrido_corriente_equivalente.pdf}
+		\caption{Corriente equivalente instantánea.}
+		\label{fig:barrido_corriente_discreto}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]
+		{img/resultados/controlador_discreto/barrido_torque_salida.pdf}
+		\caption{Torque en el eje de salida.}
+		\label{fig:barrido_torque_discreto}
+	\end{subfigure}
+	
+	\caption{Esfuerzos de control para las frecuencias de muestreo evaluadas.}
+	\label{fig:barrido_esfuerzos_discreto}
+\end{figure}
+
+A partir de los resultados obtenidos se seleccionó una frecuencia de muestreo
+de
+
+\[
+\boxed{f_s=10~\text{kHz}},
+\qquad
+\boxed{T_s=100~\mu\text{s}}.
+\]
+
+Este valor conserva prácticamente el desempeño obtenido para
+\(20~\text{kHz}\), reduce considerablemente el rizado observado para
+\(5~\text{kHz}\), cumple los límites mecánicos y eléctricos del accionamiento,
+y evita el costo computacional adicional asociado a una frecuencia de muestreo
+mayor. Por lo tanto, se considera adecuada la implementación discreta del
+controlador y del observador para las siguientes etapas de evaluación del
+sistema.
+
+La aparición de posibles errores residuales está fundamentada por tres fenómenos intrínsecos de la digitalización:
 \begin{enumerate}
     \item \textbf{Efecto de Retención (ZOH):} Las señales analógicas se bloquean en forma de escalones durante la duración del intervalo $T_s$. Esta naturaleza escalonada imposibilita la corrección instantánea en los instantes inter-muestreo, permitiendo que la planta física (que sigue evolucionando continuamente) se desvíe levemente hasta la lectura de la siguiente muestra.
     \item \textbf{Aproximación Numérica de Tustin:} Si bien la integración trapezoidal es sumamente precisa, no deja de ser una aproximación lineal por tramos de una curva continua. En rampas pronunciadas o variaciones abruptas de aceleración, el área bajo la curva estimada por el procesador difiere fraccionalmente de la integración analítica real, acumulando un ínfimo error de fase.
     \item \textbf{Retardo Algorítmico en el Observador:} Al operar con datos discretizados, la estimación del estado interno arrastra un retraso computacional mínimo de un ciclo de reloj. Esto provoca que el PID reaccione sobre información levemente atrasada respecto al tiempo absoluto de simulación.
 \end{enumerate}
 
-\paragraph{Conclusión del Análisis Digital.} 
-A pesar de la manifestación de este error de cuantización temporal, su amplitud absoluta resulta lo suficientemente pequeña como para considerarse asintóticamente despreciable en un escenario industrial real. La rigurosa selección de un $T_s = 100\,\mu\text{s}$, holgadamente por debajo de las restricciones del teorema de Nyquist-Shannon, logró que la penalización por la digitalización no comprometa la estabilidad ni induzca resonancias indeseadas (\textit{aliasing}). 
 
-La elección de una frecuencia de muestreo de $10\,\text{kHz}$ incrementará previsiblemente las demandas de capacidad de cómputo del microprocesador o DSP destinado para la implementación en hardware. Sin embargo, la balanza entre costo computacional y exactitud justifica plenamente la decisión, concluyendo que la arquitectura digitalizada es madura, robusta y completamente apta para su despliegue físico.
 
 \subsection{Codificación de Software de Control: Implementación en Lenguaje Estructurado}
 
