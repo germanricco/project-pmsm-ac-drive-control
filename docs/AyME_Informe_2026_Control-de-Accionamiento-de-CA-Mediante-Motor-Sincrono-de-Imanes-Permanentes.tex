@@ -25,6 +25,8 @@
 \usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{enumitem}
+\usepackage{listings}
+\usepackage{caption}
 
 \usepackage{tabularx}
 \sisetup{output-decimal-marker={,}, per-mode=symbol}
@@ -38,6 +40,7 @@
 % ---------------------------------------------------------
 % CONFIGURACIÓN GENERAL
 % ---------------------------------------------------------
+
 \geometry{
     a4paper,
     left=2.0cm,
@@ -67,6 +70,43 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{4pt}
 \renewcommand{\baselinestretch}{1.03}
+
+% Definición de la paleta de colores estándar de MATLAB
+\definecolor{matlabKeyword}{RGB}{0,0,255}         % Azul clásico
+\definecolor{matlabComment}{RGB}{34,139,34}       % Verde bosque
+\definecolor{matlabString}{RGB}{160,32,240}       % Púrpura
+\definecolor{matlabBackground}{RGB}{248,248,248}  % Gris casi blanco, muy elegante
+\definecolor{matlabLineNumbers}{RGB}{120,120,120} % Gris discreto para los números
+\definecolor{matlabFrame}{RGB}{200,200,200}       % Gris claro para el recuadro
+
+\captionsetup[lstlisting]{labelformat=empty}
+
+% Configuración del estilo para MATLAB
+\lstset{
+    language=Matlab,
+    backgroundcolor=\color{matlabBackground},   
+    basicstyle=\ttfamily\footnotesize,            % Fuente monoespaciada, tamaño ideal
+    keywordstyle=\color{matlabKeyword}\bfseries,  % Palabras clave en azul y negrita
+    commentstyle=\color{matlabComment}\itshape,   % Comentarios en verde y cursiva
+    stringstyle=\color{matlabString},             % Cadenas de texto en púrpura
+    numberstyle=\tiny\color{matlabLineNumbers},   % Números de línea pequeños y grises
+    numbers=left,                                 % Números a la izquierda
+    numbersep=10pt,                               % Separación entre números y código
+    stepnumber=1,                                 % Numerar cada línea
+    frame=single,                                 % Recuadro simple alrededor del código
+    rulecolor=\color{matlabFrame},                % Color del borde del recuadro
+    breaklines=true,                              % Ajuste automático de líneas largas
+    breakatwhitespace=false,
+    tabsize=4,                                    % Tabulación de 4 espacios
+    showspaces=false,
+    showstringspaces=false,
+    captionpos=b,                                 % Título en la parte inferior
+    keepspaces=true,
+    % Soporte para caracteres en español (Tildes, eñes, símbolos de apertura)
+    literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+             {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+             {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¡}{{\textexclamdown}}1 {¿}{{\textquestiondown}}1
+}
 
 % ---------------------------------------------------------
 % DATOS DEL INFORME - COMPLETAR SI HACE FALTA
@@ -6398,6 +6438,254 @@ Si bien el desempeño dinámico y la robustez del accionamiento cumplen holgadam
 El presente trabajo ha consolidado el diseño de un algoritmo de control para un motor PMSM que trasciende las soluciones clásicas. La sinergia lograda entre la linealización de la dinámica eléctrica, el control cinemático en cascada, la estimación de perturbaciones y una rigurosa discretización, ha cristalizado en un sistema altamente estable, preciso y resiliente. 
 
 Los resultados obtenidos no solo validan matemáticamente las estrategias de control moderno aplicadas, sino que establecen una plataforma tecnológica robusta, parametrizada y lista para dar el salto hacia su implementación física en sistemas mecatrónicos y robóticos de nueva generación.
+
+% ---------------------------------------------------------
+% ANEXO
+% ---------------------------------------------------------
+\section{Anexo: Implementación en matlab}
+
+\begin{lstlisting}[caption=Implentación de set-point., label=codigo:setpoint]
+function [theta_m_star, w_m_star] = set_point_discreto(q_t, q_prime_t)
+    % Definición de variables de memoria (persistent)
+    persistent q_t_prev q_prime_prev theta_int_prev
+
+    % Inicialización en el primer ciclo de ejecución (t=0)
+    if isempty(q_t_prev)
+        q_t_prev = q_t;             % Evita el pico (infinito) de la derivada en t=0
+        q_prime_prev = q_prime_t;
+        theta_int_prev = 0;         % El integrador arranca descargado
+    end
+
+    % --- CÁLCULO NUMÉRICO DISCRETO ---
+    % A. Derivador Discreto (Diferencia Hacia Atrás / Backward Euler)
+    % Fórmula: dy[k] = (x[k] - x[k-1]) / Ts
+    q_dot_derivado = (q_t - q_t_prev) / T_s;
+
+    % B. Integrador Discreto (Método de Tustin / Trapezoidal)
+    % Fórmula: y[k] = y[k-1] + (Ts/2) * (u[k] + u[k-1])
+    theta_integrado = theta_int_prev + (T_s / 2) * (q_prime_t + q_prime_prev);
+
+    % --- SALIDAS DEL SISTEMA ---
+    theta_m_star = r * (q_t + theta_integrado);
+    w_m_star     = r * (q_prime_t + q_dot_derivado);
+
+    % Actualización de memoria para el próximo ciclo
+    q_t_prev = q_t;
+    q_prime_prev = q_prime_t;
+    theta_int_prev = theta_integrado;
+end
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Implentación de controlador PID., label=codigo:pid]
+function T_m_star = controlador_pid(w_m_star, w_m)
+    % Memoria de estados para los integradores y valores previos
+    persistent e_pos_estado e_int_estado e_vel_prev e_pos_prev
+    
+    % Inicialización en el primer ciclo (t=0)
+    if isempty(e_pos_estado)
+        e_pos_estado = 0; % Memoria del integrador de posición
+        e_int_estado = 0; % Memoria del integrador de la acción integral
+        e_vel_prev = 0;   % Velocidad del ciclo anterior
+        e_pos_prev = 0;   % Posición del ciclo anterior
+    end
+
+    % Cálculo del Error de Velocidad
+    e_vel = w_m_star - w_m;
+
+    % Primer Integrador: Error de Velocidad -> Error de Posición
+    e_pos = e_pos_estado + (T_s / 2) * (e_vel + e_vel_prev);
+    
+    % Segundo Integrador: Error de Posición -> Integral del error de posición
+    e_int = e_int_estado + (T_s / 2) * (e_pos + e_pos_prev);
+    
+    D_action = ba_num * e_vel; % Accion Derivativa
+    P_action = Ksa_num * e_pos; % Accion Proporcional
+    I_action = Ksia_num * e_int;    % Accion Integral
+
+    % --- CALCULO DE LA SALIDA ---
+    T_m_star_unbounded = P_action + I_action + D_action;
+
+    % --- SATURACIÓN DE SALIDA ---
+    if T_m_star_unbounded > Torque_max
+        T_m_star = Torque_max;
+        % Saturado: No guardamos el nuevo e_int en e_int_estado (congelamos el integrador I)
+    elseif T_m_star_unbounded < -Torque_max
+        T_m_star = -Torque_max;
+        % Saturado: No guardamos el nuevo e_int en e_int_estado (congelamos el integrador I)
+    else
+        T_m_star = T_m_star_unbounded;
+        % Zona lineal: Actualizamos la memoria del integrador I
+        e_int_estado = e_int; 
+    end
+
+    % El integrador de posición NUNCA se congela, solo el de integracion.
+    e_pos_estado = e_pos;
+
+    % Actualización de memorias para el cálculo de Tustin en el próximo ciclo
+    e_vel_prev = e_vel;
+    e_pos_prev = e_pos;
+end
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Implentación de Observador de Estado Reducido Extendido., label=codigo:observador_estado]
+function [w_m_estimada, theta_m_estimada] = observador_estado(theta_m, T_m_star)
+    % Memoria de los integradores (Salidas)
+    persistent int1_estado w_est_estado th_est_estado
+    
+    % Memoria de las entradas a los integradores (para método de Tustin)
+    persistent in1_prev in2_prev in3_prev
+    
+    % Inicialización
+    if isempty(th_est_estado)
+        int1_estado = 0;   
+        w_est_estado = 0;    
+        th_est_estado = 0;  
+        
+        in1_prev = 0;
+        in2_prev = 0;
+        in3_prev = 0;
+    end
+    
+    % Cálculo del error de estimación (usando la posición estimada previa)
+    e_theta = theta_m - th_est_estado;
+    
+    % --- Lazo de Perturbación (K_ei) ---
+    in1_actual = K_ei_ext_agresivo * e_theta;
+    int1_actual = int1_estado + (T_s / 2) * (in1_actual + in1_prev); % Salida del 1er integrador
+    
+    % --- Lazo de Velocidad (K_ew) ---
+    in2_actual = (T_m_star / Jeq) + int1_actual + (K_ew_ext_agresivo * e_theta);
+    w_est_actual = w_est_estado + (T_s / 2) * (in2_actual + in2_prev); % Salida del 2do integrador
+    
+    % --- Lazo de Posición (K_eth) ---
+    in3_actual = w_est_actual + (K_eth_ext_agresivo * e_theta);
+    th_est_actual = th_est_estado + (T_s / 2) * (in3_actual + in3_prev); % Salida del 3er integrador
+    
+    % --- ASIGNACIÓN DE SALIDAS ---
+    w_m_estimada = w_est_actual;
+    theta_m_estimada = th_est_actual;
+    
+    % --- ACTUALIZACIÓN DE MEMORIAS PARA EL PRÓXIMO CICLO ---
+    % Actualizamos los estados de los integradores
+    int1_estado = int1_actual;
+    w_est_estado = w_est_actual;
+    th_est_estado = th_est_actual;
+    
+    % Actualizamos las entradas previas para el cálculo de Tustin
+    in1_prev = in1_actual;
+    in2_prev = in2_actual;
+    in3_prev = in3_actual;
+end
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Implentación de compensador mecánico., label=codigo:compensador_mecanico]
+function i_q_star = compensador_mecanico(T_m_star, w_m_estimada, theta_m, i_d)
+    % --- Compensacion de no linealidades ---
+    % Compensación Feedforward de Fricción Viscosa
+    T_friccion = b_eq * w_m_estimada;
+
+    % Compensación Feedforward de Gravedad
+    T_gravedad = K_g * sin(theta_m / r);
+
+    % Torque Total Requerido
+    T_req = T_m_star + T_friccion + T_gravedad;
+
+    % --- Modulación de Torque a Corriente ---
+    % T = (K_t + K_rel * i_d) * i_q
+    Denominador_Torque = K_t + K_rel * i_d;
+
+    % Evitar división por cero
+    if abs(Denominador_Torque) < 1e-6
+        Denominador_Torque = sign(Denominador_Torque) * 1e-6;
+        if Denominador_Torque == 0
+            Denominador_Torque = 1e-6;
+        end
+    end
+
+    % Cálculo final de la consigna de corriente
+    i_q_star = T_req / Denominador_Torque;
+end
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Implentación de controlador de corrientes con Linealizacion por Realimentacion exacta., label=codigo:controlador_corrientes]
+function [v_q, v_d, v_o] = controlador_corriente(i_q_star, i_d_star, i_o_star, i_q, i_d, i_o, R_s, w_m_estimada)
+    % --- Controlador Proporcional ---
+    % Cálculo del error de seguimiento
+    e_q = i_q_star - i_q;
+    e_d = i_d_star - i_d;
+    e_o = i_o_star - i_o;
+    
+    % Generación de las tensiones de control
+    v_bar_q = R_q_prime * e_q;
+    v_bar_d = R_d_prime * e_d;
+    v_bar_o = R_o_prime * e_o;
+
+    % --- Desacoplamiento electrico (Feedback Linearization) ---
+    % Eje en Cuadratura (q): Compensa caída óhmica y fuerza contraelectromotriz
+    v_q = v_bar_q + R_s * i_q + Pp * w_m_estimada * (L_d * i_d + lambda_m);
+    
+    % Eje Directo (d): Compensa caída óhmica y acoplamiento por reluctancia cruzada
+    v_d = v_bar_d + R_s * i_d - Pp * w_m_estimada * L_q * i_q;
+    
+    % Eje Homopolar (0): Compensa únicamente caída óhmica
+    v_o = v_bar_o + R_s * i_o;
+end
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Implentación de estimador de resistencia del estator., label=codigo:estimar_Rs]
+function R_s = estimar_Rs(T_s)
+    % Cálculo del incremento de temperatura
+    Delta_T = T_s_segura - T_sREF;
+
+    % Aplicación de la Ecuación del modelo físico
+    R_s = RsREF * (1 + alphaCu * Delta_T);
+end
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Implentación de calculo de posicion referida al rotor., label=codigo:calcular_theta_m]
+function theta_r = calcular_theta_r(theta_m)
+    theta_r = Pp * theta_m;
+end
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Implentación de Transformada Directa de Park., label=codigo:TD_Park]
+function [fq, fd, f0] = T_Park(fa, fb, fc, theta_r)
+% Transformada directa de Park: abc -> qd0
+% Convención usada:
+% fq: eje q
+% fd: eje d
+% f0: componente homopolar
+
+c1 = cos(theta_r);
+c2 = cos(theta_r - 2*pi/3);
+c3 = cos(theta_r + 2*pi/3);
+
+s1 = sin(theta_r);
+s2 = sin(theta_r - 2*pi/3);
+s3 = sin(theta_r + 2*pi/3);
+
+fq = (2/3)*(c1*fa + c2*fb + c3*fc);
+fd = (2/3)*(s1*fa + s2*fb + s3*fc);
+f0 = (1/3)*(fa + fb + fc);
+end
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Implentación de Transformada Inversa de Park., label=codigo:TI_Park]
+function [fa, fb, fc] = TI_Park(fq, fd, f0, theta_r)
+% Transformada inversa de Park: qd0 -> abc
+fa = cos(theta_r)*fq ...
+   + sin(theta_r)*fd ...
+   + f0;
+
+fb = cos(theta_r - 2*pi/3)*fq ...
+   + sin(theta_r - 2*pi/3)*fd ...
+   + f0;
+
+fc = cos(theta_r + 2*pi/3)*fq ...
+   + sin(theta_r + 2*pi/3)*fd ...
+   + f0;
+end
+\end{lstlisting}
 
 % ---------------------------------------------------------
 % REFERENCIAS

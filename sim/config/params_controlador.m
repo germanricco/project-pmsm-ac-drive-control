@@ -22,6 +22,8 @@ ba_num   = Jeq_ctrl*n_pid*wn_pid;
 Ksa_num  = Jeq_ctrl*n_pid*wn_pid^2;
 Ksia_num = Jeq_ctrl*wn_pid^3;
 
+Torque_max = 45;
+
 assert(p_c < 0, 'El polo de corriente p_c debe estar en el semiplano izquierdo.');
 assert(wn_pid > 0 && zeta_pid > 0, ...
     'wn_pid y zeta_pid deben ser positivos.');
