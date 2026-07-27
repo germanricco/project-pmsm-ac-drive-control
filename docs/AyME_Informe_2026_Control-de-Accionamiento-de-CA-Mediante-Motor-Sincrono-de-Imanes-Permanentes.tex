@@ -765,7 +765,7 @@ Internamente, se aplica la transformación de Park directa para resolver las ecu
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.95\textwidth]{img/subsistema_electromagnetico.pdf}
+	\includegraphics[width=0.95\textwidth]{img/diagrama_subsistema_electromagnetico.pdf}
 	\caption{Diagrama de bloques del subsistema electromagnético de la PMSM en coordenadas $qd0$, con acceso físico mediante tensiones y corrientes trifásicas $abc$.}
 	\label{fig:diagrama_electromecanico_equivalente}
 \end{figure}
@@ -827,7 +827,7 @@ La Fig.~\ref{fig:diagrama_termico_equivalente} muestra la implementación del mo
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.95\textwidth]{img/subsistema_termico.pdf}
+	\includegraphics[width=0.95\textwidth]{img/diagrama_subsistema_termico.pdf}
 	\caption{Diagrama de bloques del subsistema térmico en coordenadas $qd0$, con cálculo de pérdidas Joule, dinámica de temperatura y retroalimentación de $R_s(T_s^{\circ})$.}
 	\label{fig:diagrama_termico_equivalente}
 \end{figure}
@@ -953,7 +953,7 @@ La Figura~\ref{fig:modelo_global_nl} muestra la implementación en Simulink del 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{img/modelo_global_nl.pdf}
+	\includegraphics[width=\textwidth]{img/diagrama_modelo_global_nl.pdf}
 	\caption{Modelo global no lineal del accionamiento PMSM implementado en Simulink. El diagrama integra las transformaciones de Park directa e inversa, el subsistema eléctrico en coordenadas $qd0$, el subsistema mecánico equivalente, el cálculo térmico de pérdidas Joule y la retroalimentación de la resistencia estatórica variable $R_s(T_s^{\circ})$.}
 	\label{fig:modelo_global_nl}
 \end{figure}
@@ -3839,28 +3839,6 @@ La consigna exige sintonizar este lazo interior con un polo fuertemente negativo
     R_0^\prime &= (5000)\cdot L_{ls} = 5000 \cdot (0.8 \times 10^{-3}) = 4.0\,\si{\ohm}
 \end{align*}
 
-Esta asignación de polos modifica profundamente la estructura modal de la planta. Tal como ilustra la Figura~\ref{fig:mapa_pz_control_corriente}, la aplicación conjunta de la linealización por retroalimentación y el control proporcional fuerza a que los tres polos electromagnéticos acoplados originales abandonen sus posiciones naturales y migren de manera exacta hacia la coordenada unificada de $-5000\,\text{rad/s}$ en el eje real.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\linewidth]
-	{img/mapa\_pz\_sistema\_corriente\_controlada.pdf}
-  	\caption{Migración de los polos electromagnéticos tras el desacoplamiento de no linealidades y el cierre del lazo proporcional de corrientes (polos ubicados asintóticamente en $s = -5000$).}
-	\label{fig:mapa_pz_control_corriente}
-\end{figure}
-
-Bajo este ajuste, las corrientes del motor convergerán hacia sus referencias en un tiempo de asentamiento imperceptible ($\tau_c = 1/5000 = 0.2\,\text{ms}$, asentamiento al $99\%$ en $\approx 0.9\,\text{ms}$). 
-
-El contraste en el dominio del tiempo es contundente. La Figura~\ref{fig:rta_step_corriente} compara la evolución temporal de la corriente frente a un escalón normalizado unitario.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\linewidth]
-	{img/fig\_rta\_step\_original\_vs\_control\_p\_corriente.pdf}
-  	\caption{Comparativa de la respuesta al escalón unitario de corriente: Sistema original a lazo abierto (oscilatorio y lento) vs. Sistema con lazo de control proporcional desacoplado (primer orden, ultra-rápido).}
-	\label{fig:rta_step_corriente}
-\end{figure}
-
 \paragraph{¿Es necesaria una acción Integral (PI) en el lazo de corriente?}
 Al comparar esta dinámica con la planta LTI analizada en la sección de estabilidad (donde el polo eléctrico natural de lazo abierto residía en $\approx -154\,\text{rad/s}$), el lazo cerrado ha inyectado un ancho de banda extraordinariamente más rápido. 
 
@@ -3893,15 +3871,7 @@ Por otro lado, recordando la dinámica de aceleración del subsistema mecánico 
     \dot{\omega}_m(t) = \frac{1}{J_{eq}} \left[ T_m(t) - b_{eq}\omega_m(t) - \frac{g k_l}{r} \sin\left(\frac{\theta_m(t)}{r}\right) - \frac{T_{ld}(t)}{r} \right],
 \end{equation*}
 
-se evidencia que el controlador PID externo, cuya acción bruta se define como $T_{m}^{*\prime}(t)$, debe lidiar con disipaciones no lineales y fuerzas restauradoras. En la Figura~\ref{fig:mapa_pz_mecanico_natural} se aprecia un detalle de los polos del sistema mecánico operando a bajas frecuencias de manera natural. La fricción viscosa y la rigidez gravitacional (que actúa como un resorte oscilatorio no lineal) desplazan estos polos, alejando a la planta de un comportamiento integrador ideal.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\linewidth]
-	{img/mapa\_pz\_sistema\_natural\_polos\_baja\_frec.pdf}
-  	\caption{Detalle de los polos del sistema mecánico natural a baja frecuencia. La fricción viscosa y el torque gravitacional desvían la dinámica respecto a la de una inercia pura.}
-	\label{fig:mapa_pz_mecanico_natural}
-\end{figure}
+se evidencia que el controlador PID externo, cuya acción bruta se define como $T_{m}^{*\prime}(t)$, debe lidiar con disipaciones no lineales y fuerzas restauradoras.
 
 Para lograr que la planta responda idealmente como una inercia pura ($J_{eq}\dot{\omega}_m = T_{m}^{*\prime}$), el Modulador de Torque aplica \textit{feedback linearization}. Utilizando los estados mecánicos medidos por el encoder ($\theta_m$ y $\omega_m$), se anulan estas perturbaciones internas sumando términos de \textit{feedforward} a la orden del PID:
 
@@ -3918,16 +3888,6 @@ Igualando el requerimiento total de torque a la expresión compacta de la PMSM y
     }
     \label{eq:modulador_torque_final}
 \end{equation}
-
-La efectividad de esta linealización por retroalimentación sobre la dinámica mecánica se evidencia radicalmente en la reubicación modal del sistema. Como ilustra la Figura~\ref{fig:mapa_pz_torque_compensado}, la inyección del par precalculado anula por completo las dinámicas disipativas y restauradoras de la planta física, forzando a los polos mecánicos a desplazarse exactamente hacia el origen del plano complejo ($s=0$), transformando la planta en un sistema integrador puro.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\linewidth]
-	{img/mapa\_pz\_sistema\_con\_torque\_compensado.pdf}
-  	\caption{Mapa de polos mecánicos tras aplicar el Modulador de Torque con compensación de fricción y gravedad. Los polos convergen al origen, configurando una planta integradora ideal ($1/J_{eq}s$).}
-	\label{fig:mapa_pz_torque_compensado}
-\end{figure}
 
 El impacto de esta síntesis se comprueba nítidamente en el dominio del tiempo al evaluar la respuesta de la velocidad rotacional del eje ante un escalón de torque (Figura~\ref{fig:rta_step_torque_compensado}). En el sistema natural a lazo abierto, la velocidad oscila y decae hasta anularse, indicando que el accionamiento ha alcanzado una nueva posición de equilibrio estático donde el torque inyectado apenas iguala a la fuerza de gravedad opuesta. Por el contrario, al activar el Modulador de Torque con la compensación \textit{feedforward}, la gravedad se vuelve "invisible" para la dinámica: la velocidad crece de forma lineal, constante e indefinida en forma de rampa. Esto confirma empíricamente que el controlador externo goberna ahora una inercia pura libre de perturbaciones.
 
@@ -4230,16 +4190,6 @@ Para evitar este inconveniente y garantizar una operación estable, la arquitect
 	\label{fig:diagrama_controlador_pid}
 \end{figure}
 
-A fin de validar empíricamente la dinámica interna de este controlador previo a su acoplamiento con la trayectoria espacial, se analiza su respuesta transitoria frente a una consigna en escalón puramente de velocidad. Tal como lo evidencia la Figura~\ref{fig:respuesta_escalon_vel}, el núcleo del controlador gobierna de manera eficaz la inercia del sistema, logrando un seguimiento ágil, con un nivel de amortiguamiento óptimo y un tiempo de establecimiento mínimo que revalida las asunciones teóricas de la sintonía.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\linewidth]
-	{img/respuesta\_escalon\_velocidad\_pid.pdf}
-    \caption{Respuesta del lazo de control frente a una entrada en escalón de velocidad.}
-	\label{fig:respuesta_escalon_vel}
-\end{figure}
-
 \subsubsection{Jerarquía Espectral y Separación de Lazos}
 
 El éxito de la arquitectura de Control en Cascada reside en mantener una separación rigurosa de las escalas dinámicas (jerarquía espectral) para evitar la interacción destructiva entre los bucles. La Figura~\ref{fig:jerarquia_polos_global} expone el mapa de polos unificado que valida esta arquitectura.
@@ -4282,22 +4232,12 @@ No obstante, el Controlador PID de movimiento ha sido diseñado y sintonizado ma
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.95\linewidth]
-	{img/set\_point.pdf}
+	{img/diagrama_set_point.pdf}
   	\caption{Implementacion en Simulink de bloque set point.}
 	\label{fig:set_point}
 \end{figure}
 
 Este bloque de adaptación permite que el marco de referencia superior trabaje exclusivamente en el dominio físico real de la carga útil (grados o radianes efectivos del brazo articulado), delegando al esquema en cascada la gestión transparente e interna de las amplificadas excursiones angulares desarrolladas por el rotor de la máquina síncrona.
-
-La eficiencia final del diseño se consolida al evaluar el seguimiento de trayectoria posicional. La Figura~\ref{fig:respuesta_escalon_pid_posicion} exhibe la respuesta temporal del sistema frente a un comando en escalón normalizado ($\theta_m^* = 1$). El accionamiento logra un tiempo de establecimiento extraordinariamente veloz, acompañado de un sobreimpulso contenido que respeta las especificaciones del diseño. Incluso ante las máximas variaciones de inercia, la acción Integral erradica cualquier error de estado estacionario, confirmando que el Modulador de Torque y el Controlador PID operan en perfecta sinergia.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.95\linewidth]
-	{img/respuesta\_escalon\_posicion\_pid.pdf}
-    \caption{Respuesta del lazo de control frente a una entrada en escalón de posicion.}
-	\label{fig:respuesta_escalon_pid_posicion}
-\end{figure}
 
 % ---------------------------------------------------------
 
@@ -6066,38 +6006,29 @@ Para modelar matemáticamente esta interfaz en Simulink, se implementaron conver
 
 \begin{itemize}
     \item \textbf{Adquisición (ADC):} Se modeló utilizando bloques retenedores de orden cero (\textit{Zero-Order Hold}, ZOH). Este bloque emula el comportamiento real de un ADC, tomando una muestra instantánea del sensor continuo (corrientes, posición, temperatura) en $t = k T_s$ y manteniendo dicho valor constante en la entrada del algoritmo de control durante todo el ciclo de cómputo.
-    \item \textbf{Actuación (DAC):} Para la salida del controlador, encargada de comandar las tensiones de referencia al inversor, se optó por una retención de primer orden (\textit{First-Order Hold}, FOH). A diferencia del ZOH que genera escalones, el FOH realiza una interpolación lineal entre las muestras actual y previa, ofreciendo una reconstrucción más suave de la señal de control y mitigando los armónicos de alta frecuencia inyectados a la planta electromagnética.
+    \item \textbf{Actuación (DAC):} Para la salida del controlador, encargada de comandar las tensiones de referencia al inversor, también se optó por una retención de orden cero (\textit{Zero-Order Hold}, ZOH). Esta elección modela de forma mucho más rigurosa y realista la naturaleza de un generador de Modulación por Ancho de Pulsos (PWM) en un hardware embebido, el cual actualiza sus registros en instantes discretos y mantiene el ciclo de trabajo (y por ende, la tensión media aplicada) constante durante todo el período de conmutación de la etapa de potencia.
 \end{itemize}
 
 Esta delimitación física asegura que no existan lazos algebraicos inválidos ni retardos redundantes ocultos dentro de los subsistemas internos del controlador. 
-En la siguiente Figura se ilustra la implementación independiente de ambas interfaces.
 
-\begin{figure}[htbp]
+
+\begin{figure}[H]
     \centering
     \begin{minipage}{0.48\textwidth}
         \centering
-        \framebox{\parbox{0.9\textwidth}{\centering
-            \vspace{2.5cm}
-            \small\textit{Bloques ZOH en sensores.}
-            \vspace{2.5cm}
-			\includegraphics[width=0.8\linewidth, height=0.35\textheight, keepaspectratio]{img/diagrama_ADC.pdf}
-        }}
+        \includegraphics[height=4.5cm, keepaspectratio]{img/diagrama_ADC.pdf}
         \caption{Conversores ADC implementados mediante retención de orden cero (ZOH).}
         \label{fig:adc_zoh}
     \end{minipage}\hfill
     \begin{minipage}{0.48\textwidth}
         \centering
-        \framebox{\parbox{0.9\textwidth}{\centering
-            \vspace{2.5cm}
-            \small\textit{Bloques FOH en salidas.}
-            \vspace{2.5cm}
-			\includegraphics[width=0.8\linewidth, height=0.35\textheight, keepaspectratio]{img/diagrama_DAC.pdf}
-        }}
-        \caption{Conversores DAC implementados mediante retención de primer orden (FOH).}
-        \label{fig:dac_foh}
-    \end{minipage} \hfill
-    \label{fig:conversores}
+        \includegraphics[height=4.5cm, keepaspectratio]{img/diagrama_DAC.pdf}
+        \caption{Conversores DAC implementados mediante retención de orden cero (ZOH), emulando un PWM.}
+        \label{fig:dac_zoh_pwm}
+    \end{minipage}
+    \label{fig:conversores_adc_dac}
 \end{figure}
+
 
 \subsubsection{Selección del Período de Muestreo y Retenedor de Orden Cero}
 
@@ -6116,7 +6047,9 @@ Por lo tanto, adoptamos conservadoramente $f_s \approx 10 \, \text{kHz}$, lo que
 \end{equation}
 
 \subsubsection{Métodos de Integración y Derivación Numérica}
-Definido el tiempo de muestreo, es necesario transponer la dinámica interna de los controladores al entorno digital. Para los bloques acumulativos, se utilizó el \textbf{Método de Tustin} (aproximación bilineal o integración numérica por trapecios). Este método destaca por mapear de forma estable y biyectiva el semiplano izquierdo del dominio $s$ hacia el interior del círculo unitario del dominio $z$, conservando la estabilidad asintótica original.
+
+Definido el tiempo de muestreo, es necesario transponer la dinámica interna de los controladores al entorno digital. Para los bloques acumulativos, se utilizó el \textbf{Método de Tustin} (aproximación bilineal o integración numérica por trapecios). 
+Este método destaca por mapear de forma estable y biyectiva el semiplano izquierdo del dominio $s$ hacia el interior del círculo unitario del dominio $z$, conservando la estabilidad asintótica original.
 
 La transformación de Tustin obedece a la siguiente sustitución algebraica:
 \begin{equation}
@@ -6130,6 +6063,15 @@ Aplicando la Ecuación~\eqref{eq:tustin_sustitucion} a la función de transferen
     \label{eq:integrador_tustin}
 \end{equation}
 
+Para evidenciar el comportamiento analítico de esta transformación, se implementó el integrador de manera desagregada en Simulink, prescindiendo deliberadamente del bloque precompilado \texttt{Discrete-Time Integrator}. En la Figura~\ref{fig:integrador_tustin_bloques} se observa cómo la función de transferencia hallada cobra vida a través de ganancias, sumadores y un bloque de retardo unitario ($z^{-1}$) que retiene la memoria del estado y la entrada del ciclo previo.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.58\textwidth]{img/diagrama_integrador_discreto_trapezoidal.pdf}
+  	\caption{Implementación en bloques discretos elementales de la integración por el método de Tustin.}
+	\label{fig:integrador_tustin_bloques}
+\end{figure}
+
 De manera complementaria a la integración, la arquitectura del sistema requiere en instancias específicas el cálculo de tasas de cambio instantáneas, particularmente en la Interfaz de Referencia (Set-Point) para derivar la consigna de velocidad $\omega_m^*(t)$ a partir de la trayectoria de posición $\theta_m^*(t)$.
 
 Puesto que la derivación continua pura ($s$) no es implementable algorítmicamente de forma robusta, se recurre a la aproximación por \textbf{Diferencia Hacia Atrás} (\textit{Backward Euler} o \textit{Backward Difference}). Este método aproxima la pendiente analítica evaluando la tasa de variación entre la muestra actual y la inmediatamente anterior. Su equivalencia matemática para transformar el dominio $s$ al dominio $z$ se define como:
@@ -6138,12 +6080,22 @@ Puesto que la derivación continua pura ($s$) no es implementable algorítmicame
     \label{eq:derivada_backward}
 \end{equation}
 
-Aplicando esta sustitución a un derivador continuo $G_{der}(s) = s$, y trasladando el resultado al dominio del tiempo discreto ($k$), se obtiene una ecuación en diferencias recursiva fácilmente ejecutable por un microprocesador:
+Al igual que con el integrador, este derivador numérico se materializó en el entorno de simulación construyendo su topología desde cero (sin el uso del bloque \texttt{Discrete Derivative}). La Figura~\ref{fig:derivador_backward_bloques} ilustra esta estructura fundamental.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.58\textwidth]{img/diagrama_derivador_discreto.pdf}
+  	\caption{Estructura algorítmica desagregada para la derivación numérica mediante Diferencia Hacia Atrás.}
+	\label{fig:derivador_backward_bloques}
+\end{figure}
+
+Trasladando el resultado de la Ecuación~\eqref{eq:derivada_backward} al dominio del tiempo discreto ($k$), se comprueba que el diagrama de bloques equivale a la siguiente ecuación en diferencias recursiva, fácilmente ejecutable por un microprocesador:
 \begin{equation}
     y[k] = \frac{x[k] - x[k-1]}{T_s}
     \label{eq:derivada_diferencias}
 \end{equation}
-Donde $x[k]$ representa la muestra de entrada actual (ej. posición consignada en este instante) y $x[k-1]$ el valor retenido en memoria del ciclo de cómputo previo.
+Donde $x[k]$ representa la muestra de entrada actual (ej. posición consignada en este instante) y $x[k-1]$ el valor retenido en memoria del ciclo de cómputo previo garantizado por el retardo $z^{-1}$.
+
 
 \subsubsection{Implementación Robusta en Lazo Cerrado: Uso de Componentes Discretos}
 
