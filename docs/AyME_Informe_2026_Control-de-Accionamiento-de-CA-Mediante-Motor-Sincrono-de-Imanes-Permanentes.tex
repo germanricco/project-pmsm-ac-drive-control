@@ -960,161 +960,549 @@ La Figura~\ref{fig:modelo_global_nl} muestra la implementación en Simulink del 
 
 \subsubsection{Linealización Jacobiana: Modelo global LPV}
 
-\paragraph{Objetivo de la linealización.}
-El modelo global no lineal de quinto orden obtenido en \eqref{eq:modelo_global_nl} representa con alta fidelidad la dinámica de la planta física completa. 
-Sin embargo, su fuerte acoplamiento y naturaleza no lineal impiden la aplicación directa de las herramientas clásicas de análisis y síntesis de control 
-(como el lugar de las raíces, diagramas de Bode o ubicación de polos), las cuales asumen sistemas Lineales e Invariantes en el Tiempo (LTI).
 
-Para sortear este obstáculo, se realiza una linealización Jacobiana basada en la expansión en serie de Taylor alrededor de un punto genérico de operación. 
-Debido a que las matrices dinámicas resultantes dependerán de las coordenadas exactas de dicho punto (como la posición espacial del péndulo, la velocidad o la temperatura), 
-el resultado es un modelo lineal local con parámetros variables, conocido en la literatura de control como modelo LPV (\textit{Linear Parameter Varying}).
+\paragraph{Representación no lineal previa a la linealización.}
+El modelo global de la planta obtenido en \eqref{eq:modelo_global_nl} posee seis estados y, antes de realizar cualquier aproximación lineal, se representa mediante una función vectorial no lineal:
 
-\paragraph{Pequeñas variaciones alrededor de un punto de operación.}
-Dado el sistema no lineal en espacio de estados $\dot{x}(t) = f(x(t),u(t))$ y $y(t) = g(x(t),u(t))$, se define un punto genérico de operación nominal dado por los vectores constantes de estado y de entrada:
+\begin{equation}
+	\begin{aligned}
+		\dot{x}(t) &= f\bigl(x(t),u_c(t),u_d(t)\bigr),
+		\qquad x(t_0)=x_0,\\
+		y_p(t) &= g_p\bigl(x(t)\bigr)
+		=\frac{x_1(t)}{r}.
+	\end{aligned}
+	\label{eq:forma_general_nl_lpv}
+\end{equation}
 
-\begin{equation*}
-    x^o = \begin{bmatrix}
-        \theta_m^o & \omega_m^o & I_q^o & I_d^o & T_s^o
-    \end{bmatrix}^{T},
-    \qquad
-    u^o = \begin{bmatrix}
-        V_q^o & V_d^o & T_{ld}^o & T_{amb}^o
-    \end{bmatrix}^{T}.
-\end{equation*}
+Los vectores de estado, control y perturbación se mantienen de acuerdo con el modelo general:
 
-Se asume que el sistema experimenta pequeñas perturbaciones o variaciones dinámicas $(\Delta)$ respecto a esta condición nominal, tal que:
+\begin{equation}
+	x(t)=
+	\begin{bmatrix}
+		\theta_m(t) &
+		\omega_m(t) &
+		i_{qs}^r(t) &
+		i_{ds}^r(t) &
+		i_{0s}(t) &
+		T_s^{\circ}(t)
+	\end{bmatrix}^{T},
+\end{equation}
 
-\begin{equation*}
-	x(t)=x^o+\Delta x(t),
+\begin{equation}
+	u_c(t)=
+	\begin{bmatrix}
+		v_{qs}^r(t) &
+		v_{ds}^r(t) &
+		v_{0s}(t)
+	\end{bmatrix}^{T},
 	\qquad
-	u(t)=u^o+\Delta u(t).
-\end{equation*}
-
-Aplicando una aproximación por serie de Taylor truncada a primer orden, la dinámica local de las pequeñas variaciones queda descrita por el sistema linealizado:
-
-\begin{equation}
-    \begin{aligned}
-        \Delta\dot{x}(t) &= A(x^o,u^o)\Delta x(t) + B(x^o,u^o)\Delta u(t), \\
-        \Delta y_p(t) &= C(x^o,u^o)\Delta x(t) + D(x^o,u^o)\Delta u(t).
-    \end{aligned}
-    \label{eq:lpv_sistema}
-\end{equation}
-
-Las matrices Jacobianas del sistema se evalúan estrictamente en el punto de operación, determinándose componente a componente como:
-
-\begin{equation*}
-    A_{ij} = \left. \frac{\partial f_i}{\partial x_j} \right|_{x^o,u^o}, \qquad 
-    B_{ij} = \left. \frac{\partial f_i}{\partial u_j} \right|_{x^o,u^o}, \qquad
-    C_{ij} = \left. \frac{\partial g_i}{\partial x_j} \right|_{x^o,u^o}, \qquad
-    D_{ij} = \left. \frac{\partial g_i}{\partial u_j} \right|_{x^o,u^o}.
-\end{equation*}
-
-\paragraph{Espacio de operación global no lineal cuasi-estacionario.}
-Para que el punto de evaluación $(x^o, u^o)$ sea matemáticamente válido, debe pertenecer al espacio de soluciones de equilibrio del sistema no lineal; 
-es decir, anular las derivadas de los estados lentos o, en el caso de accionamientos eléctricos, establecer un régimen permanente en el marco rotórico.
-
-Igualando a cero las derivadas de la velocidad, las corrientes y la temperatura del modelo \eqref{eq:modelo_global_nl}, 
-se obtienen las ecuaciones algebraicas que restringen el punto de operación cuasi-estacionario:
-
-\begin{equation}
-    \begin{aligned}
-        0 &= K_t I_q^o + K_{rel}I_d^o I_q^o - b_{eq}\omega_m^o - \frac{gk_l}{r}\sin\left(\frac{\theta_m^o}{r}\right) - \frac{T_{ld}^o}{r},\\[1mm]
-        0 &= V_q^o - R_s(T_s^o) I_q^o - \left(\lambda_m^{\prime r}+L_d I_d^o\right)P_p\omega_m^o,\\[1mm]
-        0 &= V_d^o - R_s(T_s^o) I_d^o + L_q I_q^o P_p\omega_m^o,\\[1mm]
-        0 &= \frac{3}{2}R_s(T_s^o)\left[(I_q^o)^2+(I_d^o)^2\right] - \frac{T_s^o-T_{amb}^o}{R_{ts-amb}}.
-    \end{aligned}
-    \label{eq:condiciones_equilibrio}
-\end{equation}
-
-La Ecuación \eqref{eq:condiciones_equilibrio} permite hallar los requerimientos de tensión y corriente en estado estacionario para sostener cualquier consigna mecánica. 
-Para un equilibrio estricto de posición (por ejemplo, mantener el brazo robótico frenado en un ángulo específico contra la gravedad), se debe cumplir adicionalmente $\omega_m^o = 0$. 
-En contraste, si el objetivo es analizar el seguimiento a velocidad constante, se establece $\omega_m^o \neq 0$ y el punto se interpreta como un estado cuasi-estacionario o "congelado". 
-Es crucial notar que, dado el uso del marco $qd0$, una velocidad mecánica constante se traduce efectivamente en variables de estado constantes para las corrientes, 
-haciendo matemáticamente factible la linealización Jacobiana.
-
-\paragraph{Matriz de Estado $A(x^o,u^o)$ del modelo LPV.}
-Para evaluar las derivadas parciales que involucran a la resistencia térmica, 
-resulta conveniente definir la constante de variación de resistencia con la temperatura:
-
-\begin{equation}
-	\kappa_R=\frac{dR_s}{dT_s^{\circ}}=R_{sREF}\alpha_{Cu},
-\end{equation}
-
-Calculando el Jacobiano del sistema \eqref{eq:modelo_global_nl} respecto al vector de estado, 
-la matriz de estado local queda definida por:
-
-\begin{equation}
-	A(x^o,u^o)=
+	u_d(t)=
 	\begin{bmatrix}
-		0 & 1 & 0 & 0 & 0\\[1mm]
-		A_{21} & A_{22} & A_{23} & A_{24} & 0\\[1mm]
-		0 & A_{32} & A_{33} & A_{34} & A_{35}\\[1mm]
-		0 & A_{42} & A_{43} & A_{44} & A_{45}\\[1mm]
-		0 & 0 & A_{53} & A_{54} & A_{55}
+		T_{ld}(t) &
+		T_{amb}^{\circ}(t)
+	\end{bmatrix}^{T}.
+\end{equation}
+
+\paragraph{Linealización alrededor de una condición nominal.}
+Sea una condición nominal
+$\bigl(x^o(t),u_c^o(t),u_d^o(t)\bigr)$
+que satisface la dinámica no lineal:
+
+\begin{equation}
+	\dot{x}^o(t)
+	=
+	f\bigl(x^o(t),u_c^o(t),u_d^o(t)\bigr).
+	\label{eq:trayectoria_nominal_lpv}
+\end{equation}
+
+Se definen las variaciones locales respecto de dicha condición:
+
+\begin{equation}
+	\begin{aligned}
+		x(t) &= x^o(t)+\Delta x(t),\\
+		u_c(t) &= u_c^o(t)+\Delta u_c(t),\\
+		u_d(t) &= u_d^o(t)+\Delta u_d(t),\\
+		y_p(t) &= y_p^o(t)+\Delta y_p(t).
+	\end{aligned}
+	\label{eq:variables_incrementales_lpv}
+\end{equation}
+
+La expansión de Taylor de primer orden de la función $f$ alrededor de la condición nominal resulta:
+
+\begin{equation}
+	\begin{aligned}
+		f(x,u_c,u_d)\approx {}&
+		f(x^o,u_c^o,u_d^o)
+		+\left.\frac{\partial f}{\partial x}\right|_o\Delta x\\
+		&+\left.\frac{\partial f}{\partial u_c}\right|_o\Delta u_c
+		+\left.\frac{\partial f}{\partial u_d}\right|_o\Delta u_d,
+	\end{aligned}
+\end{equation}
+
+donde $\left.\cdot\right|_o$ indica que las derivadas se evalúan en
+$\bigl(x^o,u_c^o,u_d^o\bigr)$.
+Restando la dinámica nominal dada por \eqref{eq:trayectoria_nominal_lpv}, se obtiene el modelo lineal de las variaciones:
+
+\begin{equation}
+	\boxed{
+		\Delta\dot{x}(t)
+		=
+		A_{LPV}(\rho)\Delta x(t)
+		+B_c\Delta u_c(t)
+		+B_d\Delta u_d(t)
+	}
+	\label{eq:modelo_incremental_lpv_6}
+\end{equation}
+
+\begin{equation}
+	\Delta y_p(t)=C_p\Delta x(t),
+	\label{eq:salida_incremental_lpv_6}
+\end{equation}
+
+con:
+
+\begin{equation}
+	\begin{aligned}
+		A_{LPV}(\rho)
+		&=
+		\left.
+		\frac{\partial f}{\partial x}
+		\right|_{x^o,u_c^o,u_d^o},\\
+		B_c
+		&=
+		\left.
+		\frac{\partial f}{\partial u_c}
+		\right|_{x^o,u_c^o,u_d^o},\\
+		B_d
+		&=
+		\left.
+		\frac{\partial f}{\partial u_d}
+		\right|_{x^o,u_c^o,u_d^o}.
+	\end{aligned}
+	\label{eq:definicion_jacobianos_lpv}
+\end{equation}
+
+El vector de variables del punto de operación puede expresarse como:
+
+\begin{equation}
+	\rho=
+	\begin{bmatrix}
+		\theta_m^o &
+		\omega_m^o &
+		I_q^o &
+		I_d^o &
+		I_0^o &
+		T_s^o
+	\end{bmatrix}^{T}.
+	\label{eq:vector_programacion_lpv}
+\end{equation}
+
+Para un valor fijo de $\rho$, las matrices evaluadas son constantes y se obtiene un modelo LTI local. Al considerar distintos valores de $\rho$ dentro de la región de operación, se obtiene una familia de modelos lineales locales que puede representarse como un modelo LPV. 
+
+\paragraph{Puntos de equilibrio estrictos.}
+Un punto de equilibrio es un conjunto constante
+$\bigl(x^o,u_c^o,u_d^o\bigr)$
+que satisface:
+
+\begin{equation}
+	\dot{x}^o=0
+	\quad\Longleftrightarrow\quad
+	f(x^o,u_c^o,u_d^o)=0.
+	\label{eq:definicion_equilibrio_lpv}
+\end{equation}
+
+Para el modelo global de sexto orden se consideran:
+
+\begin{equation}
+	x^o=
+	\begin{bmatrix}
+		\theta_m^o &
+		\omega_m^o &
+		I_q^o &
+		I_d^o &
+		I_0^o &
+		T_s^o
+	\end{bmatrix}^{T},
+\end{equation}
+
+\begin{equation}
+	u_c^o=
+	\begin{bmatrix}
+		V_q^o &
+		V_d^o &
+		V_0^o
+	\end{bmatrix}^{T},
+	\qquad
+	u_d^o=
+	\begin{bmatrix}
+		T_{ld}^o &
+		T_{amb}^o
+	\end{bmatrix}^{T}.
+\end{equation}
+
+Al anular las seis derivadas del modelo global no lineal se obtienen las siguientes condiciones de equilibrio:
+
+\begin{equation}
+	\boxed{
+		\begin{aligned}
+			0 &= \omega_m^o,\\[1mm]
+			0 &= K_t I_q^o
+			+K_{rel}I_d^oI_q^o
+			-b_{eq}\omega_m^o
+			-\frac{gk_l}{r}
+			\sin\left(\frac{\theta_m^o}{r}\right)
+			-\frac{T_{ld}^o}{r},\\[1mm]
+			0 &= V_q^o
+			-R_s(T_s^o)I_q^o
+			-\left(\lambda_m^{\prime r}+L_dI_d^o\right)
+			P_p\omega_m^o,\\[1mm]
+			0 &= V_d^o
+			-R_s(T_s^o)I_d^o
+			+L_qI_q^oP_p\omega_m^o,\\[1mm]
+			0 &= V_0^o-R_s(T_s^o)I_0^o,\\[1mm]
+			0 &= \frac{3}{2}R_s(T_s^o)
+			\left[
+			(I_q^o)^2+(I_d^o)^2+2(I_0^o)^2
+			\right]
+			-\frac{T_s^o-T_{amb}^o}{R_{ts-amb}}.
+		\end{aligned}
+	}
+	\label{eq:condiciones_equilibrio_6}
+\end{equation}
+
+La primera condición establece necesariamente que $\omega_m^o=0$ para un equilibrio estático. Las restantes variables nominales no pueden elegirse de forma independiente: al fijar algunas condiciones de operación, como la posición, la corriente de eje directo, el torque de perturbación o la temperatura ambiente, los demás valores deben determinarse de manera que todas las ecuaciones de \eqref{eq:condiciones_equilibrio_6} se satisfagan simultáneamente.
+
+Además, el punto seleccionado debe respetar los límites físicos de corriente, tensión, torque, velocidad y temperatura establecidos para el accionamiento.
+
+\paragraph{Operación a velocidad no nula.}
+Si $\omega_m^o\neq0$, entonces:
+
+\begin{equation}
+	\dot{\theta}_m^o=\omega_m^o\neq0,
+\end{equation}
+
+por lo que la posición nominal no permanece constante. Debido a que el torque gravitacional depende de $\theta_m$, esta condición no representa un punto de equilibrio estricto del sistema completo.
+
+En ese caso debe considerarse una trayectoria nominal $x^o(t)$ que satisfaga \eqref{eq:trayectoria_nominal_lpv}. La linealización obtenida alrededor de dicha trayectoria es variante en el tiempo. La evaluación instantánea de los Jacobianos a lo largo de ella puede interpretarse como una sucesión de modelos LTI locales congelados.
+
+\paragraph{Especialización al caso $I_d^o=0$.}
+Como primera condición de análisis se adopta una corriente nominal de eje directo nula:
+
+\begin{equation}
+	I_d^o=0.
+	\label{eq:punto_nominal_id0}
+\end{equation}
+
+Para una máquina trifásica equilibrada conectada en estrella con neutro flotante también se considera:
+
+\begin{equation}
+	I_0^o=0,
+	\qquad
+	V_0^o=0.
+	\label{eq:punto_nominal_i00}
+\end{equation}
+
+La condición $I_d^o=0$ selecciona un subconjunto particular dentro de la familia de puntos de operación, pero no determina por sí sola un modelo LTI. Para obtener un modelo lineal local deben fijarse también los restantes valores del punto de equilibrio y evaluar en ellos la matriz Jacobiana. Una vez fijado completamente el punto, todas las entradas de $A_{LPV}(\rho)$ toman valores constantes y se obtiene un modelo LTI válido para pequeñas variaciones alrededor de dicha condición.
+
+Debe distinguirse esta elección nominal de la condición:
+
+\begin{equation}
+	i_{ds}^r(t)\equiv0.
+\end{equation}
+
+Al considerar solamente $I_d^o=0$, la corriente directa puede presentar pequeñas variaciones:
+
+\begin{equation}
+	i_{ds}^r(t)
+	=
+	I_d^o+\Delta i_d(t)
+	=
+	\Delta i_d(t),
+\end{equation}
+
+por lo que $\Delta i_d(t)$ continúa formando parte del modelo linealizado de sexto orden. En consecuencia, fijar $I_d^o=0$ no elimina automáticamente los acoplamientos asociados al eje $d$ ni reduce el orden del sistema.
+
+El modelo LTI equivalente que se obtiene posteriormente requiere una hipótesis más restrictiva: mediante control vectorial y realimentación no lineal se fuerza $i_{ds}^r(t)\equiv0$, se compensan los términos de acoplamiento electromagnético y se elimina la dinámica del eje directo del modelo reducido. Por lo tanto, el modelo LTI equivalente posterior no surge únicamente de evaluar el Jacobiano en $I_d^o=0$, sino también de aplicar una estrategia de control que mantenga dicha corriente nula durante toda la operación.
+
+\paragraph{Matriz de estado Jacobiana de sexto orden.}
+Para cada punto de operación se define el valor de la resistencia estatórica:
+
+\begin{equation}
+	R_s^o=R_s(T_s^o).
+	\label{eq:resistencia_punto_operacion}
+\end{equation}
+
+Una vez fijada la temperatura nominal $T_s^o$, el valor $R_s^o$ es constante dentro del modelo LTI local. Sin embargo, como la resistencia original depende de la temperatura, los elementos del Jacobiano asociados a $\Delta T_s$ contienen la sensibilidad:
+
+\begin{equation}
+	\frac{dR_s}{dT_s^{\circ}}
+	=
+	R_{sREF}\alpha_{Cu}.
+	\label{eq:derivada_resistencia_temperatura}
+\end{equation}
+
+El Jacobiano completo respecto de los seis estados resulta:
+
+\begin{equation}
+	\boxed{
+		A_{LPV}(\rho)=
+		\begin{bmatrix}
+			0      & 1      & 0      & 0      & 0      & 0\\[1mm]
+			a_{21} & a_{22} & a_{23} & a_{24} & 0      & 0\\[1mm]
+			0      & a_{32} & a_{33} & a_{34} & 0      & a_{36}\\[1mm]
+			0      & a_{42} & a_{43} & a_{44} & 0      & a_{46}\\[1mm]
+			0      & 0      & 0      & 0      & a_{55} & a_{56}\\[1mm]
+			0      & 0      & a_{63} & a_{64} & a_{65} & a_{66}
+		\end{bmatrix}.
+	}
+	\label{eq:matriz_a_lpv_6}
+\end{equation}
+
+Los coeficientes asociados a la dinámica mecánica son:
+
+\begin{equation}
+	\begin{aligned}
+		a_{21}
+		&=
+		-\frac{gk_l}{J_{eq}r^2}
+		\cos\left(\frac{\theta_m^o}{r}\right),
+		&
+		a_{22}
+		&=
+		-\frac{b_{eq}}{J_{eq}},\\[1mm]
+		a_{23}
+		&=
+		\frac{K_t+K_{rel}I_d^o}{J_{eq}},
+		&
+		a_{24}
+		&=
+		\frac{K_{rel}I_q^o}{J_{eq}}.
+	\end{aligned}
+	\label{eq:coeficientes_mecanicos_lpv_6}
+\end{equation}
+
+Los coeficientes eléctricos correspondientes al eje $q$ son:
+
+\begin{equation}
+	\begin{aligned}
+		a_{32}
+		&=
+		-\frac{
+			P_p\left(\lambda_m^{\prime r}+L_dI_d^o\right)
+		}{L_q},
+		&
+		a_{33}
+		&=
+		-\frac{R_s^o}{L_q},\\[1mm]
+		a_{34}
+		&=
+		-\frac{L_dP_p\omega_m^o}{L_q},
+		&
+		a_{36}
+		&=
+		-\frac{
+			R_{sREF}\alpha_{Cu}I_q^o
+		}{L_q}.
+	\end{aligned}
+	\label{eq:coeficientes_q_lpv_6}
+\end{equation}
+
+Los coeficientes eléctricos correspondientes al eje $d$ son:
+
+\begin{equation}
+	\begin{aligned}
+		a_{42}
+		&=
+		\frac{L_qP_pI_q^o}{L_d},
+		&
+		a_{43}
+		&=
+		\frac{L_qP_p\omega_m^o}{L_d},\\[1mm]
+		a_{44}
+		&=
+		-\frac{R_s^o}{L_d},
+		&
+		a_{46}
+		&=
+		-\frac{
+			R_{sREF}\alpha_{Cu}I_d^o
+		}{L_d}.
+	\end{aligned}
+	\label{eq:coeficientes_d_lpv_6}
+\end{equation}
+
+Los coeficientes correspondientes a la dinámica homopolar son:
+
+\begin{equation}
+	a_{55}
+	=
+	-\frac{R_s^o}{L_{ls}},
+	\qquad
+	a_{56}
+	=
+	-\frac{
+		R_{sREF}\alpha_{Cu}I_0^o
+	}{L_{ls}}.
+	\label{eq:coeficientes_0_lpv_6}
+\end{equation}
+
+Finalmente, los coeficientes correspondientes a la dinámica térmica son:
+
+\begin{equation}
+	\begin{aligned}
+		a_{63}
+		&=
+		\frac{3R_s^oI_q^o}{C_{ts}},
+		&
+		a_{64}
+		&=
+		\frac{3R_s^oI_d^o}{C_{ts}},\\[1mm]
+		a_{65}
+		&=
+		\frac{6R_s^oI_0^o}{C_{ts}},
+		&
+		a_{66}
+		&=
+		\frac{1}{C_{ts}}
+		\left[
+		\frac{3}{2}
+		R_{sREF}\alpha_{Cu}
+		\left(
+		(I_q^o)^2
+		+(I_d^o)^2
+		+2(I_0^o)^2
+		\right)
+		-\frac{1}{R_{ts-amb}}
+		\right].
+	\end{aligned}
+	\label{eq:coeficientes_termicos_lpv_6}
+\end{equation}
+
+El coeficiente $a_{21}$ conserva explícitamente el efecto de la gravedad. La linealización se realiza alrededor de una posición nominal genérica $\theta_m^o$ y, por lo tanto, no requiere suponer que la posición absoluta sea cercana a cero. La aproximación será válida siempre que la variación $\Delta\theta_m$ permanezca suficientemente próxima al punto seleccionado.
+
+\paragraph{Matrices de entrada.}
+Como las entradas aparecen de forma afín en el modelo no lineal, sus Jacobianos son constantes. Para las entradas de control:
+
+\begin{equation}
+	u_c=
+	\begin{bmatrix}
+		v_{qs}^r &
+		v_{ds}^r &
+		v_{0s}
+	\end{bmatrix}^{T},
+\end{equation}
+
+se obtiene:
+
+\begin{equation}
+	\boxed{
+		B_c=
+		\begin{bmatrix}
+			0 & 0 & 0\\
+			0 & 0 & 0\\
+			\dfrac{1}{L_q} & 0 & 0\\[2mm]
+			0 & \dfrac{1}{L_d} & 0\\[2mm]
+			0 & 0 & \dfrac{1}{L_{ls}}\\[2mm]
+			0 & 0 & 0
+		\end{bmatrix}.
+	}
+	\label{eq:matriz_bc_lpv_6}
+\end{equation}
+
+Para las entradas de perturbación:
+
+\begin{equation}
+	u_d=
+	\begin{bmatrix}
+		T_{ld} &
+		T_{amb}^{\circ}
+	\end{bmatrix}^{T},
+\end{equation}
+
+resulta:
+
+\begin{equation}
+	\boxed{
+		B_d=
+		\begin{bmatrix}
+			0 & 0\\[1mm]
+			-\dfrac{1}{J_{eq}r} & 0\\[2mm]
+			0 & 0\\
+			0 & 0\\
+			0 & 0\\[1mm]
+			0 & \dfrac{1}{C_{ts}R_{ts-amb}}
+		\end{bmatrix}.
+	}
+	\label{eq:matriz_bd_lpv_6}
+\end{equation}
+
+\paragraph{Matrices de salida.}
+La salida principal correspondiente a la posición articular es lineal respecto del estado:
+
+\begin{equation}
+	C_p=
+	\begin{bmatrix}
+		\dfrac{1}{r} & 0 & 0 & 0 & 0 & 0
 	\end{bmatrix},
-	\label{eq:matriz_a_lpv}
-\end{equation}
-
-cuyos coeficientes no nulos, evaluados en el punto de operación, se agrupan según su naturaleza dinámica:
-
-\begin{equation*}
-    \begin{aligned}
-        & \text{Mecánicos:} &
-        A_{21} &= -\frac{g k_l}{J_{eq}r^2}\cos\left(\frac{\theta_m^o}{r}\right), \quad &
-        A_{22} &= -\frac{b_{eq}}{J_{eq}}, \\
-        & &
-        A_{23} &= \frac{K_t+K_{rel}I_d^o}{J_{eq}}, \quad &
-        A_{24} &= \frac{K_{rel}I_q^o}{J_{eq}}. \\[2mm]
-        & \text{Eléctricos ($q$):} &
-        A_{32} &= -\frac{P_p\left(\lambda_m^{\prime r}+L_d I_d^o\right)}{L_q}, \quad &
-        A_{33} &= -\frac{R_s^o}{L_q}, \\
-        & &
-        A_{34} &= -\frac{L_d P_p\omega_m^o}{L_q}, \quad &
-        A_{35} &= -\frac{\kappa_R I_q^o}{L_q}. \\[2mm]
-        & \text{Eléctricos ($d$):} &
-        A_{42} &= \frac{L_q P_p I_q^o}{L_d}, \quad &
-        A_{43} &= \frac{L_q P_p \omega_m^o}{L_d}, \\
-        & &
-        A_{44} &= -\frac{R_s^o}{L_d}, \quad &
-        A_{45} &= -\frac{\kappa_R I_d^o}{L_d}. \\[2mm]
-        & \text{Térmicos:} &
-        A_{53} &= \frac{3 R_s^o I_q^o}{C_{ts}}, \quad &
-        A_{54} &= \frac{3 R_s^o I_d^o}{C_{ts}}, \\
-        & &
-        A_{55} &= \frac{1}{C_{ts}} \left[ \frac{3}{2}\kappa_R\left((I_q^o)^2+(I_d^o)^2\right) -\frac{1}{R_{ts-amb}} \right].
-    \end{aligned}
-\end{equation*}
-
-\paragraph{Matriz de Entrada $B(x^o,u^o)$ y Salida $C$.}
-Derivando el sistema \eqref{eq:modelo_global_nl} respecto al vector de entradas aumentado $u = \begin{bmatrix} v_{qs}^r & v_{ds}^r & T_{ld} & T_{amb}^\circ \end{bmatrix}^T$, 
-se obtiene la matriz Jacobiana de entrada:
-
-\begin{equation}
-	B(x^o,u^o)=
+	\qquad
+	D_{pc}=
 	\begin{bmatrix}
-		0 & 0 & 0 & 0\\[1mm]
-		0 & 0 & -\dfrac{1}{J_{eq}r} & 0\\[3mm]
-		\dfrac{1}{L_q} & 0 & 0 & 0\\[3mm]
-		0 & \dfrac{1}{L_d} & 0 & 0\\[3mm]
-		0 & 0 & 0 & \dfrac{1}{C_{ts}R_{ts-amb}}
+		0 & 0 & 0
+	\end{bmatrix},
+	\qquad
+	D_{pd}=
+	\begin{bmatrix}
+		0 & 0
 	\end{bmatrix}.
-	\label{eq:matriz_b_lpv}
+	\label{eq:matrices_salida_lpv_6}
 \end{equation}
 
-Finalmente, la ecuación de salida para la variable controlada $y_p(t) = q(t) = \theta_m(t)/r$ es lineal, 
-por lo que sus matrices asociadas resultan invariantes respecto al punto de operación:
+Para la posición medida sobre el eje del motor se tiene:
 
 \begin{equation}
-    C_p = \begin{bmatrix} \dfrac{1}{r} & 0 & 0 & 0 & 0 \end{bmatrix}, \qquad D = \begin{bmatrix} 0 & 0 & 0 & 0 \end{bmatrix}.
-    \label{eq:matrices_cd_lpv}
+	C_s=
+	\begin{bmatrix}
+		1 & 0 & 0 & 0 & 0 & 0
+	\end{bmatrix}.
 \end{equation}
 
-\paragraph{Conclusión del modelo LPV.}
-Como queda en evidencia en el cálculo analítico, el modelo es de tipo \textit{Linear Parameter Varying} (LPV) ya que los autovalores 
-y la dinámica de las matrices locales $A(x^o,u^o)$ dependen fuertemente del punto de evaluación: 
-la posición angular espacial $\theta_m^o$ (modificando la rigidez gravitacional en $A_{21}$), 
-la velocidad de régimen $\omega_m^o$, las corrientes de carga $I_q^o, I_d^o$, 
-y el estado térmico de la resistencia del bobinado $R_s^o(T_s^o)$.
+\paragraph{Caso equilibrado con neutro flotante.}
+En la condición física particular:
+
+\begin{equation}
+	I_0^o=0,
+\end{equation}
+
+se anulan los acoplamientos de primer orden $a_{56}$ y $a_{65}$. No obstante, al conservar los seis estados, la dinámica homopolar permanece explícitamente representada:
+
+\begin{equation}
+	\Delta\dot{i}_0(t)
+	=
+	-\frac{R_s^o}{L_{ls}}\Delta i_0(t)
+	+\frac{1}{L_{ls}}\Delta v_0(t).
+\end{equation}
+
+Si además se cumple:
+
+\begin{equation}
+	\Delta v_0(t)=0,
+	\qquad
+	\Delta i_0(t_0)=0,
+\end{equation}
+
+entonces:
+
+\begin{equation}
+	\Delta i_0(t)\equiv0.
+\end{equation}
+
+En estas condiciones el modo homopolar queda desacoplado, lo que permite recuperar posteriormente un modelo reducido de quinto orden sin perder la coherencia con el desarrollo general de sexto orden.
+
+\paragraph{Interpretación de la familia LPV.}
+La matriz $A_{LPV}(\rho)$ depende de la posición, la velocidad, las corrientes y la temperatura correspondientes al punto de operación. Por ello, la linealización Jacobiana representa una familia de modelos lineales locales.
+
+Cada punto de equilibrio completamente definido produce una matriz constante y, por lo tanto, un modelo LTI local. En cambio, al considerar distintos puntos dentro de la región de operación o actualizar las matrices mediante $\rho(t)$, se obtiene la representación LPV utilizada para analizar cómo varía la dinámica del accionamiento.
+
 
 \subsubsection{Linealización por retroalimentación NO LINEAL y modelo LTI equivalente}
 
@@ -2285,7 +2673,7 @@ Todos estos resultados numéricos, en conjunto con el polo integrador cinemátic
         \toprule
         \textbf{Subsistema / Modo} & \textbf{Ubicación en $s$ (\si{\radian\per\second})} & \textbf{Cte. de Tiempo} & \textbf{Efecto Dinámico} \\
         \midrule
-        Cinemático (Integrador) & $p_1 = 0.00$ & $\infty$ & Posición libre sin resorte de retorno. Origina inestabilidad BIBO. \\
+        Cinemático (Integrador) & $p_1 = 0.00$ & $\infty$ & Posición libre sin resorte de retorno. \\
         \addlinespace
         Electromecánico (Dominante) & $p_{2,3} = -88.49 \pm j149.94$ & $\tau_{em} = \SI{11.3}{\milli\second}$ & Dinámica acoplada subamortiguada. Decaimiento de la envolvente oscilatoria. \\
         \addlinespace
@@ -2306,23 +2694,47 @@ Todos estos resultados numéricos, en conjunto con el polo integrador cinemátic
 \end{figure}
 
 \paragraph{Conclusión sobre la estabilidad a lazo abierto.}
-La evaluación de la estabilidad del sistema requiere un análisis exhaustivo tanto de sus modos observables como de los inobservables. 
-El análisis espectral de los autovalores revela que el sistema global es \textbf{marginalmente estable} a lazo abierto. 
-Esta condición es impuesta de manera exclusiva por la inercia integradora de la posición ($p_1 = 0$). 
-Como consecuencia de este polo, cualquier perturbación de carga $T_l(t)$ o entrada de tensión $v_{qs}^r(t)$ constante y sostenida en el tiempo provocará un desplazamiento angular ilimitado de tipo rampa, 
-indicando formalmente que el sistema \textit{no posee estabilidad BIBO (Bounded-Input Bounded-Output)} para la variable de salida $\theta_m(t)$.
+El modelo LTI equivalente aumentado presenta un polo simple en el origen,
+$p_1=0$, asociado exclusivamente a la relación cinemática entre la velocidad
+y la posición angular.
 
-Por otro lado, al analizar la estabilidad interna del modelo aumentado, 
-se constata que todos los autovalores restantes ($p_{2,3}, p_d, p_T$) se ubican estrictamente en el semiplano izquierdo del plano complejo $s$. 
-Esto incluye tanto a los polos electromecánicos visibles desde la transferencia principal, 
-como a los modos residuales desacoplados ($i_{ds}^r$ y $T_s^\circ$) que, 
-si bien no aparecen de forma directa en las funciones de transferencia hacia la posición, 
-garantizan el decaimiento estable de las corrientes y la temperatura hacia sus valores de equilibrio. 
-Por consiguiente, se concluye que la derivada de la posición (la velocidad angular $\omega_m$) y todos los estados internos de la máquina sí gozan de \textbf{estabilidad asintótica parcial}.
+La integral representa el desplazamiento angular acumulado durante el
+movimiento. Por lo tanto, el polo en el origen no corresponde a un modo
+dinámico divergente de la máquina, sino al integrador cinemático necesario
+para obtener la posición a partir de la velocidad.
 
-Este comportamiento dual, donde la velocidad y los estados internos se estabilizan naturalmente mientras la posición diverge de forma libre, 
-es una característica inherente a los servoaccionamientos electromecánicos. 
-Este análisis justifica matemáticamente la necesidad imperativa de diseñar y cerrar un lazo de control de posición externo en las etapas posteriores del proyecto.
+En el modelo considerado, la posición angular no interviene en la dinámica
+mediante un término de rigidez restauradora proporcional a
+$\theta_m(t)$. En términos mecánicos, esto equivale a que el eje no posee un
+``resorte'' que lo obligue a regresar a una posición angular única de
+equilibrio. En consecuencia, pueden existir distintas posiciones de reposo.
+
+Los restantes autovalores del modelo, $p_{2,3}$, $p_d$ y $p_T$, poseen parte
+real estrictamente negativa. Por ello, ante entradas nulas, las variaciones
+de velocidad, corriente y temperatura respecto de sus respectivos valores
+de equilibrio decaen con el tiempo. En particular,
+$\omega_m(t)\rightarrow 0$, mientras que la posición converge hacia un valor
+constante determinado por la condición inicial y por el desplazamiento
+acumulado durante el transitorio:
+
+\begin{equation}
+	\theta_m(\infty)
+	=
+	\theta_m(t_0)
+	+
+	\int_{t_0}^{\infty}\omega_m(\tau)\,d\tau.
+\end{equation}
+
+Por esta razón, el sistema no es asintóticamente estable respecto de una
+posición angular única: los modos internos se estabilizan, pero la posición
+permanece en el último valor alcanzado. Solamente si una acción externa
+sostenida mantiene una velocidad distinta de cero, la posición continuará
+variando mientras persista dicho movimiento.
+
+Este comportamiento justifica la incorporación posterior de un lazo externo
+de posición, cuya función es establecer una posición de equilibrio deseada y
+generar la acción restauradora que no está presente en la planta a lazo
+abierto.
 
 \subsubsection{Estabilidad y migración de propiedades (Incertidumbre paramétrica)}
 
@@ -2493,9 +2905,36 @@ Analizando los mapas de polos de las Figuras~\ref{fig:mapa_pz_migracion_Rs} y~\r
 \end{enumerate}
 
 \paragraph{Síntesis del Análisis de Estabilidad a Lazo Abierto.}
-El modelo LTI equivalente aumentado presenta cinco autovalores: un polo en el origen ($p_1=0$) asociado al modo cinemático integrador; un par complejo conjugado dominante ($p_{2,3}$) representativo del modo electromecánico subamortiguado; y dos polos reales, uno rápido correspondiente a la dinámica eléctrica residual del eje $d$ ($p_d$) y otro extremadamente lento para la dinámica térmica estatórica ($p_T$).
+El modelo LTI equivalente aumentado presenta cinco autovalores: un polo en el
+origen ($p_1=0$), asociado al modo cinemático integrador; un par complejo
+conjugado dominante ($p_{2,3}$), representativo del modo electromecánico
+subamortiguado; y dos polos reales, uno rápido correspondiente a la dinámica
+eléctrica residual del eje $d$ ($p_d$) y otro extremadamente lento asociado a
+la dinámica térmica estatórica ($p_T$).
 
-Al evaluar la condición operativa nominal y los escenarios de máxima perturbación (incertidumbre de carga mecánica y severidad térmica), todos los autovalores internos, excluyendo el integrador, conservan sistemáticamente una parte real estrictamente negativa. Esto permite afirmar que el sistema a lazo abierto presenta \textbf{estabilidad asintótica parcial}, garantizando que la dinámica propia de la máquina no es intrínsecamente inestable. Sin embargo, la presencia fundamental del polo $p_1=0$ condiciona al accionamiento a una \textbf{estabilidad marginal}, resultando inestable en el sentido BIBO para la posición angular $\theta_m(t)$, obligando así al diseño de una compensación por lazo de control.
+Al evaluar la condición operativa nominal y los escenarios de máxima
+perturbación considerados, los autovalores correspondientes a las dinámicas
+electromecánica, eléctrica y térmica conservan parte real estrictamente
+negativa. Por lo tanto, ante entradas nulas, las variaciones de velocidad,
+corrientes y temperatura respecto de sus valores de equilibrio decaen con el
+tiempo.
+
+El polo en el origen tiene una interpretación diferente, ya que proviene de
+la relación cinemática entre la posición y la velocidad angular.
+
+El modelo LTI considerado no posee una
+acción restauradora dependiente de la posición angular. En términos
+mecánicos, no existe un elemento equivalente a un resorte que obligue al eje
+a retornar espontáneamente a una posición determinada.  En consecuencia, cuando los modos transitorios se extinguen y
+$\omega_m(t)\rightarrow 0$, la posición no necesariamente regresa a su valor
+inicial, sino que permanece en el último valor alcanzado.
+
+Entonces, la dinámica interna de la máquina no presenta modos
+divergentes, pero la planta a lazo abierto tampoco regula por sí misma la
+posición angular. La incorporación posterior de un lazo externo de posición
+resulta necesaria para establecer una referencia deseada, corregir el error
+de posición y generar la acción restauradora que no está presente en la
+dinámica natural del accionamiento.
 
 A partir de la migración paramétrica evaluada en los tres escenarios de incertidumbre (masa, fricción y temperatura), se desprenden las siguientes conclusiones fundamentales sobre la robustez pasiva de la planta:
 
