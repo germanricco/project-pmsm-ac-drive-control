@@ -71,6 +71,9 @@ zeta_v = 1;            % Amortiguamiento crítico [-]
 wn_v = k_w_v*wn_v_base;  % Frecuencia natural efectiva [rad/s]
 f_n_v = wn_v/(2*pi);     % Frecuencia natural equivalente [Hz]
 
+K_v_wn2     = wn_v^2;            % Ganancia desde x1 hacia dx2/dt
+K_v_amort   = 2*zeta_v*wn_v;     % Realimentación de x2 hacia dx2/dt
+
 % Coeficientes de la función de transferencia.
 num_v = k_v*wn_v^2;
 den_v = [1, 2*zeta_v*wn_v, wn_v^2];

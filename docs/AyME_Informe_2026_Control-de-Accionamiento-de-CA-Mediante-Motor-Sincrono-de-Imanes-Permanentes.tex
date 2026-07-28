@@ -6106,7 +6106,7 @@ Dada la constante de tiempo $\tau = 20\,\text{s}$, su representación en Espacio
     A_T = [-0.05], \quad B_T = [1], \quad C_T = [0.05], \quad D_T = [0]
 \end{equation}
 
-\subsubsection{III) Calibración de Condiciones Iniciales e Implementación en Simulink}
+\subsubsection{III) Verificación de Condiciones Iniciales e Implementación en Simulink}
 
 Un aspecto crítico al implementar dinámica de sensores mediante integradores es la correcta inicialización del estado interno ($\mathbf{x}_0$). Si el sistema físico inicia su operación en una condición de equilibrio distinta de cero (por ejemplo, una temperatura ambiente inicial de $T_0 = 25^\circ\text{C}$ o una posición angular de reposo arbitraria), forzar a los filtros a arrancar con variables de estado nulas provocará un error de seguimiento masivo en el instante $t=0^+$, induciendo un esfuerzo de control espurio por acción del término derivativo.
 
@@ -6115,8 +6115,8 @@ Para evitar estos transitorios artificiales de medición, los vectores de estado
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.4\linewidth]
-	{img/diagrama\_sensores\_no\_ideales\_en\_SS.pdf}
-  	\caption{Diagrama de bloques implementado en Simulink para la degradación de los sensores. Cada bloque \textit{State-Space} se configura con las matrices de diseño y condiciones iniciales rigurosamente calculadas para asegurar un arranque sin transitorios.}
+	{img/sensores_no_ideales_desag.pdf}
+  	\caption{Diagrama de bloques implementado en Simulink para el modelo no ideal de sensores.}
 	\label{fig:diagrama_sensores_no_ideales}
 \end{figure}
 
@@ -6347,8 +6347,8 @@ La arquitectura final de la planta de potencia, integrando tanto la limitación 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth, height=0.35\textheight, keepaspectratio]{img/diagrama_inversor_no_ideal_SS.pdf}
-    \caption{Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. A la izquierda se observa la estructura interna por fase incorporando la saturación estricta ($\pm 39.19\,\text{V}$) y la degradación dinámica en Espacio de Estados; a la derecha, el bloque consolidado.}
+    \includegraphics[width=0.8\linewidth, height=0.35\textheight, keepaspectratio]{img/inversor_no_ideal_desag.pdf}
+    \caption{Diagrama de bloques del Modulador Trifásico de Tensión No Ideal en Simulink. Diagrama desagregado por fase incorporando la saturación estricta ($\pm 39.19\,\text{V}$) y la degradación dinámica en Espacio de Estados.}
     \label{fig:diagrama_inversor_no_ideal}
 \end{figure}
 
