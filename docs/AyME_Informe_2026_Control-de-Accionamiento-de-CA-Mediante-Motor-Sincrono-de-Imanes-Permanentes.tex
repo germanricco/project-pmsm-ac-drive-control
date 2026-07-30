@@ -83,29 +83,30 @@
 
 % Configuración del estilo para MATLAB
 \lstset{
-    language=Matlab,
-    backgroundcolor=\color{matlabBackground},   
-    basicstyle=\ttfamily\footnotesize,            % Fuente monoespaciada, tamaño ideal
-    keywordstyle=\color{matlabKeyword}\bfseries,  % Palabras clave en azul y negrita
-    commentstyle=\color{matlabComment}\itshape,   % Comentarios en verde y cursiva
-    stringstyle=\color{matlabString},             % Cadenas de texto en púrpura
-    numberstyle=\tiny\color{matlabLineNumbers},   % Números de línea pequeños y grises
-    numbers=left,                                 % Números a la izquierda
-    numbersep=10pt,                               % Separación entre números y código
-    stepnumber=1,                                 % Numerar cada línea
-    frame=single,                                 % Recuadro simple alrededor del código
-    rulecolor=\color{matlabFrame},                % Color del borde del recuadro
-    breaklines=true,                              % Ajuste automático de líneas largas
-    breakatwhitespace=false,
-    tabsize=4,                                    % Tabulación de 4 espacios
-    showspaces=false,
-    showstringspaces=false,
-    captionpos=b,                                 % Título en la parte inferior
-    keepspaces=true,
-    % Soporte para caracteres en español (Tildes, eñes, símbolos de apertura)
-    literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
-             {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
-             {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¡}{{\textexclamdown}}1 {¿}{{\textquestiondown}}1
+	language=Matlab,
+	backgroundcolor=\color{matlabBackground},
+	basicstyle=\ttfamily\footnotesize,
+	keywordstyle=\color{matlabKeyword}\bfseries,
+	commentstyle=\color{matlabComment}\itshape,
+	stringstyle=\color{matlabString},
+	numberstyle=\tiny\color{matlabLineNumbers},
+	numbers=left,
+	numbersep=10pt,
+	stepnumber=1,
+	frame=single,
+	rulecolor=\color{matlabFrame},
+	breaklines=true,
+	breakatwhitespace=false,
+	tabsize=4,
+	showspaces=false,
+	showstringspaces=false,
+	captionpos=b,
+	keepspaces=true,
+	literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+	{Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+	{ñ}{{\~n}}1 {Ñ}{{\~N}}1
+	{¡}{{\textexclamdown}}1 {¿}{{\textquestiondown}}1
+	{°}{{\textdegree}}1
 }
 
 % ---------------------------------------------------------
@@ -6041,7 +6042,7 @@ Los resultados demuestran que el accionamiento presenta un comportamiento térmi
 
 La falta de cumplimiento en el segundo ensayo no invalida el diseño para su funcionamiento nominal, sino que permite establecer una restricción de operación ante perturbaciones máximas sostenidas.
 
-\subsubsection{Modelado en Espacio de Estados}
+\subsubsection{Sensores y acondicionadores no ideales: modelado en espacio de estados.}
 
 A lo largo de las etapas previas de síntesis analítica, se asumió implícitamente una dinámica de medición ideal para todas las variables de realimentación ($G(s) \equiv 1$). Esta simplificación teórica supone que los transductores físicos y su electrónica de acondicionamiento asociada (amplificadores operacionales, filtros antialiasing, conversores ADC) poseen un ancho de banda infinito y un retardo de fase nulo. 
 
@@ -6776,7 +6777,7 @@ La validación comparativa del modelo demostró que esta topología basada en c�
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth, height=0.35\textheight, keepaspectratio]{img/diagrama_sistema_completo_discretizado_con_funciones.pdf}
+    \includegraphics[width=1\linewidth, height=0.35\textheight, keepaspectratio]{img/sistema_completo_discretizado_final.pdf}
   	\caption{Arquitectura del controlador discreto programado mediante lenguaje de texto estructurado.}
     \label{fig:diagrama_software_matlab}
 \end{figure}
@@ -6784,299 +6785,209 @@ La validación comparativa del modelo demostró que esta topología basada en c�
 % ---------------------------------------------------------
 % CONCLUSIONES
 % ---------------------------------------------------------
-\section{Conclusiones y Recomendaciones Futuras}
+\section{Conclusiones y recomendaciones}
 
-\subsection{Conclusiones Generales y Análisis de Desempeño}
+\subsection{Conclusiones generales}
 
-El desarrollo del presente Proyecto Global Integrador ha permitido recorrer exitosamente el ciclo completo de ingeniería de control aplicado a un accionamiento eléctrico de alto rendimiento. Se ha logrado transicionar desde el modelado físico-matemático no lineal de una máquina síncrona de imanes permanentes (PMSM) hasta la validación de una arquitectura de control digital robusta, capaz de gobernar el seguimiento de trayectorias articulares de un brazo robótico bajo condiciones de carga variable.
+El presente trabajo permitió desarrollar un modelo integral de un accionamiento
+de corriente alterna basado en una máquina síncrona de imanes permanentes,
+incluyendo las dinámicas mecánica, electromagnética y térmica. El modelo global
+no lineal se utilizó para representar el comportamiento físico del sistema,
+mientras que los modelos linealizados y desacoplados facilitaron el análisis de
+sus propiedades y el diseño de los lazos de control.
 
-El análisis exhaustivo y las simulaciones desarrolladas en el entorno MATLAB/Simulink permiten decantar las siguientes conclusiones analíticas y técnicas:
-
-\begin{itemize}
-    \item \textbf{Modelado y Desacoplamiento Exacto:} El análisis a lazo abierto evidenció la severidad de los acoplamientos electromagnéticos y la no linealidad del sistema. La implementación de la técnica de \textit{Linealización por Realimentación Exacta} (Feedback Linearization) en el lazo interno de corriente demostró ser una solución superadora frente a controladores clásicos. Al pre-compensar las fuerzas contraelectromotrices y las caídas óhmicas, se garantizó una dinámica de producción de torque puramente lineal, aislada y de un ancho de banda colosal ($p_c = -5000\,\text{rad/s}$).
-    
-    \item \textbf{Robustez Térmica Paramétrica:} Se corroboró matemáticamente que el desempeño del lazo interno de corriente es altamente sensible a las variaciones de la resistencia estatórica ($R_s$) producto del calentamiento por efecto Joule. La incorporación de una estimación térmica en tiempo real para actualizar las leyes de desacoplamiento erradicó los errores de estado estacionario en el lazo interno, demostrando que la adaptabilidad paramétrica es mandatoria para eximir al lazo de corriente del uso de acciones integrales.
-    
-    \item \textbf{Control Cinemático en Cascada:} La segmentación del problema en escalas de tiempo separadas permitió que el Controlador PID externo de movimiento operara sobre una "planta virtual" idealizada por el lazo interno. La sintonización del PID, dotado de mecanismos \textit{Anti-Windup}, garantizó un seguimiento posicional veloz, con un sobreimpulso estrictamente acotado y un error de estado estacionario nulo.
-    
-    \item \textbf{Observación de Estado y Rechazo de Perturbaciones:} La inclusión de un Observador de Estado Reducido Extendido probó ser una estrategia sumamente eficaz. No solo permitió estimar la velocidad mecánica minimizando el ruido inherente a la derivación numérica de la posición, sino que su capacidad para estimar e inyectar el par de carga perturbador (fricción y gravedad) como una pre-alimentación (\textit{feedforward}) dotó al sistema de una rigidez dinámica excepcional frente a variaciones de carga externas.
-    
-    \item \textbf{Impacto de Dinámicas No Ideales (Inversor y Sensores):} La transición de la planta ideal a un modelo de alta fidelidad reveló la criticidad de los componentes de hardware. Al incorporar sensores no ideales y modelar la electrónica de potencia (inversor trifásico) mediante un filtro en el espacio de estados y bloques de saturación, el sistema original evidenció inestabilidades transitorias. Los retardos introducidos por el filtro del inversor alteraron los márgenes de fase de los lazos internos. Para recuperar el seguimiento robusto de la consigna y re-estabilizar el sistema, fue imperativo re-sintonizar agresivamente la dinámica, desplazando la ubicación de los polos desde su diseño inicial de $-6000\,\text{rad/s}$ a un valor $4.5$ veces mayor ($-27000\,\text{rad/s}$). Esto demostró la sensibilidad del esquema ante dinámicas parásitas y retardos de conmutación.
-    
-    \item \textbf{Viabilidad de Implementación (Discretización):} La transposición formal del sistema continuo al dominio discreto ($z$) mediante el método de Tustin y el uso de bloques integradores robustos, limitados por interfaces ADC (ZOH) y DAC (FOH), validó la viabilidad del algoritmo. Se demostró que la arquitectura es estable, no presenta lazos algebraicos inválidos y está matemáticamente madura para su síntesis en código C/C++ destinado a microprocesadores industriales.
-\end{itemize}
-
-\subsection{Recomendaciones y Trabajos Futuros}
-
-Si bien el desempeño dinámico y la robustez del accionamiento cumplen holgadamente con los requerimientos de diseño estipulados, el rigor ingenieril exige plantear líneas de optimización y evolución para el sistema:
+Los principales resultados obtenidos pueden sintetizarse de la siguiente
+manera:
 
 \begin{itemize}
-    \item \textbf{Dimensionamiento Electromecánico (Sizing):} El análisis de las simulaciones bajo condiciones del peor caso (carga máxima de carga útil) reveló que las corrientes de cuadratura ($i_{qs}$) operan marginalmente cerca de los límites transitorios del motor. Para preservar la vida útil del aislamiento y evitar la desmagnetización térmica a largo plazo, se recomienda reevaluar el factor de servicio y migrar hacia un motor de mayor potencia nominal o incrementar la relación de transmisión del reductor planetario.
-    
-    \item \textbf{Implementación Hardware-in-the-Loop (HIL) y Embebidos:} El siguiente paso natural en la evolución del proyecto es abandonar la simulación \textit{offline} para ejecutar el controlador discretizado en hardware de control de grado industrial (como procesadores de la familia TI C2000 o STMicroelectronics STM32). El uso de técnicas HIL permitirá validar el impacto real de los retardos de cómputo, el ruido de cuantización de los ADC y la resolución del PWM sobre la estabilidad del sistema.
-    
-    \item \textbf{Optimización Computacional mediante Control Multitasa (Multi-rate Control):} En la simulación actual se adoptó un período de muestreo global y conservador de $10\,\text{kHz}$ ($T_s = 100\,\mu\text{s}$) para todo el sistema. Sin embargo, en un DSP real esto monopoliza los ciclos de CPU. Como trabajo futuro de optimización de firmware, se propone desagregar los tiempos de muestreo respetando las constantes de tiempo físicas de cada variable. El lazo interno de corriente y el PWM continuarían operando a $10\,\text{kHz}$; el lazo externo de posición/velocidad (PID) operaría eficientemente a $1\,\text{kHz}$ ($1\,\text{ms}$); mientras que la lectura del termopar y la actualización paramétrica de $R_s$ se realizarían a una frecuencia de apenas $10\,\text{Hz}$ ($100\,\text{ms}$), dado que la dinámica térmica es extremadamente lenta. Esta arquitectura multitasa (\textit{multi-rate sampling}) liberaría valiosos recursos computacionales sin degradar el seguimiento de trayectoria ni el margen de fase.
-    
-    \item \textbf{Control Predictivo Basado en Modelos (MPC):} A pesar de la excelencia del control en cascada con realimentación linealizada, esta arquitectura gestiona las restricciones físicas (saturación de voltaje y corriente) mediante recortes a posteriori (\textit{Anti-Windup}). Se sugiere investigar el uso de técnicas de Control Predictivo, las cuales pueden optimizar la trayectoria de las corrientes considerando las restricciones del hexágono de voltaje del inversor de manera nativa en el cálculo matemático.
-    
-    \item \textbf{Operación Sensorless Avanzada:} Si bien el observador desarrollado estima exitosamente la perturbación y la velocidad, la posición del rotor aún depende de un encoder de alta resolución. Para entornos hostiles, se recomienda explorar arquitecturas \textit{Full Sensorless} (mediante observadores de modo deslizante o inyección de señales de alta frecuencia), eliminando el punto de falla que representa el sensor mecánico y reduciendo los costos de manufactura.
-    
-    \item \textbf{Gestión de Eficiencia y Modelado Térmico 3D:} Para aplicaciones de régimen continuo exigente, se propone desarrollar un gemelo digital térmico más complejo (redes de parámetros concentrados) que no solo compense la resistencia $R_s$, sino que controle sistemas de refrigeración activa o adapte dinámicamente las aceleraciones máximas permitidas para mantener las pérdidas por efecto Joule dentro de límites que maximicen la eficiencia energética global del brazo robótico.
+	\setlength{\itemsep}{0.6em}
+	
+	\item \textbf{Comportamiento a lazo abierto.}
+	Los modos electromagnéticos y térmicos considerados presentaron dinámicas
+	estables dentro de los rangos paramétricos evaluados. Sin embargo, la
+	presencia del integrador cinemático implica que la planta no regula por sí
+	misma la posición angular, lo que justifica la incorporación de un
+	controlador externo de movimiento.
+	
+	\item \textbf{Arquitectura de control en cascada.}
+	La combinación del modulador vectorial de torque, los lazos internos de
+	corriente y el controlador externo de movimiento permitió obtener un
+	seguimiento preciso de las consignas cuando estas fueron compatibles con
+	las restricciones físicas del accionamiento. La compensación basada en el
+	modelo redujo los acoplamientos entre los ejes eléctricos y simplificó la
+	dinámica observada por el controlador externo.
+	
+	\item \textbf{Viabilidad física de las consignas.}
+	Un error de seguimiento reducido no garantiza por sí solo la viabilidad
+	física de la operación. La consigna original, que contenía cambios bruscos
+	de velocidad, produjo solicitudes de torque, corriente y tensión superiores
+	a los límites del motor, la transmisión y el inversor. Al reemplazarla por
+	un perfil trapezoidal de velocidad o por una trayectoria polinómica de
+	quinto orden, se mantuvo un seguimiento adecuado y las magnitudes
+	verificadas permanecieron dentro de los límites especificados. Esto
+	demuestra la importancia de incorporar un generador de trayectorias
+	realizables, además del propio controlador.
+	
+	\item \textbf{Estimación de la velocidad.}
+	El observador reducido convencional permitió estimar la velocidad a partir
+	de la medición de posición, pero presentó un error estacionario frente a
+	perturbaciones constantes no incluidas en su modelo. La incorporación de
+	una acción integral en el observador extendido permitió eliminar dicho
+	error y mejorar la estimación ante perturbaciones sostenidas.
+	
+	\item \textbf{Dinámicas no ideales de los sensores.}
+	Los resultados mostraron que los retardos y anchos de banda limitados de
+	los sensores pueden degradar el desempeño e incluso provocar inestabilidad.
+	Para las condiciones simuladas se obtuvieron respuestas satisfactorias con
+	una frecuencia natural de
+	$\omega_{n,\theta}=5000~\mathrm{rad/s}$ para el sensor de posición, una
+	frecuencia natural de
+	$\omega_{n,i}=10000~\mathrm{rad/s}$ para los sensores de corriente y una
+	constante de tiempo de
+	$\tau_T=0{,}5~\mathrm{s}$ para el sensor térmico.
+	
+	Un sensor de posición demasiado lento introduce retardos en la variable
+	empleada por el controlador de movimiento y el observador, mientras que un
+	ancho de banda insuficiente en los sensores de corriente afecta
+	directamente los lazos internos de control vectorial. Asimismo, una
+	respuesta excesivamente lenta del sensor de temperatura puede retrasar la
+	estimación de la resistencia estatórica y la detección de condiciones de
+	sobretemperatura.
+	
+	\item \textbf{Dinámica no ideal del inversor.}
+	El valor inicial de
+	$\omega_{n,v}=6000~\mathrm{rad/s}$ no resultó suficiente para la sintonía
+	adoptada, mientras que
+	$\omega_{n,v}=27000~\mathrm{rad/s}$ permitió completar correctamente la
+	simulación de la consigna analizada. Este último valor debe interpretarse
+	como una condición suficiente para el escenario estudiado y no como un
+	valor óptimo general.
+	
+	\item \textbf{Comportamiento térmico.}
+	Durante la operación repetitiva nominal, con una temperatura ambiente de
+	$40\,^{\circ}\mathrm{C}$, la temperatura del estator alcanzó
+	aproximadamente $46{,}6\,^{\circ}\mathrm{C}$, permaneciendo por debajo del
+	límite de $115\,^{\circ}\mathrm{C}$. En cambio, al aplicar de manera
+	sostenida el torque máximo de perturbación sobre la planta nominal, la
+	temperatura alcanzó aproximadamente $165{,}1\,^{\circ}\mathrm{C}$ y
+	continuó aumentando. Esta condición no resulta admisible para una operación
+	continua y establece una limitación térmica concreta del accionamiento.
+	
+	\item \textbf{Implementación en tiempo discreto.}
+	La implementación discreta conservó un comportamiento próximo al modelo
+	continuo para una frecuencia de muestreo de $10~\mathrm{kHz}$. Con
+	$5~\mathrm{kHz}$ aumentó el rizado de las señales, mientras que la
+	configuración evaluada a $2~\mathrm{kHz}$ no logró completar la simulación.
+	Por lo tanto, se adoptó
+	$T_s=100~\mu\mathrm{s}$ como período de muestreo para la arquitectura
+	actual.
 \end{itemize}
 
-\subsection{Conclusión Final}
+Los valores obtenidos para los sensores, el inversor y la frecuencia de
+muestreo deben entenderse como condiciones adecuadas para la configuración y
+los escenarios simulados. No constituyen especificaciones óptimas o universales,
+ya que su selección depende de la sintonía conjunta de todos los componentes y
+lazos que forman el sistema.
 
-El presente trabajo ha consolidado el diseño de un algoritmo de control para un motor PMSM que trasciende las soluciones clásicas. La sinergia lograda entre la linealización de la dinámica eléctrica, el control cinemático en cascada, la estimación de perturbaciones y una rigurosa discretización, ha cristalizado en un sistema altamente estable, preciso y resiliente. 
+\subsection{Recomendaciones}
 
-Los resultados obtenidos no solo validan matemáticamente las estrategias de control moderno aplicadas, sino que establecen una plataforma tecnológica robusta, parametrizada y lista para dar el salto hacia su implementación física en sistemas mecatrónicos y robóticos de nueva generación.
+A partir de las limitaciones identificadas, se plantean las siguientes
+recomendaciones:
+
+\begin{enumerate}
+	\setlength{\itemsep}{0.8em}
+	
+	\item \textbf{Utilizar trayectorias físicamente realizables.}
+	
+	Debe mantenerse el uso de perfiles de movimiento con velocidad y
+	aceleración limitadas, junto con las saturaciones y los mecanismos de
+	anti-windup incorporados. La referencia de movimiento debe diseñarse
+	considerando simultáneamente los límites de torque, corriente, tensión y
+	velocidad del accionamiento.
+	
+	\item \textbf{Evaluar las condiciones máximas de operación.}
+	
+	Se recomienda repetir la verificación completa utilizando simultáneamente
+	la carga útil máxima y la perturbación máxima, dado que el ensayo térmico
+	presentado se realizó con los parámetros nominales de la planta. Este
+	análisis permitirá definir con mayor precisión la envolvente de operación,
+	el tiempo máximo durante el cual puede sostenerse una perturbación elevada
+	y los períodos de enfriamiento necesarios.
+	
+	\item \textbf{Mejorar la disipación térmica.}
+	
+	Para condiciones de operación continua exigente se recomienda incorporar
+	un sistema de disipación mejorado o ventilación forzada. Dentro del modelo
+	térmico, esta modificación puede representarse mediante una reducción de la
+	resistencia térmica $R_{ts-\mathrm{amb}}$, lo que disminuye tanto la
+	temperatura de equilibrio como la constante de tiempo térmica.
+	
+	Como medida complementaria, puede incorporarse una estrategia de reducción
+	de prestaciones, limitación de corriente o desconexión cuando la
+	temperatura se aproxime al límite permitido.
+	
+	\item \textbf{Seleccionar adecuadamente el inversor y los sensores.}
+	
+	Antes de una implementación física deberá verificarse cuidadosamente la
+	dinámica real tanto del inversor como de los sensores y sus
+	acondicionadores de señal:
+	
+	\begin{itemize}
+		\setlength{\itemsep}{0.35em}
+		
+		\item El inversor debe poseer un ancho de banda compatible con la
+		dinámica exigida por los lazos internos de corriente.
+		
+		\item Los sensores de posición y corriente deben proporcionar
+		mediciones suficientemente rápidas para no introducir retardos que
+		reduzcan los márgenes de estabilidad.
+		
+		\item El sensor de temperatura debe presentar un tiempo de respuesta
+		adecuado para estimar correctamente la resistencia estatórica y
+		detectar con anticipación posibles condiciones de sobretemperatura.
+	\end{itemize}
+	
+	La selección de estos componentes no debe basarse únicamente en su rango,
+	precisión estática o capacidad eléctrica, sino también en su ancho de
+	banda, tiempo de respuesta, resolución, ruido y retardos asociados.
+	
+	\item \textbf{Reajustar el control cuando sea necesario.}
+	
+	Si los dispositivos disponibles no alcanzan la dinámica requerida por la
+	sintonía actual, deberán reajustarse conjuntamente los lazos de corriente,
+	el observador y el controlador externo. En particular, puede ser necesario
+	reducir sus anchos de banda para mantener una separación adecuada entre las
+	dinámicas del controlador, los sensores, el inversor y la planta.
+	
+	\item \textbf{Realizar una futura validación experimental.}
+	
+	Una implementación física o una validación mediante
+	hardware-in-the-loop permitirá evaluar características no representadas
+	completamente en las simulaciones, como los retardos de cálculo, la
+	cuantización, la resolución del PWM, el ruido eléctrico y las dinámicas
+	reales de los sensores y del inversor.
+\end{enumerate}
+
+\subsection{Conclusión final}
+
+Los resultados obtenidos permiten concluir que la arquitectura propuesta es
+capaz de controlar el movimiento del accionamiento con buena precisión, siempre
+que las consignas sean físicamente realizables y se respeten las limitaciones
+eléctricas, mecánicas y térmicas de sus componentes.
+
+El trabajo proporciona una base consistente para una futura implementación
+digital, aunque dicha implementación deberá complementarse con una selección
+cuidadosa del inversor y de los sensores, verificando que sus anchos de banda,
+tiempos de respuesta y retardos sean compatibles con la dinámica del sistema.
+También será necesario incorporar una gestión térmica adecuada y realizar la
+validación experimental del accionamiento completo.
 
 % ---------------------------------------------------------
 % ANEXO
 % ---------------------------------------------------------
-\section{Anexo: Implementación en matlab}
+\section{Anexo: Implementación en MATLAB}
 
-\begin{lstlisting}[caption=Implentación de set-point., label=codigo:setpoint]
-function [theta_m_star, w_m_star] = set_point_discreto(q_t, q_prime_t)
-    % Definición de variables de memoria (persistent)
-    persistent q_t_prev q_prime_prev theta_int_prev
-
-    % Inicialización en el primer ciclo de ejecución (t=0)
-    if isempty(q_t_prev)
-        q_t_prev = q_t;             % Evita el pico (infinito) de la derivada en t=0
-        q_prime_prev = q_prime_t;
-        theta_int_prev = 0;         % El integrador arranca descargado
-    end
-
-    % --- CÁLCULO NUMÉRICO DISCRETO ---
-    % A. Derivador Discreto (Diferencia Hacia Atrás / Backward Euler)
-    % Fórmula: dy[k] = (x[k] - x[k-1]) / Ts
-    q_dot_derivado = (q_t - q_t_prev) / T_s;
-
-    % B. Integrador Discreto (Método de Tustin / Trapezoidal)
-    % Fórmula: y[k] = y[k-1] + (Ts/2) * (u[k] + u[k-1])
-    theta_integrado = theta_int_prev + (T_s / 2) * (q_prime_t + q_prime_prev);
-
-    % --- SALIDAS DEL SISTEMA ---
-    theta_m_star = r * (q_t + theta_integrado);
-    w_m_star     = r * (q_prime_t + q_dot_derivado);
-
-    % Actualización de memoria para el próximo ciclo
-    q_t_prev = q_t;
-    q_prime_prev = q_prime_t;
-    theta_int_prev = theta_integrado;
-end
-\end{lstlisting}
-
-\begin{lstlisting}[caption=Implentación de controlador PID., label=codigo:pid]
-function T_m_star = controlador_pid(w_m_star, w_m)
-    % Memoria de estados para los integradores y valores previos
-    persistent e_pos_estado e_int_estado e_vel_prev e_pos_prev
-    
-    % Inicialización en el primer ciclo (t=0)
-    if isempty(e_pos_estado)
-        e_pos_estado = 0; % Memoria del integrador de posición
-        e_int_estado = 0; % Memoria del integrador de la acción integral
-        e_vel_prev = 0;   % Velocidad del ciclo anterior
-        e_pos_prev = 0;   % Posición del ciclo anterior
-    end
-
-    % Cálculo del Error de Velocidad
-    e_vel = w_m_star - w_m;
-
-    % Primer Integrador: Error de Velocidad -> Error de Posición
-    e_pos = e_pos_estado + (T_s / 2) * (e_vel + e_vel_prev);
-    
-    % Segundo Integrador: Error de Posición -> Integral del error de posición
-    e_int = e_int_estado + (T_s / 2) * (e_pos + e_pos_prev);
-    
-    D_action = ba_num * e_vel; % Accion Derivativa
-    P_action = Ksa_num * e_pos; % Accion Proporcional
-    I_action = Ksia_num * e_int;    % Accion Integral
-
-    % --- CALCULO DE LA SALIDA ---
-    T_m_star_unbounded = P_action + I_action + D_action;
-
-    % --- SATURACIÓN DE SALIDA ---
-    if T_m_star_unbounded > Torque_max
-        T_m_star = Torque_max;
-        % Saturado: No guardamos el nuevo e_int en e_int_estado (congelamos el integrador I)
-    elseif T_m_star_unbounded < -Torque_max
-        T_m_star = -Torque_max;
-        % Saturado: No guardamos el nuevo e_int en e_int_estado (congelamos el integrador I)
-    else
-        T_m_star = T_m_star_unbounded;
-        % Zona lineal: Actualizamos la memoria del integrador I
-        e_int_estado = e_int; 
-    end
-
-    % El integrador de posición NUNCA se congela, solo el de integracion.
-    e_pos_estado = e_pos;
-
-    % Actualización de memorias para el cálculo de Tustin en el próximo ciclo
-    e_vel_prev = e_vel;
-    e_pos_prev = e_pos;
-end
-\end{lstlisting}
-
-\begin{lstlisting}[caption=Implentación de Observador de Estado Reducido Extendido., label=codigo:observador_estado]
-function [w_m_estimada, theta_m_estimada] = observador_estado(theta_m, T_m_star)
-    % Memoria de los integradores (Salidas)
-    persistent int1_estado w_est_estado th_est_estado
-    
-    % Memoria de las entradas a los integradores (para método de Tustin)
-    persistent in1_prev in2_prev in3_prev
-    
-    % Inicialización
-    if isempty(th_est_estado)
-        int1_estado = 0;   
-        w_est_estado = 0;    
-        th_est_estado = 0;  
-        
-        in1_prev = 0;
-        in2_prev = 0;
-        in3_prev = 0;
-    end
-    
-    % Cálculo del error de estimación (usando la posición estimada previa)
-    e_theta = theta_m - th_est_estado;
-    
-    % --- Lazo de Perturbación (K_ei) ---
-    in1_actual = K_ei_ext_agresivo * e_theta;
-    int1_actual = int1_estado + (T_s / 2) * (in1_actual + in1_prev); % Salida del 1er integrador
-    
-    % --- Lazo de Velocidad (K_ew) ---
-    in2_actual = (T_m_star / Jeq) + int1_actual + (K_ew_ext_agresivo * e_theta);
-    w_est_actual = w_est_estado + (T_s / 2) * (in2_actual + in2_prev); % Salida del 2do integrador
-    
-    % --- Lazo de Posición (K_eth) ---
-    in3_actual = w_est_actual + (K_eth_ext_agresivo * e_theta);
-    th_est_actual = th_est_estado + (T_s / 2) * (in3_actual + in3_prev); % Salida del 3er integrador
-    
-    % --- ASIGNACIÓN DE SALIDAS ---
-    w_m_estimada = w_est_actual;
-    theta_m_estimada = th_est_actual;
-    
-    % --- ACTUALIZACIÓN DE MEMORIAS PARA EL PRÓXIMO CICLO ---
-    % Actualizamos los estados de los integradores
-    int1_estado = int1_actual;
-    w_est_estado = w_est_actual;
-    th_est_estado = th_est_actual;
-    
-    % Actualizamos las entradas previas para el cálculo de Tustin
-    in1_prev = in1_actual;
-    in2_prev = in2_actual;
-    in3_prev = in3_actual;
-end
-\end{lstlisting}
-
-\begin{lstlisting}[caption=Implentación de compensador mecánico., label=codigo:compensador_mecanico]
-function i_q_star = compensador_mecanico(T_m_star, w_m_estimada, theta_m, i_d)
-    % --- Compensacion de no linealidades ---
-    % Compensación Feedforward de Fricción Viscosa
-    T_friccion = b_eq * w_m_estimada;
-
-    % Compensación Feedforward de Gravedad
-    T_gravedad = K_g * sin(theta_m / r);
-
-    % Torque Total Requerido
-    T_req = T_m_star + T_friccion + T_gravedad;
-
-    % --- Modulación de Torque a Corriente ---
-    % T = (K_t + K_rel * i_d) * i_q
-    Denominador_Torque = K_t + K_rel * i_d;
-
-    % Evitar división por cero
-    if abs(Denominador_Torque) < 1e-6
-        Denominador_Torque = sign(Denominador_Torque) * 1e-6;
-        if Denominador_Torque == 0
-            Denominador_Torque = 1e-6;
-        end
-    end
-
-    % Cálculo final de la consigna de corriente
-    i_q_star = T_req / Denominador_Torque;
-end
-\end{lstlisting}
-
-\begin{lstlisting}[caption=Implentación de controlador de corrientes con Linealizacion por Realimentacion exacta., label=codigo:controlador_corrientes]
-function [v_q, v_d, v_o] = controlador_corriente(i_q_star, i_d_star, i_o_star, i_q, i_d, i_o, R_s, w_m_estimada)
-    % --- Controlador Proporcional ---
-    % Cálculo del error de seguimiento
-    e_q = i_q_star - i_q;
-    e_d = i_d_star - i_d;
-    e_o = i_o_star - i_o;
-    
-    % Generación de las tensiones de control
-    v_bar_q = R_q_prime * e_q;
-    v_bar_d = R_d_prime * e_d;
-    v_bar_o = R_o_prime * e_o;
-
-    % --- Desacoplamiento electrico (Feedback Linearization) ---
-    % Eje en Cuadratura (q): Compensa caída óhmica y fuerza contraelectromotriz
-    v_q = v_bar_q + R_s * i_q + Pp * w_m_estimada * (L_d * i_d + lambda_m);
-    
-    % Eje Directo (d): Compensa caída óhmica y acoplamiento por reluctancia cruzada
-    v_d = v_bar_d + R_s * i_d - Pp * w_m_estimada * L_q * i_q;
-    
-    % Eje Homopolar (0): Compensa únicamente caída óhmica
-    v_o = v_bar_o + R_s * i_o;
-end
-\end{lstlisting}
-
-\begin{lstlisting}[caption=Implentación de estimador de resistencia del estator., label=codigo:estimar_Rs]
-function R_s = estimar_Rs(T_s)
-    % Cálculo del incremento de temperatura
-    Delta_T = T_s_segura - T_sREF;
-
-    % Aplicación de la Ecuación del modelo físico
-    R_s = RsREF * (1 + alphaCu * Delta_T);
-end
-\end{lstlisting}
-
-\begin{lstlisting}[caption=Implentación de calculo de posicion referida al rotor., label=codigo:calcular_theta_m]
-function theta_r = calcular_theta_r(theta_m)
-    theta_r = Pp * theta_m;
-end
-\end{lstlisting}
-
-\begin{lstlisting}[caption=Implentación de Transformada Directa de Park., label=codigo:TD_Park]
-function [fq, fd, f0] = T_Park(fa, fb, fc, theta_r)
-% Transformada directa de Park: abc -> qd0
-% Convención usada:
-% fq: eje q
-% fd: eje d
-% f0: componente homopolar
-
-c1 = cos(theta_r);
-c2 = cos(theta_r - 2*pi/3);
-c3 = cos(theta_r + 2*pi/3);
-
-s1 = sin(theta_r);
-s2 = sin(theta_r - 2*pi/3);
-s3 = sin(theta_r + 2*pi/3);
-
-fq = (2/3)*(c1*fa + c2*fb + c3*fc);
-fd = (2/3)*(s1*fa + s2*fb + s3*fc);
-f0 = (1/3)*(fa + fb + fc);
-end
-\end{lstlisting}
-
-\begin{lstlisting}[caption=Implentación de Transformada Inversa de Park., label=codigo:TI_Park]
-function [fa, fb, fc] = TI_Park(fq, fd, f0, theta_r)
-% Transformada inversa de Park: qd0 -> abc
-fa = cos(theta_r)*fq ...
-   + sin(theta_r)*fd ...
-   + f0;
-
-fb = cos(theta_r - 2*pi/3)*fq ...
-   + sin(theta_r - 2*pi/3)*fd ...
-   + f0;
-
-fc = cos(theta_r + 2*pi/3)*fq ...
-   + sin(theta_r + 2*pi/3)*fd ...
-   + f0;
-end
-\end{lstlisting}
+\lstinputlisting{../sim/controlador_foc_simulink.m}
 
 % ---------------------------------------------------------
 % REFERENCIAS
