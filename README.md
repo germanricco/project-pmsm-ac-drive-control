@@ -4,7 +4,8 @@
 
 [![MATLAB](https://img.shields.io/badge/MATLAB-R2023b%2B-orange?logo=mathworks&logoColor=white)](https://www.mathworks.com/products/matlab.html)
 [![Simulink](https://img.shields.io/badge/Simulink-Modelado%20y%20control-blue?logo=simulink&logoColor=white)](https://www.mathworks.com/products/simulink.html)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)](LICENSE)
+[![Código: Apache 2.0](https://img.shields.io/badge/Código-Apache%202.0-lightgrey.svg)](LICENSE)
+[![Informe y figuras: CC BY-NC-ND 4.0](https://img.shields.io/badge/Informe%20%26%20figuras-CC%20BY--NC--ND%204.0-lightgrey.svg)](LICENSE-DOCS.md)
 [![Informe](https://img.shields.io/badge/Informe%20técnico-128%20p%C3%A1ginas-blueviolet)](docs/AyME_Informe_2026_Control-de-Accionamiento-de-CA-Mediante-Motor-Sincrono-de-Imanes-Permanentes.pdf)
 
 Proyecto Global Integrador de la asignatura **Automática y Máquinas Eléctricas**, Ingeniería Mecatrónica, Facultad de Ingeniería — Universidad Nacional de Cuyo (Mendoza, Argentina). Año 2026.
@@ -152,10 +153,9 @@ El detalle completo de conclusiones y recomendaciones está en la Sección 5 del
 project-pmsm-ac-drive-control/
 ├── docs/
 │   ├── AyME_Informe_2026_Control-de-Accionamiento-de-CA-...pdf   # informe técnico completo (128 p.)
-│   ├── img/                    # figuras y resultados exportados (svg / pdf vectorial / png)
-│   │   ├── readme/             # imágenes usadas en este README
-│   │   └── resultados/         # resultados de cada escenario de simulación, por punto del informe
-│   └── Referencias/            # guías de cátedra y material de referencia
+│   └── img/                    # figuras y resultados exportados (svg / pdf vectorial / png)
+│       ├── readme/             # imágenes usadas en este README
+│       └── resultados/         # resultados de cada escenario de simulación, por punto del informe
 ├── sim/
 │   ├── config/                 # parámetros físicos y de diseño (params_*.m) + init_sistema_completo.m
 │   ├── *.slx                   # modelos Simulink: subsistemas, planta global, controlador, observador,
@@ -165,10 +165,13 @@ project-pmsm-ac-drive-control/
 │   └── controlador_foc_simulink.m, sistema_completo_en_codigo.m  # controlador expresado en código estructurado
 ├── utils/
 │   └── SignalPlotter.m         # utilidad propia para graficar y exportar figuras en PDF vectorial
-├── LICENSE
+├── LICENSE                     # licencia del código (Apache 2.0)
+├── LICENSE-DOCS.md             # licencia del informe y las figuras (CC BY-NC-ND 4.0)
 ├── .gitignore
 └── README.md
 ```
+
+> **Nota:** localmente, `docs/Referencias/` también contiene las guías de la cátedra y material de consulta usado durante el desarrollo. Esa carpeta se mantiene fuera del repositorio (ver `.gitignore`) porque incluye documentos e informes de otros grupos que no son de nuestra autoría.
 
 ## Cómo ejecutar las simulaciones
 
@@ -212,4 +215,9 @@ Profesor titular: Ing. Gabriel L. Julián
 
 ## Licencia
 
-Este proyecto se distribuye bajo la licencia [Apache 2.0](LICENSE).
+Este es un trabajo académico: el enunciado, los requerimientos y la guía de desarrollo fueron dados por la cátedra (ver [Autores](#autores)), y el contenido de este repositorio es la resolución propia de los autores sobre esa consigna. Por eso se usan dos licencias distintas según el tipo de contenido:
+
+- **Código** (scripts `.m`, modelos `.slx`, `utils/`) — licencia [Apache 2.0](LICENSE). Podés usarlo, modificarlo y redistribuirlo libremente, citando la fuente.
+- **Informe técnico y figuras** (`docs/*.pdf`, `docs/img/`) — licencia [Creative Commons BY-NC-ND 4.0](LICENSE-DOCS.md). Podés compartirlos citando a los autores, pero no para uso comercial ni para generar obras derivadas (por ejemplo, presentar este informe, total o parcialmente, como trabajo propio en otra materia o institución).
+
+Ninguna de las dos licencias implica que el proyecto haya sido concebido de forma completamente independiente: la consigna, las especificaciones y la guía de trabajo pertenecen a la cátedra de Automática y Máquinas Eléctricas (UNCuyo) y no están incluidas en este repositorio.

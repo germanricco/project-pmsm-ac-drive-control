@@ -4,9 +4,14 @@
 *.mex*
 *.log
 slprj/
-          
+
 # Caché de carpetas de Windows
 Thumbs.db
 ehthumbs.db
+
 # Resultados pesados generados por simulaciones
 docs/img/resultados/**/*.mat
+
+# Material de la cátedra y de otros grupos (no redistribuir públicamente):
+# guías de trabajo e informes de compañeros compartidos como referencia interna.
+docs/Referencias/
